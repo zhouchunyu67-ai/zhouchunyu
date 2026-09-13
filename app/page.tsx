@@ -526,7 +526,7 @@ export default function Home() {
           };
         });
         setAssets(restored);
-        setSelectedId(restored[0]?.id ?? null);
+        setSelectedId(restored.find((asset) => asset.collection === "library")?.id ?? null);
         setIsLoadingSaved(false);
         restored.forEach(readMetadata);
       })
@@ -714,7 +714,7 @@ export default function Home() {
       setNotice(`已将“${selected.name}”移到素材库根目录`);
     } else {
       updateAsset(selected.id, { collection: "category", category: destination });
-      if (filter !== "all") setFilter(`category:${destination}`);
+      setFilter(`category:${destination}`);
       setNotice(`已将“${selected.name}”移到“${destination}”`);
     }
     window.setTimeout(() => setNotice(""), 1800);
@@ -765,7 +765,8 @@ export default function Home() {
     const keyword = query.trim().toLowerCase();
     return assets.filter((asset) => {
       const matchesLocation = filter === "all"
-        || (filter.startsWith("category:")
+        ? asset.collection === "library"
+        : (filter.startsWith("category:")
           ? asset.collection === "category" && asset.category === filter.slice(9)
           : asset.collection === "library" && asset.kind === filter);
       const matchesQuery = !keyword
@@ -776,7 +777,16 @@ export default function Home() {
     });
   }, [assets, filter, query]);
 
+  useEffect(() => {
+    if (isLoadingSaved) return;
+    if (!visibleAssets.some((asset) => asset.id === selectedId)) {
+      setSelectedId(visibleAssets[0]?.id ?? null);
+    }
+  }, [isLoadingSaved, selectedId, visibleAssets]);
+
   const totalSize = useMemo(() => assets.reduce((sum, asset) => sum + asset.size, 0), [assets]);
+  const libraryAssetCount = assets.filter((asset) => asset.collection === "library").length;
+  const visibleSize = useMemo(() => visibleAssets.reduce((sum, asset) => sum + asset.size, 0), [visibleAssets]);
   const imageCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "image").length;
   const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
   const audioCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "audio").length;
@@ -920,7 +930,7 @@ export default function Home() {
               <nav className="filter-list" aria-label="素材筛选">
                 <button className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>
                   <span><i className="nav-symbol grid-symbol" />全部素材</span>
-                  <b>{assets.length}</b>
+                  <b>{libraryAssetCount}</b>
                 </button>
                 <button className={filter === "video" ? "active" : ""} onClick={() => setFilter("video")}>
                   <span><i className="nav-symbol video-symbol" />视频</span>
@@ -1037,7 +1047,7 @@ export default function Home() {
             <div className="library-heading">
               <span>ASSET MATRIX / 01</span>
               <h2>素材库</h2>
-              <p>{isLoadingSaved ? "正在读取本机素材库…" : assets.length ? `${assets.length} 个素材 · ${formatBytes(totalSize)}` : "等待导入本地素材"}</p>
+              <p>{isLoadingSaved ? "正在读取本机素材库…" : visibleAssets.length ? `${visibleAssets.length} 个素材 · ${formatBytes(visibleSize)}` : "当前区域等待导入素材"}</p>
             </div>
             <div className="toolbar-actions">
               <label className="search-box">
@@ -1416,7 +1426,7 @@ export default function Home() {
               </div>
 
               {previewOpen && (
-                <div className="viewer-overlay" role="dialog" aria-modal="true" aria-label={`${selected.name} 素材预览`} onClick={() => setPreviewOpen(false)}>
+                <div className={`viewer-overlay ${selected.kind}-viewer-overlay`} role="dialog" aria-modal="true" aria-label={`${selected.name} 素材预览`} onClick={() => setPreviewOpen(false)}>
                   <div className="viewer-shell" onClick={(event) => event.stopPropagation()}>
                     <div className="viewer-header">
                       <div>

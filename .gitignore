@@ -81,3 +81,5 @@ yarn-error.log*
 !public/ui-summer.png
 !public/ui-library-text.png
 !public/ui-inspector-text.jpg
+!public/ui-text-reader-bg.jpg
+!public/ui-viewer-surround-bg.jpg

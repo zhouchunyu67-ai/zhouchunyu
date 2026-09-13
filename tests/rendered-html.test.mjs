@@ -50,6 +50,8 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /document\.createElement\("audio"\)/);
   assert.match(page, /syncAudioMetadata/);
   assert.match(page, /saveStoredAsset\(toStoredRecord\(asset\)\)/);
+  assert.match(page, /filter === "all"\s*\? asset\.collection === "library"/);
+  assert.match(page, /asset\.collection === "category" && asset\.category/);
   assert.match(storage, /indexedDB\.open/);
   assert.match(storage, /"image" \| "video" \| "audio" \| "text"/);
 });
