@@ -60,8 +60,27 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /filter === "all"\s*\? \(keyword \? true : asset\.collection === "library"\)/);
   assert.match(page, /asset\.category\.toLowerCase\(\)\.includes\(keyword\)/);
   assert.match(page, /isGlobalAssetSearch && asset\.collection === "category"/);
+  assert.match(page, /createFrameVaultBackup/);
+  assert.match(page, /parseFrameVaultBackup/);
+  assert.match(page, /安全合并/);
+  assert.match(page, /完全恢复/);
   const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
   assert.doesNotMatch(moveHandler, /setFilter/);
   assert.match(storage, /indexedDB\.open/);
   assert.match(storage, /"image" \| "video" \| "audio" \| "text"/);
+  assert.match(storage, /restoreStoredWorkspace/);
+  assert.match(storage, /database\.transaction\(\[STORE_NAME, PROMPT_STORE_NAME\], "readwrite"\)/);
+});
+
+test("keeps the sidebar usable when the available viewport height changes", async () => {
+  const [page, styles] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(page, /className="side-panel-scroll"/);
+  assert.match(page, /aria-expanded=\{isLocalStatusExpanded\}/);
+  assert.match(styles, /height:\s*100dvh/);
+  assert.match(styles, /\.side-panel-scroll\s*\{[^}]*overflow-y:\s*auto/s);
+  assert.match(styles, /\.workspace-grid\s*\{[^}]*min-height:\s*0/s);
 });

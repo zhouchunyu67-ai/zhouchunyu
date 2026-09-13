@@ -123,3 +123,68 @@ export async function saveStoredPromptState(
   await transactionDone(transaction);
   database.close();
 }
+
+export type WorkspaceRestoreMode = "merge" | "replace";
+
+export type WorkspaceRestoreResult = {
+  imported: number;
+  skipped: number;
+};
+
+async function loadStoredAssetIds(): Promise<Set<IDBValidKey>> {
+  const database = await openDatabase();
+  const transaction = database.transaction(STORE_NAME, "readonly");
+  const keys = await requestResult(transaction.objectStore(STORE_NAME).getAllKeys());
+  database.close();
+  return new Set(keys);
+}
+
+function mergePromptState(
+  current: StoredPromptState | null,
+  incoming: StoredPromptState | null,
+): StoredPromptState | null {
+  if (!incoming) return current;
+  if (!current) return { ...incoming, id: "workspace", updatedAt: Date.now() };
+  return {
+    id: "workspace",
+    favorites: Array.from(new Set([...(current.favorites ?? []), ...(incoming.favorites ?? [])])),
+    recent: Array.from(new Set([...(incoming.recent ?? []), ...(current.recent ?? [])])).slice(0, 40),
+    drafts: { ...(incoming.drafts ?? {}), ...(current.drafts ?? {}) },
+    assetCategories: Array.from(new Set([...(current.assetCategories ?? []), ...(incoming.assetCategories ?? [])])),
+    updatedAt: Date.now(),
+  };
+}
+
+export async function restoreStoredWorkspace(
+  records: StoredAssetRecord[],
+  promptState: StoredPromptState | null,
+  mode: WorkspaceRestoreMode,
+): Promise<WorkspaceRestoreResult> {
+  const existingIds = mode === "merge" ? await loadStoredAssetIds() : new Set<IDBValidKey>();
+  const currentPromptState = mode === "merge" ? await loadStoredPromptState() : null;
+  const recordsToWrite = mode === "merge"
+    ? records.filter((record) => !existingIds.has(record.id))
+    : records;
+  const nextPromptState = mode === "merge"
+    ? mergePromptState(currentPromptState, promptState)
+    : promptState;
+
+  const database = await openDatabase();
+  const transaction = database.transaction([STORE_NAME, PROMPT_STORE_NAME], "readwrite");
+  const assetStore = transaction.objectStore(STORE_NAME);
+  const promptStore = transaction.objectStore(PROMPT_STORE_NAME);
+  if (mode === "replace") {
+    assetStore.clear();
+    promptStore.clear();
+  }
+  recordsToWrite.forEach((record) => assetStore.put(record));
+  if (nextPromptState) {
+    promptStore.put({ ...nextPromptState, id: "workspace", updatedAt: Date.now() } satisfies StoredPromptState);
+  }
+  await transactionDone(transaction);
+  database.close();
+  return {
+    imported: recordsToWrite.length,
+    skipped: records.length - recordsToWrite.length,
+  };
+}

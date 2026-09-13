@@ -12,13 +12,21 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import {
+  createFrameVaultBackup,
+  parseFrameVaultBackup,
+  type ParsedFrameVaultBackup,
+} from "./backup";
+import {
   deleteStoredAsset,
   loadStoredAssets,
   loadStoredPromptState,
   patchStoredAsset,
+  restoreStoredWorkspace,
   saveStoredAsset,
   saveStoredPromptState,
   type StoredAssetRecord,
+  type StoredPromptState,
+  type WorkspaceRestoreMode,
 } from "./storage";
 import {
   promptCategories,
@@ -33,6 +41,7 @@ type AssetStatus = "reading" | "ready" | "unsupported";
 type Filter = "all" | AssetKind | `category:${string}`;
 type WorkspaceMode = "assets" | "prompts";
 type PromptScope = "category" | "favorites" | "recent";
+type BackupDialogMode = "export" | "restore" | null;
 type PanPoint = { x: number; y: number };
 type PanDrag = PanPoint & { panX: number; panY: number };
 
@@ -202,12 +211,22 @@ export default function Home() {
   const [isAddingText, setIsAddingText] = useState(false);
   const [textTitleDraft, setTextTitleDraft] = useState("");
   const [textContentDraft, setTextContentDraft] = useState("");
+  const [backupDialogMode, setBackupDialogMode] = useState<BackupDialogMode>(null);
+  const [restoreMode, setRestoreMode] = useState<WorkspaceRestoreMode>("merge");
+  const [backupCandidate, setBackupCandidate] = useState<ParsedFrameVaultBackup | null>(null);
+  const [backupCandidateName, setBackupCandidateName] = useState("");
+  const [backupMessage, setBackupMessage] = useState("");
+  const [backupFailure, setBackupFailure] = useState("");
+  const [isBackupWorking, setIsBackupWorking] = useState(false);
+  const [replaceConfirmed, setReplaceConfirmed] = useState(false);
+  const [isLocalStatusExpanded, setIsLocalStatusExpanded] = useState(false);
   const [promptStateReady, setPromptStateReady] = useState(false);
   const [previewPan, setPreviewPan] = useState<PanPoint>({ x: 0, y: 0 });
   const [viewerPan, setViewerPan] = useState<PanPoint>({ x: 0, y: 0 });
   const [isPreviewPanning, setIsPreviewPanning] = useState(false);
   const [isViewerPanning, setIsViewerPanning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const backupInputRef = useRef<HTMLInputElement>(null);
   const previewStageRef = useRef<HTMLDivElement>(null);
   const viewerCanvasRef = useRef<HTMLDivElement>(null);
   const assetsRef = useRef<MediaAsset[]>([]);
@@ -768,6 +787,110 @@ export default function Home() {
       .catch(() => setNotice("类目已删除，但部分素材的归类保存失败，请重试"));
   };
 
+  const openBackupDialog = (mode: Exclude<BackupDialogMode, null>) => {
+    setBackupDialogMode(mode);
+    setRestoreMode("merge");
+    setBackupCandidate(null);
+    setBackupCandidateName("");
+    setBackupMessage("");
+    setBackupFailure("");
+    setReplaceConfirmed(false);
+  };
+
+  const closeBackupDialog = () => {
+    if (isBackupWorking) return;
+    setBackupDialogMode(null);
+    setBackupCandidate(null);
+    setBackupCandidateName("");
+    setBackupMessage("");
+    setBackupFailure("");
+    setReplaceConfirmed(false);
+    if (backupInputRef.current) backupInputRef.current.value = "";
+  };
+
+  const exportWorkspaceBackup = async () => {
+    setIsBackupWorking(true);
+    setBackupFailure("");
+    setBackupMessage("正在整理素材和本地记录…");
+    try {
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 20));
+      const records = assets.map((asset) => {
+        const record = toStoredRecord(asset);
+        if (asset.kind !== "text") return record;
+        const file = new Blob([asset.textContent ?? ""], { type: asset.mime || "text/plain;charset=utf-8" });
+        return { ...record, file, size: file.size };
+      });
+      const promptState: StoredPromptState = {
+        id: "workspace",
+        favorites: favoritePromptIds,
+        recent: recentPromptIds,
+        drafts: promptDrafts,
+        assetCategories,
+        updatedAt: Date.now(),
+      };
+      const { blob, manifest } = createFrameVaultBackup(records, promptState);
+      const timestamp = new Date().toISOString().slice(0, 19).replaceAll(":", "-").replace("T", "_");
+      const filename = `FrameVault-${timestamp}.framevault`;
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      setBackupMessage(`备份已生成：${manifest.assetCount} 个素材，共 ${formatBytes(manifest.totalBytes)}`);
+    } catch (error) {
+      setBackupMessage("");
+      setBackupFailure(error instanceof Error ? error.message : "备份生成失败，请重试");
+    } finally {
+      setIsBackupWorking(false);
+    }
+  };
+
+  const prepareBackupFile = async (file?: File) => {
+    if (!file) return;
+    setIsBackupWorking(true);
+    setBackupCandidate(null);
+    setBackupCandidateName(file.name);
+    setBackupFailure("");
+    setBackupMessage("正在校验备份文件…");
+    try {
+      const parsed = await parseFrameVaultBackup(file);
+      setBackupCandidate(parsed);
+      setBackupMessage(`校验完成：${parsed.manifest.assetCount} 个素材，共 ${formatBytes(parsed.manifest.totalBytes)}`);
+    } catch (error) {
+      setBackupMessage("");
+      setBackupFailure(error instanceof Error ? error.message : "无法读取这个备份文件");
+    } finally {
+      setIsBackupWorking(false);
+    }
+  };
+
+  const restoreWorkspaceBackup = async () => {
+    if (!backupCandidate || (restoreMode === "replace" && !replaceConfirmed)) return;
+    setIsBackupWorking(true);
+    setBackupFailure("");
+    setBackupMessage("正在写入本机素材库，请不要关闭页面…");
+    try {
+      const result = await restoreStoredWorkspace(
+        backupCandidate.assets,
+        backupCandidate.promptState,
+        restoreMode,
+      );
+      setBackupMessage(
+        restoreMode === "replace"
+          ? `恢复完成：已写入 ${result.imported} 个素材，正在重新加载…`
+          : `合并完成：新增 ${result.imported} 个素材，跳过 ${result.skipped} 个重复素材，正在重新加载…`,
+      );
+      window.setTimeout(() => window.location.reload(), 1100);
+    } catch (error) {
+      setBackupMessage("");
+      setBackupFailure(error instanceof Error ? error.message : "恢复失败，当前素材库未完成更新");
+      setIsBackupWorking(false);
+    }
+  };
+
   const visibleAssets = useMemo(() => {
     const keyword = query.trim().toLowerCase();
     return assets.filter((asset) => {
@@ -933,6 +1056,7 @@ export default function Home() {
             <span>{workspaceMode === "assets" ? "素材收藏夹" : "提示词分类"}</span>
             <b>⌄</b>
           </div>
+          <div className="side-panel-scroll">
           {workspaceMode === "assets" && (
             <div className="anime-side-banner" aria-hidden="true">
               <span>MY COLLECTION</span>
@@ -1099,15 +1223,35 @@ export default function Home() {
               </nav>
             </>
           )}
-
-          <div className="privacy-note">
-            <span className="privacy-icon">◎</span>
-            <div>
-              <strong>本机持久保存</strong>
-              <p>{workspaceMode === "assets" ? "素材与提示词会一直保留，只有手动移除才删除。" : "共 24 类、1,920 条本地整理模板，可离线搜索和复制。"}</p>
-            </div>
           </div>
-          <div className="node-status"><span>LOCAL DB</span><i /><b>PERSISTENT</b></div>
+
+          <div className={`privacy-note ${isLocalStatusExpanded ? "expanded" : "collapsed"}`}>
+            <button
+              type="button"
+              className="privacy-note-toggle"
+              aria-expanded={isLocalStatusExpanded}
+              aria-controls="local-persistence-details"
+              onClick={() => setIsLocalStatusExpanded((value) => !value)}
+            >
+              <span className="privacy-icon">◎</span>
+              <span className="privacy-note-title">
+                <strong>本机持久保存</strong>
+                <small><i /> LOCAL DB · PERSISTENT</small>
+              </span>
+              <b aria-hidden="true">{isLocalStatusExpanded ? "⌄" : "⌃"}</b>
+            </button>
+            {isLocalStatusExpanded && (
+              <div className="privacy-note-details" id="local-persistence-details">
+              <p>{workspaceMode === "assets" ? "素材与提示词会一直保留，只有手动移除才删除。" : "共 24 类、1,920 条本地整理模板，可离线搜索和复制。"}</p>
+              {workspaceMode === "assets" && (
+                <div className="workspace-backup-actions">
+                  <button onClick={() => openBackupDialog("export")}>⇩ 整库备份</button>
+                  <button onClick={() => openBackupDialog("restore")}>⇧ 恢复素材库</button>
+                </div>
+              )}
+              </div>
+            )}
+          </div>
         </aside>
 
         <section
@@ -1669,6 +1813,112 @@ export default function Home() {
           ) : null}
         </aside>
       </section>
+
+      {backupDialogMode && (
+        <div className="backup-overlay" role="presentation" onClick={closeBackupDialog}>
+          <section
+            className="backup-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="backup-dialog-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header>
+              <div>
+                <span>LOCAL VAULT TRANSFER</span>
+                <h3 id="backup-dialog-title">{backupDialogMode === "export" ? "导出整库备份" : "恢复素材库"}</h3>
+                <p>{backupDialogMode === "export" ? "素材、类目与提示词会保存为一个私人备份文件。" : "选择 .framevault 文件，把旧电脑中的内容恢复到本机。"}</p>
+              </div>
+              <button disabled={isBackupWorking} onClick={closeBackupDialog} aria-label="关闭备份窗口">×</button>
+            </header>
+
+            {backupDialogMode === "export" ? (
+              <>
+                <div className="backup-summary-grid">
+                  <div><span>素材数量</span><strong>{assets.length} 个</strong></div>
+                  <div><span>自定义类目</span><strong>{assetCategories.length} 个</strong></div>
+                  <div><span>素材总大小</span><strong>{formatBytes(totalSize)}</strong></div>
+                  <div><span>保存范围</span><strong>完整本地库</strong></div>
+                </div>
+                <div className="backup-safety-note">
+                  <i>♡</i>
+                  <p>备份只会下载到你选择的位置，不会上传到仓库或网络。文件中包含原始素材，请妥善保管。</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className={`backup-drop-zone ${backupCandidate ? "ready" : ""}`}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    void prepareBackupFile(event.dataTransfer.files[0]);
+                  }}
+                >
+                  <span>{backupCandidate ? "✓" : "⇧"}</span>
+                  <strong>{backupCandidate ? backupCandidateName : "把 .framevault 文件拖到这里"}</strong>
+                  <small>{backupCandidate ? `${backupCandidate.manifest.assetCount} 个素材 · ${formatBytes(backupCandidate.manifest.totalBytes)}` : "或者从电脑中选择备份文件"}</small>
+                  <button
+                    disabled={isBackupWorking}
+                    onClick={() => {
+                      if (!backupInputRef.current) return;
+                      backupInputRef.current.value = "";
+                      backupInputRef.current.click();
+                    }}
+                  >{backupCandidate ? "重新选择" : "选择备份文件"}</button>
+                  <input
+                    ref={backupInputRef}
+                    className="visually-hidden"
+                    type="file"
+                    accept=".framevault,application/x-framevault"
+                    onChange={(event) => void prepareBackupFile(event.target.files?.[0])}
+                  />
+                </div>
+
+                <div className="restore-mode-options" aria-label="恢复方式">
+                  <label className={restoreMode === "merge" ? "active" : ""}>
+                    <input type="radio" name="restore-mode" checked={restoreMode === "merge"} onChange={() => { setRestoreMode("merge"); setReplaceConfirmed(false); }} />
+                    <span><strong>安全合并</strong><small>保留本机内容，只添加备份中不重复的素材。</small></span>
+                  </label>
+                  <label className={restoreMode === "replace" ? "active danger" : ""}>
+                    <input type="radio" name="restore-mode" checked={restoreMode === "replace"} onChange={() => setRestoreMode("replace")} />
+                    <span><strong>完全恢复</strong><small>清空当前本地库，恢复为备份文件中的状态。</small></span>
+                  </label>
+                </div>
+                {restoreMode === "replace" && (
+                  <label className="replace-confirmation">
+                    <input type="checkbox" checked={replaceConfirmed} onChange={(event) => setReplaceConfirmed(event.target.checked)} />
+                    <span>我确认覆盖本机当前的 {assets.length} 个素材</span>
+                  </label>
+                )}
+              </>
+            )}
+
+            {(backupMessage || backupFailure) && (
+              <div className={`backup-status ${backupFailure ? "failure" : ""}`} role="status">
+                <i>{backupFailure ? "!" : isBackupWorking ? "…" : "✓"}</i>
+                <span>{backupFailure || backupMessage}</span>
+              </div>
+            )}
+
+            <footer>
+              <small>{backupDialogMode === "export" ? "备份文件不会进入 Git 仓库" : "支持拖放导入 · 恢复完成后自动刷新"}</small>
+              <button disabled={isBackupWorking} onClick={closeBackupDialog}>取消</button>
+              {backupDialogMode === "export" ? (
+                <button className="primary" disabled={isBackupWorking} onClick={() => void exportWorkspaceBackup()}>{isBackupWorking ? "正在生成…" : "导出备份"}</button>
+              ) : (
+                <button
+                  className={restoreMode === "replace" ? "primary danger" : "primary"}
+                  disabled={!backupCandidate || isBackupWorking || (restoreMode === "replace" && !replaceConfirmed)}
+                  onClick={() => void restoreWorkspaceBackup()}
+                >
+                  {isBackupWorking ? "正在恢复…" : restoreMode === "replace" ? "完全恢复" : "合并到本机"}
+                </button>
+              )}
+            </footer>
+          </section>
+        </div>
+      )}
 
       {categoryPendingDelete && (
         <div className="category-delete-overlay" role="dialog" aria-modal="true" aria-label="删除类目确认" onClick={() => setCategoryPendingDelete(null)}>
