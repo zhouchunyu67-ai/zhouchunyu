@@ -1,6 +1,7 @@
 {
   "name": "media-desk",
   "version": "0.1.0",
+  "description": "二次元风格的离线本地素材管理平台，支持多媒体识别、分类预览与整库迁移。",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
