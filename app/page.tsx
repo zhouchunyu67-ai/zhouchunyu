@@ -26,7 +26,7 @@ import {
   type PromptKind,
 } from "./promptCatalog";
 
-type AssetKind = "image" | "video" | "text";
+type AssetKind = "image" | "video" | "audio" | "text";
 type AssetCollection = "library" | "category";
 type AssetStatus = "reading" | "ready" | "unsupported";
 type Filter = "all" | AssetKind | `category:${string}`;
@@ -145,12 +145,28 @@ function resolutionLabel(width?: number, height?: number) {
 function inferKind(file: File): AssetKind | null {
   if (file.type.startsWith("image/")) return "image";
   if (file.type.startsWith("video/")) return "video";
+  if (file.type.startsWith("audio/")) return "audio";
   if (file.type.startsWith("text/")) return "text";
   const extension = file.name.split(".").pop()?.toLowerCase();
   if (["jpg", "jpeg", "png", "webp", "gif", "bmp", "avif", "heic", "heif"].includes(extension ?? "")) return "image";
   if (["mp4", "mov", "m4v", "webm", "avi", "mkv", "mpeg", "mpg"].includes(extension ?? "")) return "video";
+  if (["mp3", "wav", "m4a", "aac", "ogg", "flac", "opus", "wma"].includes(extension ?? "")) return "audio";
   if (["txt", "md", "markdown"].includes(extension ?? "")) return "text";
   return null;
+}
+
+function AudioArtwork({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`audio-artwork ${compact ? "compact" : ""}`} aria-hidden="true">
+      <span className="audio-disc"><i>♪</i></span>
+      <div className="audio-waveform">
+        {[34, 58, 82, 48, 72, 96, 64, 42, 78, 54, 88, 38].map((height, index) => (
+          <i key={`${height}-${index}`} style={{ height: `${height}%` }} />
+        ))}
+      </div>
+      <small>LOCAL AUDIO</small>
+    </div>
+  );
 }
 
 export default function Home() {
@@ -246,7 +262,7 @@ export default function Home() {
     const preview = previewStageRef.current;
     if (!preview) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey || selected?.kind === "text") return;
+      if (!event.ctrlKey || selected?.kind === "text" || selected?.kind === "audio") return;
       event.preventDefault();
       event.stopPropagation();
       setZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
@@ -259,7 +275,7 @@ export default function Home() {
     const canvas = viewerCanvasRef.current;
     if (!canvas || !previewOpen) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey || selected?.kind === "text") return;
+      if (!event.ctrlKey || selected?.kind === "text" || selected?.kind === "audio") return;
       event.preventDefault();
       event.stopPropagation();
       setViewerZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
@@ -367,6 +383,31 @@ export default function Home() {
       return;
     }
 
+    if (asset.kind === "audio") {
+      const audio = document.createElement("audio");
+      audio.preload = "metadata";
+      const releaseAudio = () => {
+        audio.onloadedmetadata = null;
+        audio.onerror = null;
+        audio.removeAttribute("src");
+        audio.load();
+      };
+      audio.onloadedmetadata = () => {
+        updateAsset(asset.id, {
+          duration: audio.duration,
+          status: "ready",
+        });
+        releaseAudio();
+      };
+      audio.onerror = () => {
+        updateAsset(asset.id, { status: "unsupported" });
+        releaseAudio();
+      };
+      audio.src = asset.url;
+      audio.load();
+      return;
+    }
+
     const video = document.createElement("video");
     video.preload = "auto";
     video.muted = true;
@@ -443,6 +484,14 @@ export default function Home() {
       width: video.videoWidth,
       height: video.videoHeight,
       duration: video.duration,
+      status: "ready",
+    });
+  }, [updateAsset]);
+
+  const syncAudioMetadata = useCallback((id: string, audio: HTMLAudioElement) => {
+    if (!Number.isFinite(audio.duration)) return;
+    updateAsset(id, {
+      duration: audio.duration,
       status: "ready",
     });
   }, [updateAsset]);
@@ -532,7 +581,7 @@ export default function Home() {
     let skipped = 0;
     Array.from(files).forEach((file) => {
       const kind = inferKind(file);
-      const typedFilter = filter === "image" || filter === "video" || filter === "text" ? filter : null;
+      const typedFilter = filter === "image" || filter === "video" || filter === "audio" || filter === "text" ? filter : null;
       if (!kind || (typedFilter && kind !== typedFilter)) {
         skipped += 1;
         return;
@@ -730,24 +779,29 @@ export default function Home() {
   const totalSize = useMemo(() => assets.reduce((sum, asset) => sum + asset.size, 0), [assets]);
   const imageCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "image").length;
   const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
+  const audioCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "audio").length;
   const textCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "text").length;
   const isCategoryFilter = filter.startsWith("category:");
   const showFileImport = filter !== "text";
   const showTextCreator = filter === "all" || filter === "text" || isCategoryFilter;
-  const importLabel = filter === "video" ? "添加视频" : filter === "image" ? "添加图片" : "添加";
-  const importTileLabel = filter === "video" ? "导入视频素材" : filter === "image" ? "导入图片素材" : "导入新素材";
+  const importLabel = filter === "video" ? "添加视频" : filter === "audio" ? "添加音频" : filter === "image" ? "添加图片" : "添加";
+  const importTileLabel = filter === "video" ? "导入视频素材" : filter === "audio" ? "导入音频素材" : filter === "image" ? "导入图片素材" : "导入新素材";
   const importTileHint = filter === "video"
     ? "VIDEO · DROP HERE"
+    : filter === "audio"
+      ? "AUDIO · DROP HERE"
     : filter === "image"
       ? "IMAGE · DROP HERE"
-      : "IMAGE / VIDEO / TEXT · DROP HERE";
+      : "IMAGE / VIDEO / AUDIO / TEXT · DROP HERE";
   const acceptedFileTypes = filter === "video"
     ? "video/*,.mkv,.avi"
+    : filter === "audio"
+      ? "audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.wma"
     : filter === "image"
       ? "image/*,.heic,.heif"
       : filter === "text"
         ? "text/plain,.txt,.md,.markdown"
-        : "image/*,video/*,text/plain,.txt,.md,.markdown,.mkv,.avi,.heic,.heif";
+        : "image/*,video/*,audio/*,text/plain,.txt,.md,.markdown,.mkv,.avi,.heic,.heif,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus,.wma";
   const activePromptCategories = useMemo(
     () => promptCategories.filter((category) => category.kind === promptKind),
     [promptKind],
@@ -872,6 +926,10 @@ export default function Home() {
                   <span><i className="nav-symbol video-symbol" />视频</span>
                   <b>{videoCount}</b>
                 </button>
+                <button className={filter === "audio" ? "active" : ""} onClick={() => setFilter("audio")}>
+                  <span><i className="nav-symbol audio-symbol" />音频</span>
+                  <b>{audioCount}</b>
+                </button>
                 <button className={filter === "image" ? "active" : ""} onClick={() => setFilter("image")}>
                   <span><i className="nav-symbol image-symbol" />图片</span>
                   <b>{imageCount}</b>
@@ -929,7 +987,7 @@ export default function Home() {
               <div className="side-divider compact-divider" />
               <div className="side-group-label">格式索引</div>
               <div className="format-index">
-                <span>MP4</span><span>MOV</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span><span>TXT</span><span>MD</span>
+                <span>MP4</span><span>MOV</span><span>MP3</span><span>WAV</span><span>M4A</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span><span>TXT</span><span>MD</span>
               </div>
             </>
           ) : (
@@ -1048,6 +1106,8 @@ export default function Home() {
                       <span>TEXT NOTE</span>
                       <p>{asset.textContent || "空白文本"}</p>
                     </div>
+                  ) : asset.kind === "audio" ? (
+                    <AudioArtwork compact />
                   ) : asset.kind === "image" ? (
                     <img src={asset.url} alt="" />
                   ) : (
@@ -1070,7 +1130,7 @@ export default function Home() {
                   )}
                   <div className="frame-corners" aria-hidden="true"><i /><i /><i /><i /></div>
                   <span className="asset-index">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : asset.kind === "image" ? "IMAGE" : "TEXT"}</span>
+                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : asset.kind === "audio" ? "AUDIO" : asset.kind === "image" ? "IMAGE" : "TEXT"}</span>
                   {asset.kind === "video" && <span className="play-badge">▶</span>}
                   <button
                     className="remove-button"
@@ -1083,15 +1143,15 @@ export default function Home() {
                   <strong title={asset.name}>{asset.name}</strong>
                   <div>
                     <span>{asset.extension}</span>
-                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
-                    {asset.kind === "video" && <span>{formatDuration(asset.duration)}</span>}
+                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "audio" ? "音频素材" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
+                    {(asset.kind === "video" || asset.kind === "audio") && <span>{formatDuration(asset.duration)}</span>}
                   </div>
                 </div>
                 <div className="asset-card-footer">
-                  <span>{asset.kind === "text" ? "纯文本" : ratioLabel(asset.width, asset.height)}</span>
+                  <span>{asset.kind === "text" ? "纯文本" : asset.kind === "audio" ? "声音" : ratioLabel(asset.width, asset.height)}</span>
                   <i />
                   <span>{formatBytes(asset.size)}</span>
-                  <b>{asset.kind === "text" ? `${(asset.textContent ?? "").split(/\r?\n/).length} 行` : orientationLabel(asset.width, asset.height)}</b>
+                  <b>{asset.kind === "text" ? `${(asset.textContent ?? "").split(/\r?\n/).length} 行` : asset.kind === "audio" ? formatDuration(asset.duration) : orientationLabel(asset.width, asset.height)}</b>
                 </div>
               </article>
             ))}
@@ -1109,7 +1169,7 @@ export default function Home() {
             <div className="empty-library">
               <div className="empty-orbit"><i /><i /><span>＋</span></div>
               <strong>把素材放进矩阵</strong>
-              <p>导入图片或视频，也可以直接新建文本素材。</p>
+              <p>导入图片、视频或音频，也可以直接新建文本素材。</p>
             </div>
           )}
 
@@ -1243,13 +1303,13 @@ export default function Home() {
               </label>
 
               <div className="module-heading preview-module-heading">
-                <span>{selected.kind === "text" ? "文本内容" : "画面预览"}</span>
-                <div><b>{selected.extension}</b><button onClick={openPreview}>{selected.kind === "text" ? "展开" : "预览"} ↗</button></div>
+                <span>{selected.kind === "text" ? "文本内容" : selected.kind === "audio" ? "音频试听" : "画面预览"}</span>
+                <div><b>{selected.extension}</b><button onClick={openPreview}>{selected.kind === "text" ? "展开" : selected.kind === "audio" ? "试听" : "预览"} ↗</button></div>
               </div>
               <div
                 ref={previewStageRef}
                 className={`preview-stage ${selected.kind} ${videoExpanded ? "expanded" : ""} ${selected.kind === "image" && zoom > 100 ? "can-pan" : ""} ${isPreviewPanning ? "panning" : ""}`}
-                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
+                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : selected.kind === "audio" ? "音频试听" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
                 onPointerDown={(event) => beginPan(event, "preview")}
                 onPointerMove={(event) => movePan(event, "preview")}
                 onPointerUp={(event) => endPan(event, "preview")}
@@ -1267,6 +1327,17 @@ export default function Home() {
                     aria-label="文本素材内容"
                     spellCheck={false}
                   />
+                ) : selected.kind === "audio" ? (
+                  <div className="audio-preview-player">
+                    <AudioArtwork />
+                    <audio
+                      key={selected.id}
+                      src={selected.url}
+                      controls
+                      preload="metadata"
+                      onLoadedMetadata={(event) => syncAudioMetadata(selected.id, event.currentTarget)}
+                    />
+                  </div>
                 ) : selected.kind === "video" ? (
                   <>
                     <video
@@ -1294,7 +1365,7 @@ export default function Home() {
                     />
                   </div>
                 )}
-                {selected.kind !== "text" && <span className="preview-ratio">{ratioLabel(selected.width, selected.height)}</span>}
+                {(selected.kind === "image" || selected.kind === "video") && <span className="preview-ratio">{ratioLabel(selected.width, selected.height)}</span>}
                 {selected.kind !== "text" && <button className="open-preview-float" onPointerDown={(event) => event.stopPropagation()} onClick={openPreview}>点开预览 ↗</button>}
               </div>
 
@@ -1303,6 +1374,11 @@ export default function Home() {
                   <span className="wheel-hint">编辑后自动保存到本机</span>
                   <button onClick={copySelectedText}>复制文本</button>
                   <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(selected.textContent ?? "")}`} download={selected.name} aria-label="下载文本素材">↓ 下载</a>
+                </div>
+              ) : selected.kind === "audio" ? (
+                <div className="preview-controls audio-preview-controls">
+                  <span className="wheel-hint">音频时长 {formatDuration(selected.duration)}</span>
+                  <a href={selected.url} download={selected.name} aria-label="下载音频素材">↓ 下载音频</a>
                 </div>
               ) : (
                 <div className="preview-controls">
@@ -1317,10 +1393,10 @@ export default function Home() {
 
               <div className="module-heading"><span>参数信息</span><b>METADATA</b></div>
               <div className="metadata-grid">
-                <div><span>{selected.kind === "text" ? "字符数量" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
-                <div><span>{selected.kind === "text" ? "文本行数" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : resolutionLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "text" ? "字符数量" : selected.kind === "audio" ? "音频格式" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? selected.extension : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
+                <div><span>{selected.kind === "text" ? "文本行数" : selected.kind === "audio" ? "读取状态" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : selected.kind === "audio" ? selected.status === "ready" ? "可播放" : selected.status === "unsupported" ? "格式不支持" : "识别中" : resolutionLabel(selected.width, selected.height)}</strong></div>
                 <div><span>文件大小</span><strong>{formatBytes(selected.size)}</strong></div>
-                <div><span>{selected.kind === "video" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "video" || selected.kind === "audio" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" || selected.kind === "audio" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
               </div>
 
               <div className="module-heading prompt-heading"><span>提示词</span><b>PROMPT</b></div>
@@ -1328,19 +1404,19 @@ export default function Home() {
                 <textarea
                   value={selected.prompt}
                   onChange={(event) => updatePrompt(event.target.value)}
-                  placeholder="记录画面描述、镜头要求或生成提示词…"
+                  placeholder={selected.kind === "audio" ? "记录声音内容、情绪、节奏或音频提示词…" : "记录画面描述、镜头要求或生成提示词…"}
                   aria-label="提示词"
                   spellCheck={false}
                 />
                 <div className="prompt-footer">
-                  <span>{selected.kind === "text" ? "文本素材" : "素材比例"}</span>
-                  <strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : ratioLabel(selected.width, selected.height)}</strong>
-                  <i>{selected.kind === "text" ? "TXT" : orientationLabel(selected.width, selected.height)}</i>
+                  <span>{selected.kind === "text" ? "文本素材" : selected.kind === "audio" ? "音频素材" : "素材比例"}</span>
+                  <strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? formatDuration(selected.duration) : ratioLabel(selected.width, selected.height)}</strong>
+                  <i>{selected.kind === "text" ? "TXT" : selected.kind === "audio" ? "AUDIO" : orientationLabel(selected.width, selected.height)}</i>
                 </div>
               </div>
 
               {previewOpen && (
-                <div className="viewer-overlay" role="dialog" aria-modal="true" aria-label={`${selected.name} 大图预览`} onClick={() => setPreviewOpen(false)}>
+                <div className="viewer-overlay" role="dialog" aria-modal="true" aria-label={`${selected.name} 素材预览`} onClick={() => setPreviewOpen(false)}>
                   <div className="viewer-shell" onClick={(event) => event.stopPropagation()}>
                     <div className="viewer-header">
                       <div>
@@ -1348,15 +1424,15 @@ export default function Home() {
                         <strong>{selected.name}</strong>
                       </div>
                       <div className="viewer-header-meta">
-                        <span>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
-                        <span>{selected.kind === "text" ? "TEXT" : ratioLabel(selected.width, selected.height)}</span>
-                        <button onClick={() => setPreviewOpen(false)} aria-label="关闭大图预览">×</button>
+                        <span>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? formatDuration(selected.duration) : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
+                        <span>{selected.kind === "text" ? "TEXT" : selected.kind === "audio" ? "AUDIO" : ratioLabel(selected.width, selected.height)}</span>
+                        <button onClick={() => setPreviewOpen(false)} aria-label="关闭素材预览">×</button>
                       </div>
                     </div>
                     <div
                       ref={viewerCanvasRef}
                       className={`viewer-canvas ${selected.kind === "image" && viewerZoom > 100 ? "can-pan" : ""} ${isViewerPanning ? "panning" : ""}`}
-                      title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本阅读模式" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
+                      title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本阅读模式" : selected.kind === "audio" ? "音频试听模式" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
                       onPointerDown={(event) => beginPan(event, "viewer")}
                       onPointerMove={(event) => movePan(event, "viewer")}
                       onPointerUp={(event) => endPan(event, "viewer")}
@@ -1368,6 +1444,23 @@ export default function Home() {
                           <h2>{selected.name}</h2>
                           <pre>{selected.textContent || "空白文本"}</pre>
                         </article>
+                      ) : selected.kind === "audio" ? (
+                        <section className="viewer-audio-document">
+                          <AudioArtwork />
+                          <div>
+                            <span>AUDIO PREVIEW</span>
+                            <h2>{selected.name}</h2>
+                            <p>{selected.extension} · {formatBytes(selected.size)} · {formatDuration(selected.duration)}</p>
+                          </div>
+                          <audio
+                            key={`viewer-${selected.id}`}
+                            src={selected.url}
+                            controls
+                            autoPlay
+                            preload="metadata"
+                            onLoadedMetadata={(event) => syncAudioMetadata(selected.id, event.currentTarget)}
+                          />
+                        </section>
                       ) : selected.kind === "video" ? (
                         <video
                           key={`viewer-${selected.id}`}
@@ -1392,6 +1485,14 @@ export default function Home() {
                         <button onClick={copySelectedText}>复制文本</button>
                         <i />
                         <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(selected.textContent ?? "")}`} download={selected.name}>↓ 下载文本</a>
+                        <small>ESC 关闭</small>
+                      </div>
+                    ) : selected.kind === "audio" ? (
+                      <div className="viewer-toolbar audio-viewer-toolbar">
+                        <span>AUDIO</span>
+                        <strong>{formatDuration(selected.duration)}</strong>
+                        <i />
+                        <a href={selected.url} download={selected.name}>↓ 下载音频</a>
                         <small>ESC 关闭</small>
                       </div>
                     ) : (

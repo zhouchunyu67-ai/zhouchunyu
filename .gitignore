@@ -64,6 +64,14 @@ yarn-error.log*
 *.avif
 *.heic
 *.heif
+*.mp3
+*.wav
+*.m4a
+*.aac
+*.ogg
+*.flac
+*.opus
+*.wma
 
 # interface artwork required by the application
 !public/ui-icon.jpg

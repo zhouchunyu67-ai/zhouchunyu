@@ -2,7 +2,7 @@ export type StoredAssetRecord = {
   id: string;
   file: Blob;
   name: string;
-  kind: "image" | "video" | "text";
+  kind: "image" | "video" | "audio" | "text";
   extension: string;
   mime: string;
   size: number;
