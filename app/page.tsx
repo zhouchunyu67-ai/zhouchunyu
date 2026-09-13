@@ -26,7 +26,8 @@ import {
   type PromptKind,
 } from "./promptCatalog";
 
-type AssetKind = "image" | "video";
+type AssetKind = "image" | "video" | "text";
+type AssetCollection = "library" | "category";
 type AssetStatus = "reading" | "ready" | "unsupported";
 type Filter = "all" | AssetKind | `category:${string}`;
 type WorkspaceMode = "assets" | "prompts";
@@ -44,12 +45,14 @@ type MediaAsset = {
   extension: string;
   mime: string;
   size: number;
+  textContent?: string;
   width?: number;
   height?: number;
   duration?: number;
   status: AssetStatus;
   prompt: string;
   category: string;
+  collection: AssetCollection;
   createdAt: number;
 };
 
@@ -64,12 +67,14 @@ function toStoredRecord(asset: MediaAsset): StoredAssetRecord {
     extension: asset.extension,
     mime: asset.mime,
     size: asset.size,
+    textContent: asset.textContent,
     width: asset.width,
     height: asset.height,
     duration: asset.duration,
     status: asset.status,
     prompt: asset.prompt,
     category: asset.category,
+    collection: asset.collection,
     createdAt: asset.createdAt,
     updatedAt: Date.now(),
   };
@@ -140,9 +145,11 @@ function resolutionLabel(width?: number, height?: number) {
 function inferKind(file: File): AssetKind | null {
   if (file.type.startsWith("image/")) return "image";
   if (file.type.startsWith("video/")) return "video";
+  if (file.type.startsWith("text/")) return "text";
   const extension = file.name.split(".").pop()?.toLowerCase();
   if (["jpg", "jpeg", "png", "webp", "gif", "bmp", "avif", "heic", "heif"].includes(extension ?? "")) return "image";
   if (["mp4", "mov", "m4v", "webm", "avi", "mkv", "mpeg", "mpg"].includes(extension ?? "")) return "video";
+  if (["txt", "md", "markdown"].includes(extension ?? "")) return "text";
   return null;
 }
 
@@ -174,6 +181,9 @@ export default function Home() {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [categoryDraft, setCategoryDraft] = useState("");
   const [categoryPendingDelete, setCategoryPendingDelete] = useState<string | null>(null);
+  const [isAddingText, setIsAddingText] = useState(false);
+  const [textTitleDraft, setTextTitleDraft] = useState("");
+  const [textContentDraft, setTextContentDraft] = useState("");
   const [promptStateReady, setPromptStateReady] = useState(false);
   const [previewPan, setPreviewPan] = useState<PanPoint>({ x: 0, y: 0 });
   const [viewerPan, setViewerPan] = useState<PanPoint>({ x: 0, y: 0 });
@@ -236,27 +246,27 @@ export default function Home() {
     const preview = previewStageRef.current;
     if (!preview) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey) return;
+      if (!event.ctrlKey || selected?.kind === "text") return;
       event.preventDefault();
       event.stopPropagation();
       setZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
     };
     preview.addEventListener("wheel", onWheel, { passive: false });
     return () => preview.removeEventListener("wheel", onWheel);
-  }, [selectedId]);
+  }, [selectedId, selected?.kind]);
 
   useEffect(() => {
     const canvas = viewerCanvasRef.current;
     if (!canvas || !previewOpen) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey) return;
+      if (!event.ctrlKey || selected?.kind === "text") return;
       event.preventDefault();
       event.stopPropagation();
       setViewerZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
     };
     canvas.addEventListener("wheel", onWheel, { passive: false });
     return () => canvas.removeEventListener("wheel", onWheel);
-  }, [previewOpen, selectedId]);
+  }, [previewOpen, selectedId, selected?.kind]);
 
   const openPreview = () => {
     setViewerZoom(100);
@@ -320,6 +330,9 @@ export default function Home() {
     if ("name" in values) persistentValues.name = values.name;
     if ("prompt" in values) persistentValues.prompt = values.prompt;
     if ("category" in values) persistentValues.category = values.category;
+    if ("collection" in values && values.collection) persistentValues.collection = values.collection;
+    if ("textContent" in values) persistentValues.textContent = values.textContent;
+    if ("size" in values) persistentValues.size = values.size;
     if ("width" in values) persistentValues.width = values.width;
     if ("height" in values) persistentValues.height = values.height;
     if ("duration" in values) persistentValues.duration = values.duration;
@@ -332,6 +345,16 @@ export default function Home() {
   }, []);
 
   const readMetadata = useCallback((asset: MediaAsset) => {
+    if (asset.kind === "text") {
+      if (asset.textContent !== undefined) {
+        updateAsset(asset.id, { status: "ready" });
+        return;
+      }
+      void asset.file.text()
+        .then((textContent) => updateAsset(asset.id, { textContent, status: "ready" }))
+        .catch(() => updateAsset(asset.id, { status: "unsupported" }));
+      return;
+    }
     if (asset.kind === "image") {
       const image = new Image();
       image.onload = () => updateAsset(asset.id, {
@@ -442,12 +465,14 @@ export default function Home() {
             extension: record.extension,
             mime: record.mime,
             size: record.size,
+            textContent: record.textContent,
             width: record.width,
             height: record.height,
             duration: record.duration,
             status: record.status,
             prompt: record.prompt,
             category: record.category ?? DEFAULT_ASSET_CATEGORY,
+            collection: record.collection ?? "category",
             createdAt: record.createdAt,
           };
         });
@@ -500,13 +525,15 @@ export default function Home() {
 
   const addFiles = useCallback((files: FileList | File[]) => {
     const accepted: MediaAsset[] = [];
+    const activeCollection: AssetCollection = filter.startsWith("category:") ? "category" : "library";
     const activeCategory = filter.startsWith("category:")
       ? filter.slice("category:".length)
       : DEFAULT_ASSET_CATEGORY;
     let skipped = 0;
     Array.from(files).forEach((file) => {
       const kind = inferKind(file);
-      if (!kind) {
+      const typedFilter = filter === "image" || filter === "video" || filter === "text" ? filter : null;
+      if (!kind || (typedFilter && kind !== typedFilter)) {
         skipped += 1;
         return;
       }
@@ -525,13 +552,13 @@ export default function Home() {
         status: "reading",
         prompt: "",
         category: activeCategory,
+        collection: activeCollection,
         createdAt: Date.now() + accepted.length,
       });
     });
 
     if (accepted.length) {
       setAssets((current) => [...accepted, ...current]);
-      if (!filter.startsWith("category:")) setFilter("all");
       setQuery("");
       setSelectedId(accepted[0].id);
       setNotice(activeCategory === DEFAULT_ASSET_CATEGORY
@@ -545,10 +572,50 @@ export default function Home() {
       });
     }
     if (skipped) {
-      setNotice(`已忽略 ${skipped} 个非图片或视频文件`);
+      setNotice(`已忽略 ${skipped} 个不支持的文件`);
       window.setTimeout(() => setNotice(""), 3200);
     }
   }, [filter, readMetadata]);
+
+  const addTextAsset = () => {
+    const textContent = textContentDraft.trim();
+    if (!textContent) return;
+    const activeCategory = filter.startsWith("category:")
+      ? filter.slice("category:".length)
+      : DEFAULT_ASSET_CATEGORY;
+    const activeCollection: AssetCollection = filter.startsWith("category:") ? "category" : "library";
+    const rawTitle = textTitleDraft.trim() || `文本素材 ${assets.filter((asset) => asset.kind === "text").length + 1}`;
+    const name = /\.(txt|md)$/i.test(rawTitle) ? rawTitle : `${rawTitle}.txt`;
+    const file = new File([textContent], name, { type: "text/plain;charset=utf-8" });
+    const asset: MediaAsset = {
+      id: crypto.randomUUID(),
+      file,
+      url: URL.createObjectURL(file),
+      name,
+      kind: "text",
+      extension: name.toLowerCase().endsWith(".md") ? "MD" : "TXT",
+      mime: file.type,
+      size: file.size,
+      textContent,
+      status: "ready",
+      prompt: "",
+      category: activeCategory,
+      collection: activeCollection,
+      createdAt: Date.now(),
+    };
+    setAssets((current) => [asset, ...current]);
+    setQuery("");
+    setSelectedId(asset.id);
+    setTextTitleDraft("");
+    setTextContentDraft("");
+    setIsAddingText(false);
+    setNotice(activeCategory === DEFAULT_ASSET_CATEGORY
+      ? "已添加文本素材"
+      : `已添加文本素材到“${activeCategory}”`);
+    window.setTimeout(() => setNotice(""), 1800);
+    void saveStoredAsset(toStoredRecord(asset))
+      .catch(() => setNotice("文本保存失败，请检查浏览器存储空间"));
+  };
 
   const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) addFiles(event.target.files);
@@ -579,6 +646,31 @@ export default function Home() {
     if (selectedId) updateAsset(selectedId, { prompt });
   };
 
+  const copySelectedText = async () => {
+    if (!selected || selected.kind !== "text") return;
+    try {
+      await navigator.clipboard.writeText(selected.textContent ?? "");
+      setNotice("文本内容已复制");
+      window.setTimeout(() => setNotice(""), 1600);
+    } catch {
+      setNotice("复制失败，请在文本框中手动复制");
+    }
+  };
+
+  const moveSelectedAsset = (destination: string) => {
+    if (!selected) return;
+    if (destination === "__library__") {
+      updateAsset(selected.id, { collection: "library" });
+      if (filter !== "all") setFilter(selected.kind);
+      setNotice(`已将“${selected.name}”移到素材库根目录`);
+    } else {
+      updateAsset(selected.id, { collection: "category", category: destination });
+      if (filter !== "all") setFilter(`category:${destination}`);
+      setNotice(`已将“${selected.name}”移到“${destination}”`);
+    }
+    window.setTimeout(() => setNotice(""), 1800);
+  };
+
   const saveName = () => {
     const value = draftName.trim();
     if (selectedId && value) updateAsset(selectedId, { name: value });
@@ -601,9 +693,11 @@ export default function Home() {
   const deleteAssetCategory = () => {
     const category = categoryPendingDelete;
     if (!category || category === DEFAULT_ASSET_CATEGORY) return;
-    const affectedAssets = assets.filter((asset) => asset.category === category);
+    const affectedAssets = assets.filter((asset) => asset.collection === "category" && asset.category === category);
     setAssets((current) => current.map((asset) => (
-      asset.category === category ? { ...asset, category: DEFAULT_ASSET_CATEGORY } : asset
+      asset.collection === "category" && asset.category === category
+        ? { ...asset, category: DEFAULT_ASSET_CATEGORY }
+        : asset
     )));
     setAssetCategories((current) => current.filter((item) => item !== category));
     if (filter === `category:${category}`) setFilter(`category:${DEFAULT_ASSET_CATEGORY}`);
@@ -621,16 +715,39 @@ export default function Home() {
   const visibleAssets = useMemo(() => {
     const keyword = query.trim().toLowerCase();
     return assets.filter((asset) => {
-      const matchesKind = filter === "all" || asset.kind === filter || filter.startsWith("category:");
-      const matchesCategory = !filter.startsWith("category:") || asset.category === filter.slice(9);
-      const matchesQuery = !keyword || asset.name.toLowerCase().includes(keyword) || asset.extension.toLowerCase().includes(keyword);
-      return matchesKind && matchesCategory && matchesQuery;
+      const matchesLocation = filter === "all"
+        || (filter.startsWith("category:")
+          ? asset.collection === "category" && asset.category === filter.slice(9)
+          : asset.collection === "library" && asset.kind === filter);
+      const matchesQuery = !keyword
+        || asset.name.toLowerCase().includes(keyword)
+        || asset.extension.toLowerCase().includes(keyword)
+        || (asset.textContent ?? "").toLowerCase().includes(keyword);
+      return matchesLocation && matchesQuery;
     });
   }, [assets, filter, query]);
 
   const totalSize = useMemo(() => assets.reduce((sum, asset) => sum + asset.size, 0), [assets]);
-  const imageCount = assets.filter((asset) => asset.kind === "image").length;
-  const videoCount = assets.length - imageCount;
+  const imageCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "image").length;
+  const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
+  const textCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "text").length;
+  const isCategoryFilter = filter.startsWith("category:");
+  const showFileImport = filter !== "text";
+  const showTextCreator = filter === "all" || filter === "text" || isCategoryFilter;
+  const importLabel = filter === "video" ? "添加视频" : filter === "image" ? "添加图片" : "添加";
+  const importTileLabel = filter === "video" ? "导入视频素材" : filter === "image" ? "导入图片素材" : "导入新素材";
+  const importTileHint = filter === "video"
+    ? "VIDEO · DROP HERE"
+    : filter === "image"
+      ? "IMAGE · DROP HERE"
+      : "IMAGE / VIDEO / TEXT · DROP HERE";
+  const acceptedFileTypes = filter === "video"
+    ? "video/*,.mkv,.avi"
+    : filter === "image"
+      ? "image/*,.heic,.heif"
+      : filter === "text"
+        ? "text/plain,.txt,.md,.markdown"
+        : "image/*,video/*,text/plain,.txt,.md,.markdown,.mkv,.avi,.heic,.heif";
   const activePromptCategories = useMemo(
     () => promptCategories.filter((category) => category.kind === promptKind),
     [promptKind],
@@ -759,6 +876,10 @@ export default function Home() {
                   <span><i className="nav-symbol image-symbol" />图片</span>
                   <b>{imageCount}</b>
                 </button>
+                <button className={filter === "text" ? "active" : ""} onClick={() => setFilter("text")}>
+                  <span><i className="nav-symbol text-symbol" />文本</span>
+                  <b>{textCount}</b>
+                </button>
               </nav>
 
               <div className="side-divider" />
@@ -790,7 +911,7 @@ export default function Home() {
                     <div key={category} className={`category-list-row ${filter === categoryFilter ? "active" : ""}`}>
                       <button className="category-filter-button" onClick={() => setFilter(categoryFilter)}>
                         <span>{category}</span>
-                        <b>{assets.filter((asset) => asset.category === category).length}</b>
+                        <b>{assets.filter((asset) => asset.collection === "category" && asset.category === category).length}</b>
                       </button>
                       {category !== DEFAULT_ASSET_CATEGORY && (
                         <button
@@ -808,7 +929,7 @@ export default function Home() {
               <div className="side-divider compact-divider" />
               <div className="side-group-label">格式索引</div>
               <div className="format-index">
-                <span>MP4</span><span>MOV</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span>
+                <span>MP4</span><span>MOV</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span><span>TXT</span><span>MD</span>
               </div>
             </>
           ) : (
@@ -872,14 +993,21 @@ export default function Home() {
                 />
                 <kbd>⌘ K</kbd>
               </label>
-              <button className="upload-button" onClick={() => inputRef.current?.click()}>
-                <span aria-hidden="true">＋</span> 添加
-              </button>
+              {showFileImport && (
+                <button className="upload-button" onClick={() => inputRef.current?.click()}>
+                  <span aria-hidden="true">＋</span> {importLabel}
+                </button>
+              )}
+              {showTextCreator && (
+                <button className="text-add-button" onClick={() => setIsAddingText(true)}>
+                  <span aria-hidden="true">¶</span> {filter === "text" ? "新建文本" : "文本"}
+                </button>
+              )}
               <input
                 ref={inputRef}
                 className="visually-hidden"
                 type="file"
-                accept="image/*,video/*,.mkv,.avi,.heic,.heif"
+                accept={acceptedFileTypes}
                 multiple
                 onChange={onInputChange}
               />
@@ -887,11 +1015,21 @@ export default function Home() {
           </div>
 
           <div className="asset-grid" role="list">
-            <button className="upload-tile" onClick={() => inputRef.current?.click()}>
-              <span className="upload-tile-icon">✦</span>
-              <strong>导入新素材</strong>
-              <small>IMAGE / VIDEO · DROP HERE</small>
-            </button>
+            {showFileImport && (
+              <button className="upload-tile" onClick={() => inputRef.current?.click()}>
+                <span className="upload-tile-icon">✦</span>
+                <strong>{importTileLabel}</strong>
+                <small>{importTileHint}</small>
+              </button>
+            )}
+
+            {showTextCreator && (
+              <button className="upload-tile text-create-tile" onClick={() => setIsAddingText(true)}>
+                <span className="upload-tile-icon">¶</span>
+                <strong>新建文本素材</strong>
+                <small>WRITE / NOTE · SAVED LOCALLY</small>
+              </button>
+            )}
 
             {visibleAssets.map((asset, index) => (
               <article
@@ -905,7 +1043,12 @@ export default function Home() {
                 }}
               >
                 <div className="asset-visual">
-                  {asset.kind === "image" ? (
+                  {asset.kind === "text" ? (
+                    <div className="text-card-preview">
+                      <span>TEXT NOTE</span>
+                      <p>{asset.textContent || "空白文本"}</p>
+                    </div>
+                  ) : asset.kind === "image" ? (
                     <img src={asset.url} alt="" />
                   ) : (
                     <video
@@ -927,7 +1070,7 @@ export default function Home() {
                   )}
                   <div className="frame-corners" aria-hidden="true"><i /><i /><i /><i /></div>
                   <span className="asset-index">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : "IMAGE"}</span>
+                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : asset.kind === "image" ? "IMAGE" : "TEXT"}</span>
                   {asset.kind === "video" && <span className="play-badge">▶</span>}
                   <button
                     className="remove-button"
@@ -940,15 +1083,15 @@ export default function Home() {
                   <strong title={asset.name}>{asset.name}</strong>
                   <div>
                     <span>{asset.extension}</span>
-                    <span>{asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
+                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
                     {asset.kind === "video" && <span>{formatDuration(asset.duration)}</span>}
                   </div>
                 </div>
                 <div className="asset-card-footer">
-                  <span>{ratioLabel(asset.width, asset.height)}</span>
+                  <span>{asset.kind === "text" ? "纯文本" : ratioLabel(asset.width, asset.height)}</span>
                   <i />
                   <span>{formatBytes(asset.size)}</span>
-                  <b>{orientationLabel(asset.width, asset.height)}</b>
+                  <b>{asset.kind === "text" ? `${(asset.textContent ?? "").split(/\r?\n/).length} 行` : orientationLabel(asset.width, asset.height)}</b>
                 </div>
               </article>
             ))}
@@ -966,7 +1109,7 @@ export default function Home() {
             <div className="empty-library">
               <div className="empty-orbit"><i /><i /><span>＋</span></div>
               <strong>把素材放进矩阵</strong>
-              <p>点击左上方导入卡片，或拖入图片和视频。</p>
+              <p>导入图片或视频，也可以直接新建文本素材。</p>
             </div>
           )}
 
@@ -1088,26 +1231,43 @@ export default function Home() {
               </div>
 
               <label className="asset-category-select">
-                <span>所属类目</span>
-                <select value={selected.category} onChange={(event) => updateAsset(selected.id, { category: event.target.value })}>
+                <span>移动到类目</span>
+                <select
+                  value={selected.collection === "library" ? "__library__" : selected.category}
+                  onChange={(event) => moveSelectedAsset(event.target.value)}
+                  aria-label={`移动 ${selected.name} 到指定类目`}
+                >
+                  <option value="__library__">素材库根目录</option>
                   {assetCategories.map((category) => <option key={category} value={category}>{category}</option>)}
                 </select>
               </label>
 
               <div className="module-heading preview-module-heading">
-                <span>画面预览</span>
-                <div><b>{selected.extension}</b><button onClick={openPreview}>预览 ↗</button></div>
+                <span>{selected.kind === "text" ? "文本内容" : "画面预览"}</span>
+                <div><b>{selected.extension}</b><button onClick={openPreview}>{selected.kind === "text" ? "展开" : "预览"} ↗</button></div>
               </div>
               <div
                 ref={previewStageRef}
                 className={`preview-stage ${selected.kind} ${videoExpanded ? "expanded" : ""} ${selected.kind === "image" && zoom > 100 ? "can-pan" : ""} ${isPreviewPanning ? "panning" : ""}`}
-                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
+                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
                 onPointerDown={(event) => beginPan(event, "preview")}
                 onPointerMove={(event) => movePan(event, "preview")}
                 onPointerUp={(event) => endPan(event, "preview")}
                 onPointerCancel={(event) => endPan(event, "preview")}
               >
-                {selected.kind === "video" ? (
+                {selected.kind === "text" ? (
+                  <textarea
+                    className="text-asset-editor"
+                    value={selected.textContent ?? ""}
+                    onChange={(event) => updateAsset(selected.id, {
+                      textContent: event.target.value,
+                      size: new Blob([event.target.value]).size,
+                    })}
+                    placeholder="在这里编辑文本内容…"
+                    aria-label="文本素材内容"
+                    spellCheck={false}
+                  />
+                ) : selected.kind === "video" ? (
                   <>
                     <video
                       key={selected.id}
@@ -1134,25 +1294,33 @@ export default function Home() {
                     />
                   </div>
                 )}
-                <span className="preview-ratio">{ratioLabel(selected.width, selected.height)}</span>
-                <button className="open-preview-float" onPointerDown={(event) => event.stopPropagation()} onClick={openPreview}>点开预览 ↗</button>
+                {selected.kind !== "text" && <span className="preview-ratio">{ratioLabel(selected.width, selected.height)}</span>}
+                {selected.kind !== "text" && <button className="open-preview-float" onPointerDown={(event) => event.stopPropagation()} onClick={openPreview}>点开预览 ↗</button>}
               </div>
 
-              <div className="preview-controls">
-                <span className="wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{selected.kind === "image" && zoom > 100 ? " · 按住拖动" : ""}</span>
-                <button aria-label="缩小预览" onClick={() => setZoom((value) => Math.max(25, value - 25))}>−</button>
-                <button className="zoom-value" onClick={() => { setZoom(100); setPreviewPan({ x: 0, y: 0 }); }}>{zoom}%</button>
-                <button aria-label="放大预览" onClick={() => setZoom((value) => Math.min(400, value + 25))}>＋</button>
-                {selected.kind === "video" && <button onClick={() => setVideoExpanded(true)}><span>⛶</span> 全屏</button>}
-                <a href={selected.url} download={selected.name} aria-label="下载素材">↓</a>
-              </div>
+              {selected.kind === "text" ? (
+                <div className="preview-controls text-preview-controls">
+                  <span className="wheel-hint">编辑后自动保存到本机</span>
+                  <button onClick={copySelectedText}>复制文本</button>
+                  <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(selected.textContent ?? "")}`} download={selected.name} aria-label="下载文本素材">↓ 下载</a>
+                </div>
+              ) : (
+                <div className="preview-controls">
+                  <span className="wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{selected.kind === "image" && zoom > 100 ? " · 按住拖动" : ""}</span>
+                  <button aria-label="缩小预览" onClick={() => setZoom((value) => Math.max(25, value - 25))}>−</button>
+                  <button className="zoom-value" onClick={() => { setZoom(100); setPreviewPan({ x: 0, y: 0 }); }}>{zoom}%</button>
+                  <button aria-label="放大预览" onClick={() => setZoom((value) => Math.min(400, value + 25))}>＋</button>
+                  {selected.kind === "video" && <button onClick={() => setVideoExpanded(true)}><span>⛶</span> 全屏</button>}
+                  <a href={selected.url} download={selected.name} aria-label="下载素材">↓</a>
+                </div>
+              )}
 
               <div className="module-heading"><span>参数信息</span><b>METADATA</b></div>
               <div className="metadata-grid">
-                <div><span>分辨率</span><strong>{selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
-                <div><span>画质等级</span><strong>{resolutionLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "text" ? "字符数量" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
+                <div><span>{selected.kind === "text" ? "文本行数" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : resolutionLabel(selected.width, selected.height)}</strong></div>
                 <div><span>文件大小</span><strong>{formatBytes(selected.size)}</strong></div>
-                <div><span>{selected.kind === "video" ? "素材时长" : "画面方向"}</span><strong>{selected.kind === "video" ? formatDuration(selected.duration) : orientationLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "video" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
               </div>
 
               <div className="module-heading prompt-heading"><span>提示词</span><b>PROMPT</b></div>
@@ -1165,9 +1333,9 @@ export default function Home() {
                   spellCheck={false}
                 />
                 <div className="prompt-footer">
-                  <span>素材比例</span>
-                  <strong>{ratioLabel(selected.width, selected.height)}</strong>
-                  <i>{orientationLabel(selected.width, selected.height)}</i>
+                  <span>{selected.kind === "text" ? "文本素材" : "素材比例"}</span>
+                  <strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : ratioLabel(selected.width, selected.height)}</strong>
+                  <i>{selected.kind === "text" ? "TXT" : orientationLabel(selected.width, selected.height)}</i>
                 </div>
               </div>
 
@@ -1180,21 +1348,27 @@ export default function Home() {
                         <strong>{selected.name}</strong>
                       </div>
                       <div className="viewer-header-meta">
-                        <span>{selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
-                        <span>{ratioLabel(selected.width, selected.height)}</span>
+                        <span>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
+                        <span>{selected.kind === "text" ? "TEXT" : ratioLabel(selected.width, selected.height)}</span>
                         <button onClick={() => setPreviewOpen(false)} aria-label="关闭大图预览">×</button>
                       </div>
                     </div>
                     <div
                       ref={viewerCanvasRef}
                       className={`viewer-canvas ${selected.kind === "image" && viewerZoom > 100 ? "can-pan" : ""} ${isViewerPanning ? "panning" : ""}`}
-                      title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
+                      title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本阅读模式" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
                       onPointerDown={(event) => beginPan(event, "viewer")}
                       onPointerMove={(event) => movePan(event, "viewer")}
                       onPointerUp={(event) => endPan(event, "viewer")}
                       onPointerCancel={(event) => endPan(event, "viewer")}
                     >
-                      {selected.kind === "video" ? (
+                      {selected.kind === "text" ? (
+                        <article className="viewer-text-document">
+                          <span>TEXT DOCUMENT</span>
+                          <h2>{selected.name}</h2>
+                          <pre>{selected.textContent || "空白文本"}</pre>
+                        </article>
+                      ) : selected.kind === "video" ? (
                         <video
                           key={`viewer-${selected.id}`}
                           src={selected.url}
@@ -1212,16 +1386,26 @@ export default function Home() {
                         />
                       )}
                     </div>
-                    <div className="viewer-toolbar">
-                      <span>ZOOM</span>
-                      <button aria-label="大预览缩小" onClick={() => setViewerZoom((value) => Math.max(25, value - 25))}>−</button>
-                      <button className="viewer-zoom-value" onClick={() => { setViewerZoom(100); setViewerPan({ x: 0, y: 0 }); }}>{viewerZoom}%</button>
-                      <button aria-label="大预览放大" onClick={() => setViewerZoom((value) => Math.min(400, value + 25))}>＋</button>
-                      <span className="viewer-wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{selected.kind === "image" && viewerZoom > 100 ? " · 按住拖动" : ""}</span>
-                      <i />
-                      <a href={selected.url} download={selected.name}>↓ 下载素材</a>
-                      <small>ESC 关闭</small>
-                    </div>
+                    {selected.kind === "text" ? (
+                      <div className="viewer-toolbar text-viewer-toolbar">
+                        <span>TEXT</span>
+                        <button onClick={copySelectedText}>复制文本</button>
+                        <i />
+                        <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(selected.textContent ?? "")}`} download={selected.name}>↓ 下载文本</a>
+                        <small>ESC 关闭</small>
+                      </div>
+                    ) : (
+                      <div className="viewer-toolbar">
+                        <span>ZOOM</span>
+                        <button aria-label="大预览缩小" onClick={() => setViewerZoom((value) => Math.max(25, value - 25))}>−</button>
+                        <button className="viewer-zoom-value" onClick={() => { setViewerZoom(100); setViewerPan({ x: 0, y: 0 }); }}>{viewerZoom}%</button>
+                        <button aria-label="大预览放大" onClick={() => setViewerZoom((value) => Math.min(400, value + 25))}>＋</button>
+                        <span className="viewer-wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{selected.kind === "image" && viewerZoom > 100 ? " · 按住拖动" : ""}</span>
+                        <i />
+                        <a href={selected.url} download={selected.name}>↓ 下载素材</a>
+                        <small>ESC 关闭</small>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -1305,12 +1489,60 @@ export default function Home() {
             <span>DELETE CATEGORY</span>
             <h3>删除“{categoryPendingDelete}”？</h3>
             <p>
-              类目中的 {assets.filter((asset) => asset.category === categoryPendingDelete).length} 个素材不会删除，
+                类目中的 {assets.filter((asset) => asset.collection === "category" && asset.category === categoryPendingDelete).length} 个素材不会删除，
               会自动移到“未分类”。
             </p>
             <div>
               <button onClick={() => setCategoryPendingDelete(null)}>取消</button>
               <button className="danger" onClick={deleteAssetCategory}>确认删除</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAddingText && (
+        <div
+          className="text-create-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="新建文本素材"
+          onClick={() => setIsAddingText(false)}
+        >
+          <div className="text-create-dialog" onClick={(event) => event.stopPropagation()}>
+            <div className="text-create-heading">
+              <div><span>NEW TEXT ASSET</span><h3>新建文本素材</h3></div>
+              <button onClick={() => setIsAddingText(false)} aria-label="关闭新建文本窗口">×</button>
+            </div>
+            <label>
+              <span>文本名称</span>
+              <input
+                autoFocus
+                value={textTitleDraft}
+                maxLength={80}
+                placeholder="例如：镜头说明、旁白文案"
+                onChange={(event) => setTextTitleDraft(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>文本内容</span>
+              <textarea
+                value={textContentDraft}
+                placeholder="在这里输入需要保存的文本…"
+                onChange={(event) => setTextContentDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") addTextAsset();
+                }}
+                spellCheck={false}
+              />
+            </label>
+            <div className="text-create-meta">
+              <span>保存到：{filter.startsWith("category:") ? filter.slice("category:".length) : "素材库根目录"}</span>
+              <b>{textContentDraft.length} 字符</b>
+            </div>
+            <div className="text-create-actions">
+              <small>Ctrl + Enter 快速保存</small>
+              <button onClick={() => setIsAddingText(false)}>取消</button>
+              <button className="primary" disabled={!textContentDraft.trim()} onClick={addTextAsset}>保存文本</button>
             </div>
           </div>
         </div>

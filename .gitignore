@@ -71,3 +71,5 @@ yarn-error.log*
 !public/ui-rain.jpg
 !public/ui-sakura.jpg
 !public/ui-summer.png
+!public/ui-library-text.png
+!public/ui-inspector-text.jpg
