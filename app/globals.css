@@ -53,6 +53,8 @@ button { color: inherit; }
 .topbar-readout i { width: 1px; height: 16px; background: var(--line); }
 .local-status { justify-self: end; margin-right: 18px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: #081116; padding: 8px 11px; color: #799098; font: 600 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .1em; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 9px rgba(102,221,235,.7); }
+.local-status.external.error,.local-status.external.permission { border-color: rgba(224,114,145,.3); background: rgba(255,240,245,.86); color: #b45f79; }
+.local-status.external.error .status-dot,.local-status.external.permission .status-dot { background: #e97d9b; box-shadow: 0 0 9px rgba(225,111,143,.45); }
 
 .workspace-grid { height: auto; min-height: 0; flex: 1 1 auto; display: grid; grid-template-columns: 184px minmax(540px, 1fr) 390px; }
 .side-panel, .library-panel, .inspector-panel { min-width: 0; }
@@ -97,6 +99,13 @@ button { color: inherit; }
 .workspace-backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 9px; }
 .workspace-backup-actions button { min-width: 0; height: 27px; padding: 0 5px; overflow: hidden; border: 1px solid rgba(101,140,200,.2); border-radius: 6px; background: rgba(255,255,255,.62); color: #667b9f; cursor: pointer; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .workspace-backup-actions button:hover { border-color: rgba(91,138,208,.45); background: rgba(239,247,255,.88); color: #4771aa; }
+.external-storage-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 6px; }
+.external-storage-actions button { min-width: 0; min-height: 29px; padding: 0 6px; border: 1px solid rgba(89,160,151,.28); border-radius: 6px; background: rgba(238,252,248,.76); color: #548b83; cursor: pointer; font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.external-storage-actions button:only-child { grid-column: 1 / -1; }
+.external-storage-actions button:hover { border-color: rgba(70,151,141,.48); background: rgba(229,249,244,.94); color: #347a70; }
+.external-storage-actions button:disabled { opacity: .5; cursor: wait; }
+.external-storage-actions.error button,.external-storage-actions.permission button { border-color: rgba(224,122,151,.28); background: rgba(255,241,246,.8); color: #b45f79; }
+.external-directory-name { display: block; margin-top: 6px; overflow: hidden; color: #8390a9; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
 
 .library-panel { overflow: auto; position: relative; padding: 0 24px 38px; background-color: #071014; background-image: linear-gradient(rgba(104,169,185,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(104,169,185,.025) 1px, transparent 1px); background-size: 28px 28px; }
 .library-toolbar { height: 94px; margin: 0 -24px 24px; padding: 0 24px; border-bottom: 1px solid var(--line); background: rgba(7,16,20,.94); display: flex; align-items: center; justify-content: space-between; gap: 18px; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(14px); }

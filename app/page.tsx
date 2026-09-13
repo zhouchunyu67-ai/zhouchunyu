@@ -17,14 +17,25 @@ import {
   type ParsedFrameVaultBackup,
 } from "./backup";
 import {
+  chooseExternalDirectory,
+  readExternalWorkspace,
+  syncExternalWorkspace,
+  verifyExternalDirectoryPermission,
+  type VaultDirectoryHandle,
+} from "./externalStorage";
+import {
+  deleteStoredExternalDirectory,
   deleteStoredAsset,
+  loadStoredExternalDirectory,
   loadStoredAssets,
   loadStoredPromptState,
   patchStoredAsset,
   restoreStoredWorkspace,
+  saveStoredExternalDirectory,
   saveStoredAsset,
   saveStoredPromptState,
   type StoredAssetRecord,
+  type StoredExternalDirectory,
   type StoredPromptState,
   type WorkspaceRestoreMode,
 } from "./storage";
@@ -42,6 +53,7 @@ type Filter = "all" | AssetKind | `category:${string}`;
 type WorkspaceMode = "assets" | "prompts";
 type PromptScope = "category" | "favorites" | "recent";
 type BackupDialogMode = "export" | "restore" | null;
+type ExternalStorageStatus = "browser" | "connecting" | "connected" | "permission" | "error";
 type PanPoint = { x: number; y: number };
 type PanDrag = PanPoint & { panX: number; panY: number };
 
@@ -220,6 +232,10 @@ export default function Home() {
   const [isBackupWorking, setIsBackupWorking] = useState(false);
   const [replaceConfirmed, setReplaceConfirmed] = useState(false);
   const [isLocalStatusExpanded, setIsLocalStatusExpanded] = useState(false);
+  const [externalDirectory, setExternalDirectory] = useState<StoredExternalDirectory | null>(null);
+  const [externalStorageStatus, setExternalStorageStatus] = useState<ExternalStorageStatus>("browser");
+  const [externalStorageMessage, setExternalStorageMessage] = useState("");
+  const [isExternalSyncing, setIsExternalSyncing] = useState(false);
   const [promptStateReady, setPromptStateReady] = useState(false);
   const [previewPan, setPreviewPan] = useState<PanPoint>({ x: 0, y: 0 });
   const [viewerPan, setViewerPan] = useState<PanPoint>({ x: 0, y: 0 });
@@ -230,12 +246,25 @@ export default function Home() {
   const previewStageRef = useRef<HTMLDivElement>(null);
   const viewerCanvasRef = useRef<HTMLDivElement>(null);
   const assetsRef = useRef<MediaAsset[]>([]);
+  const externalDirectoryRef = useRef<StoredExternalDirectory | null>(null);
+  const externalStatusRef = useRef<ExternalStorageStatus>("browser");
+  const externalSyncInFlightRef = useRef(false);
+  const externalSyncDirtyRef = useRef(false);
+  const externalSnapshotRef = useRef<{ records: StoredAssetRecord[]; promptState: StoredPromptState | null }>({ records: [], promptState: null });
   const previewDragRef = useRef<PanDrag | null>(null);
   const viewerDragRef = useRef<PanDrag | null>(null);
 
   useEffect(() => {
     assetsRef.current = assets;
   }, [assets]);
+
+  useEffect(() => {
+    externalDirectoryRef.current = externalDirectory;
+  }, [externalDirectory]);
+
+  useEffect(() => {
+    externalStatusRef.current = externalStorageStatus;
+  }, [externalStorageStatus]);
 
   useEffect(() => {
     return () => {
@@ -599,6 +628,181 @@ export default function Home() {
     }, 320);
     return () => window.clearTimeout(timer);
   }, [assetCategories, favoritePromptIds, promptDrafts, promptStateReady, recentPromptIds]);
+
+  useEffect(() => {
+    let active = true;
+    void loadStoredExternalDirectory()
+      .then(async (record) => {
+        if (!active || !record) return;
+        externalDirectoryRef.current = record;
+        setExternalDirectory(record);
+        const granted = await verifyExternalDirectoryPermission(record.handle, false);
+        if (!active) return;
+        if (granted) {
+          const externalWorkspace = await readExternalWorkspace(record.handle);
+          if (!active) return;
+          if (externalWorkspace && record.lastSyncedAt && externalWorkspace.updatedAt > record.lastSyncedAt) {
+            await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "replace");
+            await saveStoredExternalDirectory(record.handle, externalWorkspace.updatedAt);
+            window.location.reload();
+            return;
+          }
+        }
+        const status: ExternalStorageStatus = granted ? "connected" : "permission";
+        externalStatusRef.current = status;
+        setExternalStorageStatus(status);
+        setExternalStorageMessage(granted ? `已连接：${record.name}` : `需要重新授权：${record.name}`);
+      })
+      .catch(() => {
+        if (!active) return;
+        externalStatusRef.current = "error";
+        setExternalStorageStatus("error");
+        setExternalStorageMessage("外部目录记录读取失败，可重新选择目录");
+      });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    externalSnapshotRef.current = {
+      records: assets.map(toStoredRecord),
+      promptState: promptStateReady ? {
+        id: "workspace",
+        favorites: favoritePromptIds,
+        recent: recentPromptIds,
+        drafts: promptDrafts,
+        assetCategories,
+        updatedAt: Date.now(),
+      } : null,
+    };
+  }, [assetCategories, assets, favoritePromptIds, promptDrafts, promptStateReady, recentPromptIds]);
+
+  const flushExternalSync = useCallback(async (manual = false) => {
+    const directory = externalDirectoryRef.current;
+    if (!directory || externalStatusRef.current !== "connected") return;
+    externalSyncDirtyRef.current = true;
+    if (externalSyncInFlightRef.current) return;
+    externalSyncInFlightRef.current = true;
+    setIsExternalSyncing(true);
+    try {
+      let lastResult = { written: 0, reused: 0, removed: 0, updatedAt: 0 };
+      while (externalSyncDirtyRef.current) {
+        externalSyncDirtyRef.current = false;
+        const snapshot = externalSnapshotRef.current;
+        lastResult = await syncExternalWorkspace(directory.handle, snapshot.records, snapshot.promptState);
+      }
+      const nextDirectory = { ...directory, lastSyncedAt: lastResult.updatedAt, updatedAt: Date.now() };
+      await saveStoredExternalDirectory(directory.handle, lastResult.updatedAt);
+      externalDirectoryRef.current = nextDirectory;
+      setExternalDirectory(nextDirectory);
+      setExternalStorageMessage(manual
+        ? `同步完成：写入 ${lastResult.written} 个，复用 ${lastResult.reused} 个`
+        : `已同步：${directory.name}`);
+    } catch (error) {
+      externalStatusRef.current = "error";
+      setExternalStorageStatus("error");
+      setExternalStorageMessage(error instanceof Error ? error.message : "外部目录同步失败，请重新连接");
+    } finally {
+      externalSyncInFlightRef.current = false;
+      setIsExternalSyncing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (externalStorageStatus !== "connected" || isLoadingSaved || !promptStateReady) return;
+    externalSyncDirtyRef.current = true;
+    const timer = window.setTimeout(() => void flushExternalSync(false), 850);
+    return () => window.clearTimeout(timer);
+  }, [assets, assetCategories, externalStorageStatus, favoritePromptIds, flushExternalSync, isLoadingSaved, promptDrafts, promptStateReady, recentPromptIds]);
+
+  const connectExternalFolder = async (existingHandle?: VaultDirectoryHandle) => {
+    const previousDirectory = externalDirectoryRef.current;
+    const previousStatus = externalStatusRef.current;
+    externalStatusRef.current = "connecting";
+    setExternalStorageStatus("connecting");
+    setExternalStorageMessage(existingHandle ? "正在重新连接素材目录…" : "请选择硬盘或 U 盘中的素材目录…");
+    try {
+      const handle = existingHandle ?? await chooseExternalDirectory();
+      if (!await verifyExternalDirectoryPermission(handle, true)) throw new Error("未获得该文件夹的读写权限");
+      if (existingHandle) {
+        const externalWorkspace = await readExternalWorkspace(handle);
+        if (externalWorkspace && previousDirectory?.lastSyncedAt && externalWorkspace.updatedAt > previousDirectory.lastSyncedAt) {
+          setExternalStorageMessage(`检测到“${handle.name}”在其他设备上有更新，正在载入…`);
+          await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "replace");
+          await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt);
+          window.location.reload();
+          return;
+        }
+        const snapshot = externalSnapshotRef.current;
+        setExternalStorageMessage(`正在把本机待同步内容写入“${handle.name}”…`);
+        const result = await syncExternalWorkspace(handle, snapshot.records, snapshot.promptState);
+        const record: StoredExternalDirectory = {
+          id: "external-directory",
+          handle,
+          name: handle.name,
+          lastSyncedAt: result.updatedAt,
+          updatedAt: Date.now(),
+        };
+        await saveStoredExternalDirectory(handle, result.updatedAt);
+        externalDirectoryRef.current = record;
+        externalStatusRef.current = "connected";
+        setExternalDirectory(record);
+        setExternalStorageStatus("connected");
+        setExternalStorageMessage(`重新连接完成：写入 ${result.written} 个，清理 ${result.removed} 个`);
+        return;
+      }
+      const externalWorkspace = await readExternalWorkspace(handle);
+      if (externalWorkspace) {
+        setExternalStorageMessage(`正在读取“${handle.name}”中的 ${externalWorkspace.records.length} 个素材…`);
+        await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
+        await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt);
+        window.location.reload();
+        return;
+      }
+
+      const snapshot = externalSnapshotRef.current;
+      setExternalStorageMessage(`正在迁移 ${snapshot.records.length} 个现有素材，请勿拔出存储设备…`);
+      const result = await syncExternalWorkspace(handle, snapshot.records, snapshot.promptState);
+      const record: StoredExternalDirectory = {
+        id: "external-directory",
+        handle,
+        name: handle.name,
+        lastSyncedAt: result.updatedAt,
+        updatedAt: Date.now(),
+      };
+      await saveStoredExternalDirectory(handle, result.updatedAt);
+      externalDirectoryRef.current = record;
+      externalStatusRef.current = "connected";
+      setExternalDirectory(record);
+      setExternalStorageStatus("connected");
+      setExternalStorageMessage(`目录已启用：写入 ${result.written} 个素材，浏览器副本已保留`);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        externalDirectoryRef.current = previousDirectory;
+        externalStatusRef.current = previousStatus;
+        setExternalDirectory(previousDirectory);
+        setExternalStorageStatus(previousStatus);
+        setExternalStorageMessage(previousDirectory ? `仍使用：${previousDirectory.name}` : "已取消选择，继续使用浏览器本地存储");
+        return;
+      }
+      externalStatusRef.current = previousDirectory ? "error" : "browser";
+      setExternalStorageStatus(previousDirectory ? "error" : "browser");
+      setExternalStorageMessage(error instanceof Error ? error.message : "外部目录连接失败");
+    }
+  };
+
+  const stopUsingExternalFolder = async () => {
+    try {
+      await deleteStoredExternalDirectory();
+      externalDirectoryRef.current = null;
+      externalStatusRef.current = "browser";
+      externalSyncDirtyRef.current = false;
+      setExternalDirectory(null);
+      setExternalStorageStatus("browser");
+      setExternalStorageMessage("已停止同步，外部目录中的文件未删除");
+    } catch {
+      setExternalStorageMessage("无法停用外部目录，请重试");
+    }
+  };
 
   const addFiles = useCallback((files: FileList | File[]) => {
     const accepted: MediaAsset[] = [];
@@ -1044,9 +1248,9 @@ export default function Home() {
           <span>STORAGE</span>
           <strong>{formatBytes(totalSize)}</strong>
         </div>
-        <div className="local-status" title="文件不会上传至网络">
+        <div className={`local-status ${externalDirectory ? `external ${externalStorageStatus}` : ""}`} title={externalDirectory ? externalStorageMessage : "文件不会上传至网络"}>
           <span className="status-dot" />
-          SAVED LOCALLY
+          {isExternalSyncing ? "SYNCING FOLDER" : externalDirectory ? externalStorageStatus === "connected" ? "EXTERNAL MIRROR" : "FOLDER OFFLINE" : "SAVED LOCALLY"}
         </div>
       </header>
 
@@ -1235,19 +1439,43 @@ export default function Home() {
             >
               <span className="privacy-icon">◎</span>
               <span className="privacy-note-title">
-                <strong>本机持久保存</strong>
-                <small><i /> LOCAL DB · PERSISTENT</small>
+                <strong>{externalDirectory ? "外部素材目录" : "本机持久保存"}</strong>
+                <small><i /> {isExternalSyncing ? "SYNCING" : externalStorageStatus === "connected" ? "FOLDER CONNECTED" : externalStorageStatus === "permission" ? "RECONNECT NEEDED" : externalStorageStatus === "error" ? "SYNC ERROR" : "LOCAL DB · PERSISTENT"}</small>
               </span>
               <b aria-hidden="true">{isLocalStatusExpanded ? "⌄" : "⌃"}</b>
             </button>
             {isLocalStatusExpanded && (
               <div className="privacy-note-details" id="local-persistence-details">
-              <p>{workspaceMode === "assets" ? "素材与提示词会一直保留，只有手动移除才删除。" : "共 24 类、1,920 条本地整理模板，可离线搜索和复制。"}</p>
+              <p>{externalDirectory
+                ? externalStorageMessage || `素材正在同步到“${externalDirectory.name}”，浏览器副本保留用于回退。`
+                : workspaceMode === "assets"
+                  ? externalStorageMessage || "素材与提示词保存在浏览器本机，也可以选择硬盘或 U 盘目录同步。"
+                  : "共 24 类、1,920 条本地整理模板，可离线搜索和复制。"}</p>
               {workspaceMode === "assets" && (
-                <div className="workspace-backup-actions">
-                  <button onClick={() => openBackupDialog("export")}>⇩ 整库备份</button>
-                  <button onClick={() => openBackupDialog("restore")}>⇧ 恢复素材库</button>
-                </div>
+                <>
+                  <div className="workspace-backup-actions">
+                    <button onClick={() => openBackupDialog("export")}>⇩ 整库备份</button>
+                    <button onClick={() => openBackupDialog("restore")}>⇧ 恢复素材库</button>
+                  </div>
+                  <div className={`external-storage-actions ${externalStorageStatus}`}>
+                    {!externalDirectory ? (
+                      <button disabled={externalStorageStatus === "connecting"} onClick={() => void connectExternalFolder()}>
+                        {externalStorageStatus === "connecting" ? "正在连接…" : "▣ 选择硬盘 / U盘目录"}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          disabled={isExternalSyncing || externalStorageStatus === "connecting"}
+                          onClick={() => externalStorageStatus === "connected"
+                            ? void flushExternalSync(true)
+                            : void connectExternalFolder(externalDirectory.handle)}
+                        >{externalStorageStatus === "connected" ? "↻ 立即同步" : "↻ 重新连接"}</button>
+                        <button disabled={isExternalSyncing} onClick={() => void stopUsingExternalFolder()}>停止使用</button>
+                      </>
+                    )}
+                  </div>
+                  {externalDirectory && <small className="external-directory-name" title={externalDirectory.name}>目录 · {externalDirectory.name}</small>}
+                </>
               )}
               </div>
             )}

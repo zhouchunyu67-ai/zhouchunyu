@@ -64,13 +64,19 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /isGlobalAssetSearch && asset\.collection === "category"/);
   assert.match(page, /createFrameVaultBackup/);
   assert.match(page, /parseFrameVaultBackup/);
+  assert.match(page, /选择硬盘 \/ U盘目录/);
+  assert.match(page, /flushExternalSync/);
+  assert.match(page, /重新连接/);
   assert.match(page, /安全合并/);
   assert.match(page, /完全恢复/);
-  const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
+  const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
   assert.doesNotMatch(moveHandler, /setFilter/);
   assert.match(storage, /indexedDB\.open/);
   assert.match(storage, /"image" \| "video" \| "audio" \| "text"/);
   assert.match(storage, /restoreStoredWorkspace/);
+  assert.match(storage, /loadStoredExternalDirectory/);
+  assert.match(storage, /saveStoredExternalDirectory/);
+  assert.match(storage, /SETTINGS_STORE_NAME/);
   assert.match(storage, /database\.transaction\(\[STORE_NAME, PROMPT_STORE_NAME\], "readwrite"\)/);
 });
 

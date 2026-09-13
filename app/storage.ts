@@ -27,10 +27,19 @@ export type StoredPromptState = {
   updatedAt: number;
 };
 
+export type StoredExternalDirectory = {
+  id: "external-directory";
+  handle: import("./externalStorage").VaultDirectoryHandle;
+  name: string;
+  lastSyncedAt?: number;
+  updatedAt: number;
+};
+
 const DATABASE_NAME = "frame-vault-local";
-const DATABASE_VERSION = 2;
+const DATABASE_VERSION = 3;
 const STORE_NAME = "assets";
 const PROMPT_STORE_NAME = "prompt-state";
+const SETTINGS_STORE_NAME = "settings";
 
 function requestResult<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -58,6 +67,9 @@ function openDatabase(): Promise<IDBDatabase> {
       }
       if (!database.objectStoreNames.contains(PROMPT_STORE_NAME)) {
         database.createObjectStore(PROMPT_STORE_NAME, { keyPath: "id" });
+      }
+      if (!database.objectStoreNames.contains(SETTINGS_STORE_NAME)) {
+        database.createObjectStore(SETTINGS_STORE_NAME, { keyPath: "id" });
       }
     };
     request.onsuccess = () => resolve(request.result);
@@ -120,6 +132,39 @@ export async function saveStoredPromptState(
     ...values,
     updatedAt: Date.now(),
   } satisfies StoredPromptState);
+  await transactionDone(transaction);
+  database.close();
+}
+
+export async function loadStoredExternalDirectory(): Promise<StoredExternalDirectory | null> {
+  const database = await openDatabase();
+  const transaction = database.transaction(SETTINGS_STORE_NAME, "readonly");
+  const record = await requestResult(transaction.objectStore(SETTINGS_STORE_NAME).get("external-directory")) as StoredExternalDirectory | undefined;
+  database.close();
+  return record ?? null;
+}
+
+export async function saveStoredExternalDirectory(
+  handle: import("./externalStorage").VaultDirectoryHandle,
+  lastSyncedAt?: number,
+): Promise<void> {
+  const database = await openDatabase();
+  const transaction = database.transaction(SETTINGS_STORE_NAME, "readwrite");
+  transaction.objectStore(SETTINGS_STORE_NAME).put({
+    id: "external-directory",
+    handle,
+    name: handle.name,
+    lastSyncedAt,
+    updatedAt: Date.now(),
+  } satisfies StoredExternalDirectory);
+  await transactionDone(transaction);
+  database.close();
+}
+
+export async function deleteStoredExternalDirectory(): Promise<void> {
+  const database = await openDatabase();
+  const transaction = database.transaction(SETTINGS_STORE_NAME, "readwrite");
+  transaction.objectStore(SETTINGS_STORE_NAME).delete("external-directory");
   await transactionDone(transaction);
   database.close();
 }
