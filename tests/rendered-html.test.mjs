@@ -56,6 +56,8 @@ test("keeps material persistence and audio handling in the local application", a
   assert.doesNotMatch(page, /autoPlay/);
   assert.doesNotMatch(page, /videoExpanded|setVideoExpanded/);
   assert.match(page, /selected\.kind === "video" \? \([\s\S]*?video-preview-controls/);
+  assert.match(page, /\(selected\.kind === "image" \|\| selected\.kind === "video"\) && \([\s\S]*?prompt-heading/);
+  assert.doesNotMatch(page, /selected\.kind === "audio" \? "记录声音内容/);
   assert.match(page, /if \(!event\.ctrlKey \|\| selected\?\.kind !== "image"\) return;/);
   assert.match(page, /filter === "all"\s*\? \(keyword \? true : asset\.collection === "library"\)/);
   assert.match(page, /asset\.category\.toLowerCase\(\)\.includes\(keyword\)/);

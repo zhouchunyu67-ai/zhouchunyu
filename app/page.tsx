@@ -1631,21 +1631,25 @@ export default function Home() {
                 <div><span>{selected.kind === "video" || selected.kind === "audio" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" || selected.kind === "audio" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
               </div>
 
-              <div className="module-heading prompt-heading"><span>提示词</span><b>PROMPT</b></div>
-              <div className="prompt-section">
-                <textarea
-                  value={selected.prompt}
-                  onChange={(event) => updatePrompt(event.target.value)}
-                  placeholder={selected.kind === "audio" ? "记录声音内容、情绪、节奏或音频提示词…" : "记录画面描述、镜头要求或生成提示词…"}
-                  aria-label="提示词"
-                  spellCheck={false}
-                />
-                <div className="prompt-footer">
-                  <span>{selected.kind === "text" ? "文本素材" : selected.kind === "audio" ? "音频素材" : "素材比例"}</span>
-                  <strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? formatDuration(selected.duration) : ratioLabel(selected.width, selected.height)}</strong>
-                  <i>{selected.kind === "text" ? "TXT" : selected.kind === "audio" ? "AUDIO" : orientationLabel(selected.width, selected.height)}</i>
-                </div>
-              </div>
+              {(selected.kind === "image" || selected.kind === "video") && (
+                <>
+                  <div className="module-heading prompt-heading"><span>提示词</span><b>PROMPT</b></div>
+                  <div className="prompt-section">
+                    <textarea
+                      value={selected.prompt}
+                      onChange={(event) => updatePrompt(event.target.value)}
+                      placeholder="记录画面描述、镜头要求或生成提示词…"
+                      aria-label="提示词"
+                      spellCheck={false}
+                    />
+                    <div className="prompt-footer">
+                      <span>素材比例</span>
+                      <strong>{ratioLabel(selected.width, selected.height)}</strong>
+                      <i>{orientationLabel(selected.width, selected.height)}</i>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {previewOpen && (
                 <div className={`viewer-overlay ${selected.kind}-viewer-overlay`} role="dialog" aria-modal="true" aria-label={`${selected.name} 素材预览`} onClick={() => setPreviewOpen(false)}>
@@ -1745,7 +1749,7 @@ export default function Home() {
             <div className="empty-inspector">
               <div className="scanner-plate"><i /><i /><span>＋</span></div>
               <strong>等待选择素材</strong>
-              <p>点击中间的素材卡片，在这里查看画面、参数与提示词。</p>
+              <p>点击中间的素材卡片，在这里查看内容、预览与参数信息。</p>
             </div>
           )) : selectedPrompt ? (
             <div className="prompt-inspector">
