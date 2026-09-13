@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import {
   deleteStoredAsset,
   loadStoredAssets,
@@ -178,7 +179,6 @@ export default function Home() {
   const [zoom, setZoom] = useState(100);
   const [viewerZoom, setViewerZoom] = useState(100);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [videoExpanded, setVideoExpanded] = useState(false);
   const [notice, setNotice] = useState("");
   const [isRenaming, setIsRenaming] = useState(false);
   const [draftName, setDraftName] = useState("");
@@ -197,6 +197,8 @@ export default function Home() {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [categoryDraft, setCategoryDraft] = useState("");
   const [categoryPendingDelete, setCategoryPendingDelete] = useState<string | null>(null);
+  const [isCategoryBrowserOpen, setIsCategoryBrowserOpen] = useState(false);
+  const [categoryBrowserQuery, setCategoryBrowserQuery] = useState("");
   const [isAddingText, setIsAddingText] = useState(false);
   const [textTitleDraft, setTextTitleDraft] = useState("");
   const [textContentDraft, setTextContentDraft] = useState("");
@@ -231,7 +233,6 @@ export default function Home() {
     setZoom(100);
     setViewerZoom(100);
     setPreviewOpen(false);
-    setVideoExpanded(false);
     setIsRenaming(false);
     setDraftName("");
     setPreviewPan({ x: 0, y: 0 });
@@ -247,22 +248,30 @@ export default function Home() {
   }, [viewerZoom]);
 
   useEffect(() => {
-    if (!videoExpanded && !previewOpen) return;
+    if (!previewOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setVideoExpanded(false);
         setPreviewOpen(false);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [videoExpanded, previewOpen]);
+  }, [previewOpen]);
+
+  useEffect(() => {
+    if (!isCategoryBrowserOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsCategoryBrowserOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isCategoryBrowserOpen]);
 
   useEffect(() => {
     const preview = previewStageRef.current;
     if (!preview) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey || selected?.kind === "text" || selected?.kind === "audio") return;
+      if (!event.ctrlKey || selected?.kind !== "image") return;
       event.preventDefault();
       event.stopPropagation();
       setZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
@@ -710,11 +719,9 @@ export default function Home() {
     if (!selected) return;
     if (destination === "__library__") {
       updateAsset(selected.id, { collection: "library" });
-      if (filter !== "all") setFilter(selected.kind);
       setNotice(`已将“${selected.name}”移到素材库根目录`);
     } else {
       updateAsset(selected.id, { collection: "category", category: destination });
-      setFilter(`category:${destination}`);
       setNotice(`已将“${selected.name}”移到“${destination}”`);
     }
     window.setTimeout(() => setNotice(""), 1800);
@@ -787,6 +794,12 @@ export default function Home() {
   const totalSize = useMemo(() => assets.reduce((sum, asset) => sum + asset.size, 0), [assets]);
   const libraryAssetCount = assets.filter((asset) => asset.collection === "library").length;
   const visibleSize = useMemo(() => visibleAssets.reduce((sum, asset) => sum + asset.size, 0), [visibleAssets]);
+  const visibleCategoryChoices = useMemo(() => {
+    const keyword = categoryBrowserQuery.trim().toLowerCase();
+    return keyword
+      ? assetCategories.filter((category) => category.toLowerCase().includes(keyword))
+      : assetCategories;
+  }, [assetCategories, categoryBrowserQuery]);
   const imageCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "image").length;
   const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
   const audioCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "audio").length;
@@ -955,6 +968,15 @@ export default function Home() {
                 <span>自定义类目</span>
                 <button onClick={() => setIsAddingCategory((value) => !value)}>＋ 添加类目</button>
               </div>
+              <button
+                className="category-browser-trigger"
+                onClick={() => setIsCategoryBrowserOpen(true)}
+                aria-haspopup="dialog"
+              >
+                <span><i>▦</i> 查看全部类目</span>
+                <b>{assetCategories.length}</b>
+                <em>↗</em>
+              </button>
               {isAddingCategory && (
                 <div className="category-create-row">
                   <input
@@ -993,6 +1015,60 @@ export default function Home() {
                   );
                 })}
               </nav>
+
+              {isCategoryBrowserOpen && typeof document !== "undefined" && createPortal((
+                <div className="category-browser-overlay" role="presentation">
+                  <section className="category-browser-dialog" role="dialog" aria-modal="true" aria-labelledby="category-browser-title">
+                    <header>
+                      <div>
+                        <span>CATEGORY DIRECTORY</span>
+                        <h3 id="category-browser-title">查看全部类目</h3>
+                        <p>搜索类目名称，点击即可进入对应素材区。</p>
+                      </div>
+                      <button onClick={() => setIsCategoryBrowserOpen(false)} aria-label="关闭全部类目窗口">×</button>
+                    </header>
+                    <label className="category-browser-search">
+                      <i aria-hidden="true">⌕</i>
+                      <input
+                        type="search"
+                        value={categoryBrowserQuery}
+                        onChange={(event) => setCategoryBrowserQuery(event.target.value)}
+                        placeholder="搜索类目名称"
+                        aria-label="搜索全部类目"
+                      />
+                      <b>{visibleCategoryChoices.length} / {assetCategories.length}</b>
+                    </label>
+                    <div className="category-browser-grid">
+                      {visibleCategoryChoices.map((category) => {
+                        const categoryFilter = `category:${category}` as Filter;
+                        const categoryCount = assets.filter((asset) => asset.collection === "category" && asset.category === category).length;
+                        return (
+                          <button
+                            key={category}
+                            className={filter === categoryFilter ? "active" : ""}
+                            onClick={() => {
+                              setFilter(categoryFilter);
+                              setCategoryBrowserQuery("");
+                              setIsCategoryBrowserOpen(false);
+                            }}
+                          >
+                            <span>{category}</span>
+                            <small>{categoryCount} 个素材</small>
+                            <i>进入 →</i>
+                          </button>
+                        );
+                      })}
+                      {!visibleCategoryChoices.length && (
+                        <div className="category-browser-empty">
+                          <strong>没有匹配的类目</strong>
+                          <span>换一个关键词试试。</span>
+                        </div>
+                      )}
+                    </div>
+                    <footer><span>共 {assetCategories.length} 个类目</span><small>按 ESC 关闭</small></footer>
+                  </section>
+                </div>
+              ), document.body)}
 
               <div className="side-divider compact-divider" />
               <div className="side-group-label">格式索引</div>
@@ -1318,8 +1394,8 @@ export default function Home() {
               </div>
               <div
                 ref={previewStageRef}
-                className={`preview-stage ${selected.kind} ${videoExpanded ? "expanded" : ""} ${selected.kind === "image" && zoom > 100 ? "can-pan" : ""} ${isPreviewPanning ? "panning" : ""}`}
-                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : selected.kind === "audio" ? "音频试听" : "按住 Ctrl 并滚动鼠标滚轮缩放"}
+                className={`preview-stage ${selected.kind} ${selected.kind === "image" && zoom > 100 ? "can-pan" : ""} ${isPreviewPanning ? "panning" : ""}`}
+                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : selected.kind === "audio" ? "音频试听" : "视频预览"}
                 onPointerDown={(event) => beginPan(event, "preview")}
                 onPointerMove={(event) => movePan(event, "preview")}
                 onPointerUp={(event) => endPan(event, "preview")}
@@ -1349,19 +1425,13 @@ export default function Home() {
                     />
                   </div>
                 ) : selected.kind === "video" ? (
-                  <>
-                    <video
-                      key={selected.id}
-                      src={selected.url}
-                      controls
-                      preload="metadata"
-                      style={{ transform: `scale(${zoom / 100})` }}
-                      onLoadedMetadata={(event) => syncVideoMetadata(selected.id, event.currentTarget)}
-                    />
-                    {videoExpanded && (
-                      <button className="exit-fullscreen" onClick={() => setVideoExpanded(false)} aria-label="退出全屏">×</button>
-                    )}
-                  </>
+                  <video
+                    key={selected.id}
+                    src={selected.url}
+                    controls
+                    preload="metadata"
+                    onLoadedMetadata={(event) => syncVideoMetadata(selected.id, event.currentTarget)}
+                  />
                 ) : selected.status === "unsupported" ? (
                   <div className="preview-error"><span>!</span><p>当前浏览器无法预览此图片格式</p></div>
                 ) : (
@@ -1376,7 +1446,6 @@ export default function Home() {
                   </div>
                 )}
                 {(selected.kind === "image" || selected.kind === "video") && <span className="preview-ratio">{ratioLabel(selected.width, selected.height)}</span>}
-                {selected.kind !== "text" && <button className="open-preview-float" onPointerDown={(event) => event.stopPropagation()} onClick={openPreview}>点开预览 ↗</button>}
               </div>
 
               {selected.kind === "text" ? (
@@ -1390,13 +1459,17 @@ export default function Home() {
                   <span className="wheel-hint">音频时长 {formatDuration(selected.duration)}</span>
                   <a href={selected.url} download={selected.name} aria-label="下载音频素材">↓ 下载音频</a>
                 </div>
+              ) : selected.kind === "video" ? (
+                <div className="preview-controls video-preview-controls">
+                  <span className="wheel-hint">默认暂停 · 时长 {formatDuration(selected.duration)}</span>
+                  <a href={selected.url} download={selected.name} aria-label="下载视频素材">↓ 下载视频</a>
+                </div>
               ) : (
                 <div className="preview-controls">
-                  <span className="wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{selected.kind === "image" && zoom > 100 ? " · 按住拖动" : ""}</span>
+                  <span className="wheel-hint"><kbd>Ctrl</kbd> + 滚轮缩放{zoom > 100 ? " · 按住拖动" : ""}</span>
                   <button aria-label="缩小预览" onClick={() => setZoom((value) => Math.max(25, value - 25))}>−</button>
                   <button className="zoom-value" onClick={() => { setZoom(100); setPreviewPan({ x: 0, y: 0 }); }}>{zoom}%</button>
                   <button aria-label="放大预览" onClick={() => setZoom((value) => Math.min(400, value + 25))}>＋</button>
-                  {selected.kind === "video" && <button onClick={() => setVideoExpanded(true)}><span>⛶</span> 全屏</button>}
                   <a href={selected.url} download={selected.name} aria-label="下载素材">↓</a>
                 </div>
               )}
@@ -1466,7 +1539,6 @@ export default function Home() {
                             key={`viewer-${selected.id}`}
                             src={selected.url}
                             controls
-                            autoPlay
                             preload="metadata"
                             onLoadedMetadata={(event) => syncAudioMetadata(selected.id, event.currentTarget)}
                           />
@@ -1476,7 +1548,6 @@ export default function Home() {
                           key={`viewer-${selected.id}`}
                           src={selected.url}
                           controls
-                          autoPlay
                           style={{ transform: `scale(${viewerZoom / 100})` }}
                         />
                       ) : (
