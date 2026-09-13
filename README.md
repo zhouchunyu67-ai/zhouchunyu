@@ -1,4 +1,6 @@
-# vinext-starter
+# zhouchunyu
+
+本地离线素材管理平台：支持图片与视频导入、格式与分辨率识别、分类管理、右侧预览、图片缩放拖动、视频全屏与下载，以及本机持久保存。
 
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
