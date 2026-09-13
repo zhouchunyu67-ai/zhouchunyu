@@ -1,0 +1,73 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+/dist/
+/build/
+/.wrangler/
+/outputs/
+/work/
+
+# local build metadata
+*.tsbuildinfo
+
+# user material library files stay on the local device
+**/uploads/
+**/local-media/
+**/thumbnails/
+*.mp4
+*.mov
+*.m4v
+*.avi
+*.mkv
+*.webm
+*.mpeg
+*.mpg
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.bmp
+*.avif
+*.heic
+*.heif
+
+# interface artwork required by the application
+!public/ui-icon.jpg
+!public/ui-music.jpeg
+!public/ui-rain.jpg
+!public/ui-sakura.jpg
+!public/ui-summer.png
