@@ -138,6 +138,7 @@ button { color: inherit; }
 .video-placeholder small { font: 600 7px/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: .1em; }
 .asset-card-info { padding: 11px 11px 8px; border-top: 1px solid var(--line); }
 .asset-card-info > strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #cbdce0; font-size: 10px; margin-bottom: 7px; }
+.asset-card-info > .asset-category-origin { display: block; width: max-content; max-width: 100%; margin: -1px 0 8px; padding: 4px 7px; overflow: hidden; border: 1px solid rgba(115,151,211,.2); border-radius: 999px; background: linear-gradient(90deg,rgba(235,245,255,.86),rgba(255,239,246,.78)); color: #6a7fa5; font: 700 8px/1 ui-monospace,SFMono-Regular,Consolas,monospace; text-overflow: ellipsis; white-space: nowrap; }
 .asset-card-info > div { display: flex; gap: 6px; min-width: 0; }
 .asset-card-info span { color: #4c666f; font: 500 7px/1 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: nowrap; }
 .asset-card-footer { min-height: 29px; border-top: 1px solid rgba(120,177,194,.09); padding: 0 11px; display: flex; align-items: center; gap: 6px; color: #526b74; font: 500 8px/1 ui-monospace, SFMono-Regular, Consolas, monospace; }

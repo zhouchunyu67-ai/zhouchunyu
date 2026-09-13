@@ -50,7 +50,6 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /document\.createElement\("audio"\)/);
   assert.match(page, /syncAudioMetadata/);
   assert.match(page, /saveStoredAsset\(toStoredRecord\(asset\)\)/);
-  assert.match(page, /filter === "all"\s*\? asset\.collection === "library"/);
   assert.match(page, /asset\.collection === "category" && asset\.category/);
   assert.match(page, /查看全部类目/);
   assert.match(page, /categoryBrowserQuery/);
@@ -58,6 +57,9 @@ test("keeps material persistence and audio handling in the local application", a
   assert.doesNotMatch(page, /videoExpanded|setVideoExpanded/);
   assert.match(page, /selected\.kind === "video" \? \([\s\S]*?video-preview-controls/);
   assert.match(page, /if \(!event\.ctrlKey \|\| selected\?\.kind !== "image"\) return;/);
+  assert.match(page, /filter === "all"\s*\? \(keyword \? true : asset\.collection === "library"\)/);
+  assert.match(page, /asset\.category\.toLowerCase\(\)\.includes\(keyword\)/);
+  assert.match(page, /isGlobalAssetSearch && asset\.collection === "category"/);
   const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n  \};/)?.[0] ?? "";
   assert.doesNotMatch(moveHandler, /setFilter/);
   assert.match(storage, /indexedDB\.open/);

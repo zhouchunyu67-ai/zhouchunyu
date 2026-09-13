@@ -772,13 +772,14 @@ export default function Home() {
     const keyword = query.trim().toLowerCase();
     return assets.filter((asset) => {
       const matchesLocation = filter === "all"
-        ? asset.collection === "library"
+        ? (keyword ? true : asset.collection === "library")
         : (filter.startsWith("category:")
           ? asset.collection === "category" && asset.category === filter.slice(9)
           : asset.collection === "library" && asset.kind === filter);
       const matchesQuery = !keyword
         || asset.name.toLowerCase().includes(keyword)
         || asset.extension.toLowerCase().includes(keyword)
+        || asset.category.toLowerCase().includes(keyword)
         || (asset.textContent ?? "").toLowerCase().includes(keyword);
       return matchesLocation && matchesQuery;
     });
@@ -804,6 +805,7 @@ export default function Home() {
   const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
   const audioCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "audio").length;
   const textCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "text").length;
+  const isGlobalAssetSearch = filter === "all" && query.trim().length > 0;
   const isCategoryFilter = filter.startsWith("category:");
   const showFileImport = filter !== "text";
   const showTextCreator = filter === "all" || filter === "text" || isCategoryFilter;
@@ -1132,7 +1134,7 @@ export default function Home() {
                   type="search"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="搜索文件名或格式"
+                  placeholder={filter === "all" ? "搜索全库文件名、格式或类目" : "搜索文件名或格式"}
                   aria-label="搜索素材"
                 />
                 <kbd>⌘ K</kbd>
@@ -1227,6 +1229,9 @@ export default function Home() {
                 </div>
                 <div className="asset-card-info">
                   <strong title={asset.name}>{asset.name}</strong>
+                  {isGlobalAssetSearch && asset.collection === "category" && (
+                    <span className="asset-category-origin" title={`所属类目：${asset.category}`}>类目 · {asset.category}</span>
+                  )}
                   <div>
                     <span>{asset.extension}</span>
                     <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "audio" ? "音频素材" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
