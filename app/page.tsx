@@ -642,7 +642,8 @@ export default function Home() {
           const externalWorkspace = await readExternalWorkspace(record.handle);
           if (!active) return;
           if (externalWorkspace && record.lastSyncedAt && externalWorkspace.updatedAt > record.lastSyncedAt) {
-            await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "replace");
+            const result = await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
+            setExternalStorageMessage(`已从外部目录合并 ${result.imported} 个素材，本机已有素材保留`);
             await saveStoredExternalDirectory(record.handle, externalWorkspace.updatedAt);
             window.location.reload();
             return;
@@ -727,7 +728,8 @@ export default function Home() {
         const externalWorkspace = await readExternalWorkspace(handle);
         if (externalWorkspace && previousDirectory?.lastSyncedAt && externalWorkspace.updatedAt > previousDirectory.lastSyncedAt) {
           setExternalStorageMessage(`检测到“${handle.name}”在其他设备上有更新，正在载入…`);
-          await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "replace");
+          const result = await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
+          setExternalStorageMessage(`已从外部目录合并 ${result.imported} 个素材，本机已有素材保留`);
           await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt);
           window.location.reload();
           return;
@@ -1606,7 +1608,7 @@ export default function Home() {
                   )}
                   <div>
                     <span>{asset.extension}</span>
-                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "audio" ? "音频素材" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
+                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "audio" ? "音频素材" : asset.status === "unsupported" ? "格式不支持" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
                     {(asset.kind === "video" || asset.kind === "audio") && <span>{formatDuration(asset.duration)}</span>}
                   </div>
                 </div>
@@ -1853,7 +1855,7 @@ export default function Home() {
 
               <div className="module-heading"><span>参数信息</span><b>METADATA</b></div>
               <div className="metadata-grid">
-                <div><span>{selected.kind === "text" ? "字符数量" : selected.kind === "audio" ? "音频格式" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? selected.extension : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
+                <div><span>{selected.kind === "text" ? "字符数量" : selected.kind === "audio" ? "音频格式" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? selected.extension : selected.status === "unsupported" ? "格式不支持" : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
                 <div><span>{selected.kind === "text" ? "文本行数" : selected.kind === "audio" ? "读取状态" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : selected.kind === "audio" ? selected.status === "ready" ? "可播放" : selected.status === "unsupported" ? "格式不支持" : "识别中" : resolutionLabel(selected.width, selected.height)}</strong></div>
                 <div><span>文件大小</span><strong>{formatBytes(selected.size)}</strong></div>
                 <div><span>{selected.kind === "video" || selected.kind === "audio" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" || selected.kind === "audio" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
@@ -1888,7 +1890,7 @@ export default function Home() {
                         <strong>{selected.name}</strong>
                       </div>
                       <div className="viewer-header-meta">
-                        <span>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? formatDuration(selected.duration) : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
+                        <span>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? formatDuration(selected.duration) : selected.status === "unsupported" ? "格式不支持" : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</span>
                         <span>{selected.kind === "text" ? "TEXT" : selected.kind === "audio" ? "AUDIO" : ratioLabel(selected.width, selected.height)}</span>
                         <button onClick={() => setPreviewOpen(false)} aria-label="关闭素材预览">×</button>
                       </div>

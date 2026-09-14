@@ -67,6 +67,12 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /选择硬盘 \/ U盘目录/);
   assert.match(page, /flushExternalSync/);
   assert.match(page, /重新连接/);
+  const automaticExternalRestoreModes = [...page.matchAll(/restoreStoredWorkspace\(externalWorkspace\.records, externalWorkspace\.promptState, "([^"]+)"\)/g)]
+    .map((match) => match[1]);
+  assert.deepEqual(automaticExternalRestoreModes, ["merge", "merge", "merge"]);
+  assert.match(page, /已从外部目录合并 \$\{result\.imported\} 个素材，本机已有素材保留/);
+  assert.match(page, /asset\.status === "unsupported" \? "格式不支持" : asset\.width && asset\.height/);
+  assert.match(page, /selected\.status === "unsupported" \? "格式不支持" : selected\.width && selected\.height/);
   assert.match(page, /安全合并/);
   assert.match(page, /完全恢复/);
   const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
