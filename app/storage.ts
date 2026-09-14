@@ -2,11 +2,12 @@ export type StoredAssetRecord = {
   id: string;
   file: Blob;
   name: string;
-  kind: "image" | "video" | "audio" | "text";
+  kind: "image" | "video" | "audio" | "text" | "link";
   extension: string;
   mime: string;
   size: number;
   textContent?: string;
+  linkUrl?: string;
   width?: number;
   height?: number;
   duration?: number;
@@ -31,6 +32,7 @@ export type StoredExternalDirectory = {
   id: "external-directory";
   handle: import("./externalStorage").VaultDirectoryHandle;
   name: string;
+  locationLabel?: string;
   lastSyncedAt?: number;
   updatedAt: number;
 };
@@ -147,13 +149,17 @@ export async function loadStoredExternalDirectory(): Promise<StoredExternalDirec
 export async function saveStoredExternalDirectory(
   handle: import("./externalStorage").VaultDirectoryHandle,
   lastSyncedAt?: number,
+  locationLabel?: string,
 ): Promise<void> {
   const database = await openDatabase();
   const transaction = database.transaction(SETTINGS_STORE_NAME, "readwrite");
-  transaction.objectStore(SETTINGS_STORE_NAME).put({
+  const store = transaction.objectStore(SETTINGS_STORE_NAME);
+  const current = await requestResult(store.get("external-directory")) as StoredExternalDirectory | undefined;
+  store.put({
     id: "external-directory",
     handle,
     name: handle.name,
+    locationLabel: locationLabel ?? current?.locationLabel,
     lastSyncedAt,
     updatedAt: Date.now(),
   } satisfies StoredExternalDirectory);

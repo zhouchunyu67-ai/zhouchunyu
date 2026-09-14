@@ -33,7 +33,7 @@ function backupError(message: string): Error {
 }
 
 function isAssetKind(value: unknown): value is StoredAssetRecord["kind"] {
-  return value === "image" || value === "video" || value === "audio" || value === "text";
+  return value === "image" || value === "video" || value === "audio" || value === "text" || value === "link";
 }
 
 function isAssetStatus(value: unknown): value is StoredAssetRecord["status"] {
@@ -81,6 +81,7 @@ function validateManifest(value: unknown): asserts value is FrameVaultBackupMani
     if (!Number.isSafeInteger(asset.payloadSize) || asset.payloadSize < 0) throw backupError("素材文件大小异常");
     if (!Number.isSafeInteger(asset.size) || asset.size < 0) throw backupError("素材大小记录异常");
     if (typeof asset.prompt !== "string" || (asset.textContent !== undefined && typeof asset.textContent !== "string")) throw backupError("素材文本记录异常");
+    if (asset.kind === "link" && (typeof asset.linkUrl !== "string" || !asset.linkUrl)) throw backupError("链接地址缺失");
     if (asset.category !== undefined && typeof asset.category !== "string") throw backupError("素材类目异常");
     if (asset.collection !== undefined && asset.collection !== "library" && asset.collection !== "category") throw backupError("素材位置异常");
     if (!Number.isFinite(asset.createdAt) || !Number.isFinite(asset.updatedAt)) throw backupError("素材时间信息异常");

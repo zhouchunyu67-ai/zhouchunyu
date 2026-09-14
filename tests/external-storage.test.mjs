@@ -119,14 +119,27 @@ test("writes, verifies and reads a portable external material directory", async 
     assetCategories: ["未分类", "空镜素材"],
     updatedAt: Date.now(),
   };
+  const linkUrl = "https://example.com/reference";
+  const link = record({
+    id: "link-1",
+    file: new File([`[InternetShortcut]\r\nURL=${linkUrl}\r\n`], "参考链接.url", { type: "text/uri-list" }),
+    name: "参考链接",
+    kind: "link",
+    extension: "LINK",
+    mime: "text/uri-list",
+    textContent: "用于项目资料检索",
+    linkUrl,
+  });
 
-  const result = await syncExternalWorkspace(root, [text, video], promptState);
-  assert.equal(result.written, 2);
+  const result = await syncExternalWorkspace(root, [text, video, link], promptState);
+  assert.equal(result.written, 3);
   const restored = await readExternalWorkspace(root);
-  assert.equal(restored.records.length, 2);
+  assert.equal(restored.records.length, 3);
   assert.equal(restored.records[0].textContent, "第一版文本");
   assert.deepEqual(new Uint8Array(await restored.records[1].file.arrayBuffer()), videoBytes);
   assert.equal(restored.records[1].category, "空镜素材");
+  assert.equal(restored.records[2].linkUrl, linkUrl);
+  assert.equal(restored.records[2].textContent, "用于项目资料检索");
   assert.deepEqual(restored.promptState.assetCategories, ["未分类", "空镜素材"]);
 });
 

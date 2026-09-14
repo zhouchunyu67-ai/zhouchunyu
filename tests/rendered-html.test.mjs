@@ -23,7 +23,7 @@ async function render() {
   );
 }
 
-test("server-renders the local material library with all four asset types", async () => {
+test("server-renders the local material library with all five asset types", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -36,6 +36,8 @@ test("server-renders the local material library with all four asset types", asyn
   assert.match(html, /nav-symbol audio-symbol/);
   assert.match(html, /nav-symbol image-symbol/);
   assert.match(html, /nav-symbol text-symbol/);
+  assert.match(html, /nav-symbol link-symbol/);
+  assert.match(html, /添加链接素材/);
   assert.match(html, /IMAGE \/ VIDEO \/ AUDIO \/ TEXT · DROP HERE/);
   assert.match(html, /accept="[^"]*audio\/\*[^"]*\.mp3[^"]*\.wav[^"]*"/i);
 });
@@ -49,6 +51,11 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(page, /file\.type\.startsWith\("audio\/"\)/);
   assert.match(page, /document\.createElement\("audio"\)/);
   assert.match(page, /syncAudioMetadata/);
+  assert.match(page, /kind: "link"/);
+  assert.match(page, /链接描述/);
+  assert.match(page, /跳转链接/);
+  assert.match(page, /externalLocationDraft/);
+  assert.match(page, /同步位置/);
   assert.match(page, /saveStoredAsset\(toStoredRecord\(asset\)\)/);
   assert.match(page, /asset\.collection === "category" && asset\.category/);
   assert.match(page, /查看全部类目/);
@@ -78,7 +85,7 @@ test("keeps material persistence and audio handling in the local application", a
   const moveHandler = page.match(/const moveSelectedAsset = \(destination: string\) => \{[\s\S]*?\n {2}\};/)?.[0] ?? "";
   assert.doesNotMatch(moveHandler, /setFilter/);
   assert.match(storage, /indexedDB\.open/);
-  assert.match(storage, /"image" \| "video" \| "audio" \| "text"/);
+  assert.match(storage, /"image" \| "video" \| "audio" \| "text" \| "link"/);
   assert.match(storage, /restoreStoredWorkspace/);
   assert.match(storage, /loadStoredExternalDirectory/);
   assert.match(storage, /saveStoredExternalDirectory/);

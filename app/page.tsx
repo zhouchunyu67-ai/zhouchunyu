@@ -46,7 +46,7 @@ import {
   type PromptKind,
 } from "./promptCatalog";
 
-type AssetKind = "image" | "video" | "audio" | "text";
+type AssetKind = "image" | "video" | "audio" | "text" | "link";
 type AssetCollection = "library" | "category";
 type AssetStatus = "reading" | "ready" | "unsupported";
 type Filter = "all" | AssetKind | `category:${string}`;
@@ -68,6 +68,7 @@ type MediaAsset = {
   mime: string;
   size: number;
   textContent?: string;
+  linkUrl?: string;
   width?: number;
   height?: number;
   duration?: number;
@@ -90,6 +91,7 @@ function toStoredRecord(asset: MediaAsset): StoredAssetRecord {
     mime: asset.mime,
     size: asset.size,
     textContent: asset.textContent,
+    linkUrl: asset.linkUrl,
     width: asset.width,
     height: asset.height,
     duration: asset.duration,
@@ -164,6 +166,38 @@ function resolutionLabel(width?: number, height?: number) {
   return "标清";
 }
 
+function normalizeLinkUrl(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const candidate = /^[a-z][a-z\d+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : null;
+  } catch {
+    return null;
+  }
+}
+
+function linkHost(value?: string): string {
+  if (!value) return "未填写网址";
+  try {
+    return new URL(value).host || value;
+  } catch {
+    return value;
+  }
+}
+
+function linkShortcut(value: string): string {
+  return `[InternetShortcut]\r\nURL=${value}\r\n`;
+}
+
+function externalDirectoryDefaultLabel(name: string): string {
+  const trimmed = name.trim();
+  return !trimmed || trimmed === "\\" || trimmed === "/"
+    ? "磁盘根目录（盘符未公开）"
+    : trimmed;
+}
+
 function inferKind(file: File): AssetKind | null {
   if (file.type.startsWith("image/")) return "image";
   if (file.type.startsWith("video/")) return "video";
@@ -187,6 +221,17 @@ function AudioArtwork({ compact = false }: { compact?: boolean }) {
         ))}
       </div>
       <small>LOCAL AUDIO</small>
+    </div>
+  );
+}
+
+function LinkArtwork({ url, compact = false }: { url?: string; compact?: boolean }) {
+  return (
+    <div className={`link-artwork ${compact ? "compact" : ""}`} aria-hidden="true">
+      <span>WEB LINK</span>
+      <i>↗</i>
+      <strong>{linkHost(url)}</strong>
+      <small>{url || "等待填写网址"}</small>
     </div>
   );
 }
@@ -223,6 +268,9 @@ export default function Home() {
   const [isAddingText, setIsAddingText] = useState(false);
   const [textTitleDraft, setTextTitleDraft] = useState("");
   const [textContentDraft, setTextContentDraft] = useState("");
+  const [isAddingLink, setIsAddingLink] = useState(false);
+  const [linkTitleDraft, setLinkTitleDraft] = useState("");
+  const [linkUrlDraft, setLinkUrlDraft] = useState("");
   const [backupDialogMode, setBackupDialogMode] = useState<BackupDialogMode>(null);
   const [restoreMode, setRestoreMode] = useState<WorkspaceRestoreMode>("merge");
   const [backupCandidate, setBackupCandidate] = useState<ParsedFrameVaultBackup | null>(null);
@@ -235,6 +283,7 @@ export default function Home() {
   const [externalDirectory, setExternalDirectory] = useState<StoredExternalDirectory | null>(null);
   const [externalStorageStatus, setExternalStorageStatus] = useState<ExternalStorageStatus>("browser");
   const [externalStorageMessage, setExternalStorageMessage] = useState("");
+  const [externalLocationDraft, setExternalLocationDraft] = useState("");
   const [isExternalSyncing, setIsExternalSyncing] = useState(false);
   const [promptStateReady, setPromptStateReady] = useState(false);
   const [previewPan, setPreviewPan] = useState<PanPoint>({ x: 0, y: 0 });
@@ -269,7 +318,7 @@ export default function Home() {
   useEffect(() => {
     return () => {
       assetsRef.current.forEach((asset) => {
-        URL.revokeObjectURL(asset.url);
+        if (asset.kind !== "link") URL.revokeObjectURL(asset.url);
         if (asset.thumbnailUrl) URL.revokeObjectURL(asset.thumbnailUrl);
       });
     };
@@ -332,7 +381,7 @@ export default function Home() {
     const canvas = viewerCanvasRef.current;
     if (!canvas || !previewOpen) return;
     const onWheel = (event: WheelEvent) => {
-      if (!event.ctrlKey || selected?.kind === "text" || selected?.kind === "audio") return;
+      if (!event.ctrlKey || selected?.kind === "text" || selected?.kind === "audio" || selected?.kind === "link") return;
       event.preventDefault();
       event.stopPropagation();
       setViewerZoom((value) => Math.min(400, Math.max(25, value + (event.deltaY < 0 ? 10 : -10))));
@@ -342,6 +391,10 @@ export default function Home() {
   }, [previewOpen, selectedId, selected?.kind]);
 
   const openPreview = () => {
+    if (selected?.kind === "link") {
+      if (selected.linkUrl) window.open(selected.linkUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
     setViewerZoom(100);
     setViewerPan({ x: 0, y: 0 });
     setPreviewOpen(true);
@@ -405,6 +458,7 @@ export default function Home() {
     if ("category" in values) persistentValues.category = values.category;
     if ("collection" in values && values.collection) persistentValues.collection = values.collection;
     if ("textContent" in values) persistentValues.textContent = values.textContent;
+    if ("linkUrl" in values) persistentValues.linkUrl = values.linkUrl;
     if ("size" in values) persistentValues.size = values.size;
     if ("width" in values) persistentValues.width = values.width;
     if ("height" in values) persistentValues.height = values.height;
@@ -418,6 +472,10 @@ export default function Home() {
   }, []);
 
   const readMetadata = useCallback((asset: MediaAsset) => {
+    if (asset.kind === "link") {
+      updateAsset(asset.id, { status: asset.linkUrl ? "ready" : "unsupported" });
+      return;
+    }
     if (asset.kind === "text") {
       if (asset.textContent !== undefined) {
         updateAsset(asset.id, { status: "ready" });
@@ -565,13 +623,14 @@ export default function Home() {
           return {
             id: record.id,
             file,
-            url: URL.createObjectURL(file),
+            url: record.kind === "link" ? record.linkUrl ?? "" : URL.createObjectURL(file),
             name: record.name,
             kind: record.kind,
             extension: record.extension,
             mime: record.mime,
             size: record.size,
             textContent: record.textContent,
+            linkUrl: record.linkUrl,
             width: record.width,
             height: record.height,
             duration: record.duration,
@@ -636,6 +695,7 @@ export default function Home() {
         if (!active || !record) return;
         externalDirectoryRef.current = record;
         setExternalDirectory(record);
+        setExternalLocationDraft(record.locationLabel ?? externalDirectoryDefaultLabel(record.name));
         const granted = await verifyExternalDirectoryPermission(record.handle, false);
         if (!active) return;
         if (granted) {
@@ -644,7 +704,7 @@ export default function Home() {
           if (externalWorkspace && record.lastSyncedAt && externalWorkspace.updatedAt > record.lastSyncedAt) {
             const result = await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
             setExternalStorageMessage(`已从外部目录合并 ${result.imported} 个素材，本机已有素材保留`);
-            await saveStoredExternalDirectory(record.handle, externalWorkspace.updatedAt);
+            await saveStoredExternalDirectory(record.handle, externalWorkspace.updatedAt, record.locationLabel);
             window.location.reload();
             return;
           }
@@ -652,7 +712,8 @@ export default function Home() {
         const status: ExternalStorageStatus = granted ? "connected" : "permission";
         externalStatusRef.current = status;
         setExternalStorageStatus(status);
-        setExternalStorageMessage(granted ? `已连接：${record.name}` : `需要重新授权：${record.name}`);
+        const locationLabel = record.locationLabel ?? externalDirectoryDefaultLabel(record.name);
+        setExternalStorageMessage(granted ? `已连接：${locationLabel}` : `需要重新授权：${locationLabel}`);
       })
       .catch(() => {
         if (!active) return;
@@ -692,12 +753,12 @@ export default function Home() {
         lastResult = await syncExternalWorkspace(directory.handle, snapshot.records, snapshot.promptState);
       }
       const nextDirectory = { ...directory, lastSyncedAt: lastResult.updatedAt, updatedAt: Date.now() };
-      await saveStoredExternalDirectory(directory.handle, lastResult.updatedAt);
+      await saveStoredExternalDirectory(directory.handle, lastResult.updatedAt, directory.locationLabel);
       externalDirectoryRef.current = nextDirectory;
       setExternalDirectory(nextDirectory);
       setExternalStorageMessage(manual
         ? `同步完成：写入 ${lastResult.written} 个，复用 ${lastResult.reused} 个`
-        : `已同步：${directory.name}`);
+        : `已同步：${directory.locationLabel ?? externalDirectoryDefaultLabel(directory.name)}`);
     } catch (error) {
       externalStatusRef.current = "error";
       setExternalStorageStatus("error");
@@ -724,13 +785,14 @@ export default function Home() {
     try {
       const handle = existingHandle ?? await chooseExternalDirectory();
       if (!await verifyExternalDirectoryPermission(handle, true)) throw new Error("未获得该文件夹的读写权限");
+      const locationLabel = previousDirectory?.locationLabel ?? externalDirectoryDefaultLabel(handle.name);
       if (existingHandle) {
         const externalWorkspace = await readExternalWorkspace(handle);
         if (externalWorkspace && previousDirectory?.lastSyncedAt && externalWorkspace.updatedAt > previousDirectory.lastSyncedAt) {
           setExternalStorageMessage(`检测到“${handle.name}”在其他设备上有更新，正在载入…`);
           const result = await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
           setExternalStorageMessage(`已从外部目录合并 ${result.imported} 个素材，本机已有素材保留`);
-          await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt);
+          await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt, locationLabel);
           window.location.reload();
           return;
         }
@@ -741,13 +803,15 @@ export default function Home() {
           id: "external-directory",
           handle,
           name: handle.name,
+          locationLabel,
           lastSyncedAt: result.updatedAt,
           updatedAt: Date.now(),
         };
-        await saveStoredExternalDirectory(handle, result.updatedAt);
+        await saveStoredExternalDirectory(handle, result.updatedAt, locationLabel);
         externalDirectoryRef.current = record;
         externalStatusRef.current = "connected";
         setExternalDirectory(record);
+        setExternalLocationDraft(locationLabel);
         setExternalStorageStatus("connected");
         setExternalStorageMessage(`重新连接完成：写入 ${result.written} 个，清理 ${result.removed} 个`);
         return;
@@ -756,7 +820,7 @@ export default function Home() {
       if (externalWorkspace) {
         setExternalStorageMessage(`正在读取“${handle.name}”中的 ${externalWorkspace.records.length} 个素材…`);
         await restoreStoredWorkspace(externalWorkspace.records, externalWorkspace.promptState, "merge");
-        await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt);
+        await saveStoredExternalDirectory(handle, externalWorkspace.updatedAt, locationLabel);
         window.location.reload();
         return;
       }
@@ -768,13 +832,15 @@ export default function Home() {
         id: "external-directory",
         handle,
         name: handle.name,
+        locationLabel,
         lastSyncedAt: result.updatedAt,
         updatedAt: Date.now(),
       };
-      await saveStoredExternalDirectory(handle, result.updatedAt);
+      await saveStoredExternalDirectory(handle, result.updatedAt, locationLabel);
       externalDirectoryRef.current = record;
       externalStatusRef.current = "connected";
       setExternalDirectory(record);
+      setExternalLocationDraft(locationLabel);
       setExternalStorageStatus("connected");
       setExternalStorageMessage(`目录已启用：写入 ${result.written} 个素材，浏览器副本已保留`);
     } catch (error) {
@@ -783,7 +849,7 @@ export default function Home() {
         externalStatusRef.current = previousStatus;
         setExternalDirectory(previousDirectory);
         setExternalStorageStatus(previousStatus);
-        setExternalStorageMessage(previousDirectory ? `仍使用：${previousDirectory.name}` : "已取消选择，继续使用浏览器本地存储");
+        setExternalStorageMessage(previousDirectory ? `仍使用：${previousDirectory.locationLabel ?? externalDirectoryDefaultLabel(previousDirectory.name)}` : "已取消选择，继续使用浏览器本地存储");
         return;
       }
       externalStatusRef.current = previousDirectory ? "error" : "browser";
@@ -800,9 +866,26 @@ export default function Home() {
       externalSyncDirtyRef.current = false;
       setExternalDirectory(null);
       setExternalStorageStatus("browser");
+      setExternalLocationDraft("");
       setExternalStorageMessage("已停止同步，外部目录中的文件未删除");
     } catch {
       setExternalStorageMessage("无法停用外部目录，请重试");
+    }
+  };
+
+  const saveExternalLocationLabel = async () => {
+    const directory = externalDirectoryRef.current;
+    if (!directory) return;
+    const locationLabel = externalLocationDraft.trim().slice(0, 60) || externalDirectoryDefaultLabel(directory.name);
+    const nextDirectory = { ...directory, locationLabel, updatedAt: Date.now() };
+    try {
+      await saveStoredExternalDirectory(directory.handle, directory.lastSyncedAt, locationLabel);
+      externalDirectoryRef.current = nextDirectory;
+      setExternalDirectory(nextDirectory);
+      setExternalLocationDraft(locationLabel);
+      setExternalStorageMessage(`同步位置已标记为：${locationLabel}`);
+    } catch {
+      setExternalStorageMessage("同步位置标记保存失败，请重试");
     }
   };
 
@@ -815,7 +898,7 @@ export default function Home() {
     let skipped = 0;
     Array.from(files).forEach((file) => {
       const kind = inferKind(file);
-      const typedFilter = filter === "image" || filter === "video" || filter === "audio" || filter === "text" ? filter : null;
+      const typedFilter = filter === "image" || filter === "video" || filter === "audio" || filter === "text" || filter === "link" ? filter : null;
       if (!kind || (typedFilter && kind !== typedFilter)) {
         skipped += 1;
         return;
@@ -900,6 +983,51 @@ export default function Home() {
       .catch(() => setNotice("文本保存失败，请检查浏览器存储空间"));
   };
 
+  const addLinkAsset = () => {
+    const linkUrl = normalizeLinkUrl(linkUrlDraft);
+    if (!linkUrl) {
+      setNotice("请输入有效的 http 或 https 链接");
+      window.setTimeout(() => setNotice(""), 2400);
+      return;
+    }
+    const activeCategory = filter.startsWith("category:")
+      ? filter.slice("category:".length)
+      : DEFAULT_ASSET_CATEGORY;
+    const activeCollection: AssetCollection = filter.startsWith("category:") ? "category" : "library";
+    const name = linkTitleDraft.trim() || linkHost(linkUrl);
+    const shortcut = linkShortcut(linkUrl);
+    const file = new File([shortcut], `${name}.url`, { type: "text/uri-list" });
+    const asset: MediaAsset = {
+      id: crypto.randomUUID(),
+      file,
+      url: linkUrl,
+      name,
+      kind: "link",
+      extension: "LINK",
+      mime: file.type,
+      size: file.size,
+      textContent: "",
+      linkUrl,
+      status: "ready",
+      prompt: "",
+      category: activeCategory,
+      collection: activeCollection,
+      createdAt: Date.now(),
+    };
+    setAssets((current) => [asset, ...current]);
+    setQuery("");
+    setSelectedId(asset.id);
+    setLinkTitleDraft("");
+    setLinkUrlDraft("");
+    setIsAddingLink(false);
+    setNotice(activeCategory === DEFAULT_ASSET_CATEGORY
+      ? "已添加链接素材"
+      : `已添加链接素材到“${activeCategory}”`);
+    window.setTimeout(() => setNotice(""), 1800);
+    void saveStoredAsset(toStoredRecord(asset))
+      .catch(() => setNotice("链接保存失败，请检查浏览器存储空间"));
+  };
+
   const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) addFiles(event.target.files);
     event.target.value = "";
@@ -915,7 +1043,7 @@ export default function Home() {
     setAssets((current) => {
       const target = current.find((asset) => asset.id === id);
       if (target) {
-        URL.revokeObjectURL(target.url);
+        if (target.kind !== "link") URL.revokeObjectURL(target.url);
         if (target.thumbnailUrl) URL.revokeObjectURL(target.thumbnailUrl);
       }
       const remaining = current.filter((asset) => asset.id !== id);
@@ -1109,6 +1237,7 @@ export default function Home() {
         || asset.name.toLowerCase().includes(keyword)
         || asset.extension.toLowerCase().includes(keyword)
         || asset.category.toLowerCase().includes(keyword)
+        || (asset.linkUrl ?? "").toLowerCase().includes(keyword)
         || (asset.textContent ?? "").toLowerCase().includes(keyword);
       return matchesLocation && matchesQuery;
     });
@@ -1134,10 +1263,12 @@ export default function Home() {
   const videoCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "video").length;
   const audioCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "audio").length;
   const textCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "text").length;
+  const linkCount = assets.filter((asset) => asset.collection === "library" && asset.kind === "link").length;
   const isGlobalAssetSearch = filter === "all" && query.trim().length > 0;
   const isCategoryFilter = filter.startsWith("category:");
-  const showFileImport = filter !== "text";
+  const showFileImport = filter !== "text" && filter !== "link";
   const showTextCreator = filter === "all" || filter === "text" || isCategoryFilter;
+  const showLinkCreator = filter === "all" || filter === "link" || isCategoryFilter;
   const importLabel = filter === "video" ? "添加视频" : filter === "audio" ? "添加音频" : filter === "image" ? "添加图片" : "添加";
   const importTileLabel = filter === "video" ? "导入视频素材" : filter === "audio" ? "导入音频素材" : filter === "image" ? "导入图片素材" : "导入新素材";
   const importTileHint = filter === "video"
@@ -1293,6 +1424,10 @@ export default function Home() {
                   <span><i className="nav-symbol text-symbol" />文本</span>
                   <b>{textCount}</b>
                 </button>
+                <button className={filter === "link" ? "active" : ""} onClick={() => setFilter("link")}>
+                  <span><i className="nav-symbol link-symbol" />链接</span>
+                  <b>{linkCount}</b>
+                </button>
               </nav>
 
               <div className="side-divider" />
@@ -1405,7 +1540,7 @@ export default function Home() {
               <div className="side-divider compact-divider" />
               <div className="side-group-label">格式索引</div>
               <div className="format-index">
-                <span>MP4</span><span>MOV</span><span>MP3</span><span>WAV</span><span>M4A</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span><span>TXT</span><span>MD</span>
+                <span>MP4</span><span>MOV</span><span>MP3</span><span>WAV</span><span>M4A</span><span>PNG</span><span>JPG</span><span>WEBM</span><span>HEIC</span><span>TXT</span><span>MD</span><span>URL</span>
               </div>
             </>
           ) : (
@@ -1449,7 +1584,7 @@ export default function Home() {
             {isLocalStatusExpanded && (
               <div className="privacy-note-details" id="local-persistence-details">
               <p>{externalDirectory
-                ? externalStorageMessage || `素材正在同步到“${externalDirectory.name}”，浏览器副本保留用于回退。`
+                ? externalStorageMessage || `素材正在同步到“${externalDirectory.locationLabel ?? externalDirectoryDefaultLabel(externalDirectory.name)}”，浏览器副本保留用于回退。`
                 : workspaceMode === "assets"
                   ? externalStorageMessage || "素材与提示词保存在浏览器本机，也可以选择硬盘或 U 盘目录同步。"
                   : "共 24 类、1,920 条本地整理模板，可离线搜索和复制。"}</p>
@@ -1476,7 +1611,25 @@ export default function Home() {
                       </>
                     )}
                   </div>
-                  {externalDirectory && <small className="external-directory-name" title={externalDirectory.name}>目录 · {externalDirectory.name}</small>}
+                  {externalDirectory && (
+                    <>
+                      <label className="external-location-row">
+                        <span>同步位置</span>
+                        <input
+                          value={externalLocationDraft}
+                          maxLength={60}
+                          placeholder="例如：F盘素材库"
+                          aria-label="外部素材同步位置标记"
+                          onChange={(event) => setExternalLocationDraft(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") void saveExternalLocationLabel();
+                          }}
+                        />
+                        <button onClick={() => void saveExternalLocationLabel()}>保存</button>
+                      </label>
+                      <small className="external-directory-name" title={externalDirectory.name}>浏览器目录 · {externalDirectoryDefaultLabel(externalDirectory.name)}</small>
+                    </>
+                  )}
                 </>
               )}
               </div>
@@ -1523,6 +1676,11 @@ export default function Home() {
                   <span aria-hidden="true">¶</span> {filter === "text" ? "新建文本" : "文本"}
                 </button>
               )}
+              {showLinkCreator && (
+                <button className="text-add-button" onClick={() => setIsAddingLink(true)}>
+                  <span aria-hidden="true">↗</span> {filter === "link" ? "添加链接" : "链接"}
+                </button>
+              )}
               <input
                 ref={inputRef}
                 className="visually-hidden"
@@ -1551,6 +1709,14 @@ export default function Home() {
               </button>
             )}
 
+            {showLinkCreator && (
+              <button className="upload-tile link-create-tile" onClick={() => setIsAddingLink(true)}>
+                <span className="upload-tile-icon">↗</span>
+                <strong>添加链接素材</strong>
+                <small>URL / WEBSITE · SAVED LOCALLY</small>
+              </button>
+            )}
+
             {visibleAssets.map((asset, index) => (
               <article
                 key={asset.id}
@@ -1568,6 +1734,8 @@ export default function Home() {
                       <span>TEXT NOTE</span>
                       <p>{asset.textContent || "空白文本"}</p>
                     </div>
+                  ) : asset.kind === "link" ? (
+                    <LinkArtwork url={asset.linkUrl} compact />
                   ) : asset.kind === "audio" ? (
                     <AudioArtwork compact />
                   ) : asset.kind === "image" ? (
@@ -1592,7 +1760,7 @@ export default function Home() {
                   )}
                   <div className="frame-corners" aria-hidden="true"><i /><i /><i /><i /></div>
                   <span className="asset-index">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : asset.kind === "audio" ? "AUDIO" : asset.kind === "image" ? "IMAGE" : "TEXT"}</span>
+                  <span className="type-badge">{asset.kind === "video" ? "VIDEO" : asset.kind === "audio" ? "AUDIO" : asset.kind === "image" ? "IMAGE" : asset.kind === "link" ? "LINK" : "TEXT"}</span>
                   {asset.kind === "video" && <span className="play-badge">▶</span>}
                   <button
                     className="remove-button"
@@ -1608,15 +1776,15 @@ export default function Home() {
                   )}
                   <div>
                     <span>{asset.extension}</span>
-                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "audio" ? "音频素材" : asset.status === "unsupported" ? "格式不支持" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
+                    <span>{asset.kind === "text" ? `${(asset.textContent ?? "").length} 字符` : asset.kind === "link" ? linkHost(asset.linkUrl) : asset.kind === "audio" ? "音频素材" : asset.status === "unsupported" ? "格式不支持" : asset.width && asset.height ? `${asset.width} × ${asset.height}` : "识别中"}</span>
                     {(asset.kind === "video" || asset.kind === "audio") && <span>{formatDuration(asset.duration)}</span>}
                   </div>
                 </div>
                 <div className="asset-card-footer">
-                  <span>{asset.kind === "text" ? "纯文本" : asset.kind === "audio" ? "声音" : ratioLabel(asset.width, asset.height)}</span>
+                  <span>{asset.kind === "text" ? "纯文本" : asset.kind === "link" ? "网页链接" : asset.kind === "audio" ? "声音" : ratioLabel(asset.width, asset.height)}</span>
                   <i />
                   <span>{formatBytes(asset.size)}</span>
-                  <b>{asset.kind === "text" ? `${(asset.textContent ?? "").split(/\r?\n/).length} 行` : asset.kind === "audio" ? formatDuration(asset.duration) : orientationLabel(asset.width, asset.height)}</b>
+                  <b>{asset.kind === "text" ? `${(asset.textContent ?? "").split(/\r?\n/).length} 行` : asset.kind === "link" ? "跳转 ↗" : asset.kind === "audio" ? formatDuration(asset.duration) : orientationLabel(asset.width, asset.height)}</b>
                 </div>
               </article>
             ))}
@@ -1634,7 +1802,7 @@ export default function Home() {
             <div className="empty-library">
               <div className="empty-orbit"><i /><i /><span>＋</span></div>
               <strong>把素材放进矩阵</strong>
-              <p>导入图片、视频或音频，也可以直接新建文本素材。</p>
+              <p>导入图片、视频或音频，也可以直接新建文本或链接素材。</p>
             </div>
           )}
 
@@ -1768,13 +1936,13 @@ export default function Home() {
               </label>
 
               <div className="module-heading preview-module-heading">
-                <span>{selected.kind === "text" ? "文本内容" : selected.kind === "audio" ? "音频试听" : "画面预览"}</span>
-                <div><b>{selected.extension}</b><button onClick={openPreview}>{selected.kind === "text" ? "展开" : selected.kind === "audio" ? "试听" : "预览"} ↗</button></div>
+                <span>{selected.kind === "text" ? "文本内容" : selected.kind === "link" ? "链接信息" : selected.kind === "audio" ? "音频试听" : "画面预览"}</span>
+                <div><b>{selected.extension}</b><button onClick={openPreview}>{selected.kind === "text" ? "展开" : selected.kind === "link" ? "跳转" : selected.kind === "audio" ? "试听" : "预览"} ↗</button></div>
               </div>
               <div
                 ref={previewStageRef}
                 className={`preview-stage ${selected.kind} ${selected.kind === "image" && zoom > 100 ? "can-pan" : ""} ${isPreviewPanning ? "panning" : ""}`}
-                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : selected.kind === "audio" ? "音频试听" : "视频预览"}
+                title={selected.kind === "image" ? "Ctrl + 滚轮缩放；放大后按住鼠标拖动画面" : selected.kind === "text" ? "文本会自动保存到本机" : selected.kind === "link" ? "打开外部链接" : selected.kind === "audio" ? "音频试听" : "视频预览"}
                 onPointerDown={(event) => beginPan(event, "preview")}
                 onPointerMove={(event) => movePan(event, "preview")}
                 onPointerUp={(event) => endPan(event, "preview")}
@@ -1792,6 +1960,10 @@ export default function Home() {
                     aria-label="文本素材内容"
                     spellCheck={false}
                   />
+                ) : selected.kind === "link" ? (
+                  <button className="link-preview-button" onClick={openPreview} aria-label={`跳转到 ${selected.name}`}>
+                    <LinkArtwork url={selected.linkUrl} />
+                  </button>
                 ) : selected.kind === "audio" ? (
                   <div className="audio-preview-player">
                     <AudioArtwork />
@@ -1833,6 +2005,11 @@ export default function Home() {
                   <button onClick={copySelectedText}>复制文本</button>
                   <a href={`data:text/plain;charset=utf-8,${encodeURIComponent(selected.textContent ?? "")}`} download={selected.name} aria-label="下载文本素材">↓ 下载</a>
                 </div>
+              ) : selected.kind === "link" ? (
+                <div className="preview-controls link-preview-controls">
+                  <span className="wheel-hint">链接将在新窗口中打开</span>
+                  <button onClick={openPreview}>跳转链接 ↗</button>
+                </div>
               ) : selected.kind === "audio" ? (
                 <div className="preview-controls audio-preview-controls">
                   <span className="wheel-hint">音频时长 {formatDuration(selected.duration)}</span>
@@ -1855,11 +2032,34 @@ export default function Home() {
 
               <div className="module-heading"><span>参数信息</span><b>METADATA</b></div>
               <div className="metadata-grid">
-                <div><span>{selected.kind === "text" ? "字符数量" : selected.kind === "audio" ? "音频格式" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "audio" ? selected.extension : selected.status === "unsupported" ? "格式不支持" : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
-                <div><span>{selected.kind === "text" ? "文本行数" : selected.kind === "audio" ? "读取状态" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : selected.kind === "audio" ? selected.status === "ready" ? "可播放" : selected.status === "unsupported" ? "格式不支持" : "识别中" : resolutionLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "text" ? "字符数量" : selected.kind === "link" ? "链接域名" : selected.kind === "audio" ? "音频格式" : "分辨率"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").length} 字符` : selected.kind === "link" ? linkHost(selected.linkUrl) : selected.kind === "audio" ? selected.extension : selected.status === "unsupported" ? "格式不支持" : selected.width && selected.height ? `${selected.width} × ${selected.height}` : "识别中"}</strong></div>
+                <div><span>{selected.kind === "text" ? "文本行数" : selected.kind === "link" ? "链接协议" : selected.kind === "audio" ? "读取状态" : "画质等级"}</span><strong>{selected.kind === "text" ? `${(selected.textContent ?? "").split(/\r?\n/).length} 行` : selected.kind === "link" ? selected.linkUrl?.startsWith("https://") ? "HTTPS" : "HTTP" : selected.kind === "audio" ? selected.status === "ready" ? "可播放" : selected.status === "unsupported" ? "格式不支持" : "识别中" : resolutionLabel(selected.width, selected.height)}</strong></div>
                 <div><span>文件大小</span><strong>{formatBytes(selected.size)}</strong></div>
-                <div><span>{selected.kind === "video" || selected.kind === "audio" ? "素材时长" : selected.kind === "text" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" || selected.kind === "audio" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : orientationLabel(selected.width, selected.height)}</strong></div>
+                <div><span>{selected.kind === "video" || selected.kind === "audio" ? "素材时长" : selected.kind === "text" || selected.kind === "link" ? "素材类型" : "画面方向"}</span><strong>{selected.kind === "video" || selected.kind === "audio" ? formatDuration(selected.duration) : selected.kind === "text" ? "纯文本" : selected.kind === "link" ? "网页链接" : orientationLabel(selected.width, selected.height)}</strong></div>
               </div>
+
+              {selected.kind === "link" && (
+                <>
+                  <div className="module-heading prompt-heading"><span>链接描述</span><b>DESCRIPTION</b></div>
+                  <div className="prompt-section link-description-section">
+                    <textarea
+                      value={selected.textContent ?? ""}
+                      onChange={(event) => updateAsset(selected.id, {
+                        textContent: event.target.value,
+                        size: new Blob([linkShortcut(selected.linkUrl ?? "")]).size,
+                      })}
+                      placeholder="在这里记录链接用途、内容说明或使用备注…"
+                      aria-label="链接描述信息"
+                      spellCheck={false}
+                    />
+                    <div className="prompt-footer">
+                      <span>自动保存到本机</span>
+                      <strong>{(selected.textContent ?? "").length} 字符</strong>
+                      <i>LINK</i>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {(selected.kind === "image" || selected.kind === "video") && (
                 <>
@@ -2214,6 +2414,54 @@ export default function Home() {
               <small>Ctrl + Enter 快速保存</small>
               <button onClick={() => setIsAddingText(false)}>取消</button>
               <button className="primary" disabled={!textContentDraft.trim()} onClick={addTextAsset}>保存文本</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAddingLink && (
+        <div
+          className="text-create-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="添加链接素材"
+          onClick={() => setIsAddingLink(false)}
+        >
+          <div className="text-create-dialog link-create-dialog" onClick={(event) => event.stopPropagation()}>
+            <div className="text-create-heading">
+              <div><span>NEW LINK ASSET</span><h3>添加链接素材</h3></div>
+              <button onClick={() => setIsAddingLink(false)} aria-label="关闭添加链接窗口">×</button>
+            </div>
+            <label>
+              <span>链接名称</span>
+              <input
+                autoFocus
+                value={linkTitleDraft}
+                maxLength={80}
+                placeholder="例如：项目主页、参考资料"
+                onChange={(event) => setLinkTitleDraft(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>链接地址</span>
+              <input
+                value={linkUrlDraft}
+                inputMode="url"
+                placeholder="https://example.com"
+                onChange={(event) => setLinkUrlDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") addLinkAsset();
+                }}
+              />
+            </label>
+            <div className="text-create-meta">
+              <span>保存到：{filter.startsWith("category:") ? filter.slice("category:".length) : "素材库根目录"}</span>
+              <b>{normalizeLinkUrl(linkUrlDraft) ? "链接有效" : "等待有效网址"}</b>
+            </div>
+            <div className="text-create-actions">
+              <small>Ctrl + Enter 快速保存</small>
+              <button onClick={() => setIsAddingLink(false)}>取消</button>
+              <button className="primary" disabled={!normalizeLinkUrl(linkUrlDraft)} onClick={addLinkAsset}>保存链接</button>
             </div>
           </div>
         </div>

@@ -53,7 +53,7 @@ const INDEX_FILE = "frame-vault-library.json";
 const README_FILE = "README-请勿手动修改.txt";
 const INDEX_FORMAT = "frame-vault-directory";
 const INDEX_VERSION = 1;
-const ASSET_KINDS = ["image", "video", "audio", "text"] as const;
+const ASSET_KINDS = ["image", "video", "audio", "text", "link"] as const;
 
 function externalError(message: string): Error {
   return new Error(`外部素材目录错误：${message}`);
@@ -124,6 +124,7 @@ async function readIndex(root: VaultDirectoryHandle): Promise<ExternalVaultIndex
     if (typeof asset.path !== "string" || !asset.path.startsWith("media/") || asset.path.includes("..")) throw externalError("素材路径无效");
     if (!ASSET_KINDS.includes(asset.kind)) throw externalError("素材类型无效");
     if (typeof asset.name !== "string" || typeof asset.extension !== "string" || typeof asset.mime !== "string") throw externalError("素材信息不完整");
+    if (asset.kind === "link" && (typeof asset.linkUrl !== "string" || !asset.linkUrl)) throw externalError("链接地址缺失");
     if (!Number.isSafeInteger(asset.size) || asset.size < 0) throw externalError("素材大小无效");
     ids.add(asset.id);
   }
@@ -210,9 +211,11 @@ export async function syncExternalWorkspace(
     const previousAsset = previousById.get(record.id);
     const payload = record.kind === "text"
       ? new Blob([record.textContent ?? ""], { type: record.mime || "text/plain;charset=utf-8" })
-      : record.file;
+      : record.kind === "link"
+        ? new Blob([`[InternetShortcut]\r\nURL=${record.linkUrl ?? ""}\r\n`], { type: record.mime || "text/uri-list" })
+        : record.file;
     const normalizedSize = payload.size;
-    let shouldWrite = record.kind === "text" || previousAsset?.path !== path || previousAsset?.size !== normalizedSize;
+    let shouldWrite = record.kind === "text" || record.kind === "link" || previousAsset?.path !== path || previousAsset?.size !== normalizedSize;
     if (!shouldWrite) {
       try {
         const existing = await (await getFileAtPath(root, path)).getFile();
@@ -257,7 +260,7 @@ export async function syncExternalWorkspace(
     if (!isNotFound(error)) throw error;
     const help = [
       "这是 Frame Vault 外部素材目录。",
-      "media 文件夹保存源素材，frame-vault-library.json 保存名称、类目和提示词等索引。",
+      "media 文件夹保存源素材与链接快捷方式，frame-vault-library.json 保存名称、类目、链接描述和提示词等索引。",
       "请优先在 Frame Vault 中修改或删除素材，不要手动编辑索引文件。",
       "移动硬盘或 U 盘写入过程中请勿拔出。",
     ].join("\r\n");
