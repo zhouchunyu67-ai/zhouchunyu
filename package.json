@@ -1,7 +1,7 @@
 {
   "name": "media-desk",
   "version": "0.1.0",
-  "description": "二次元风格的离线本地素材管理平台，支持多媒体识别、分类预览与整库迁移。",
+  "description": "离线优先的本地创作素材工作台，支持图片、视频、音频、文本和链接管理、New.bi AI 生成、外部目录同步与加密跨电脑迁移。",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -10,7 +10,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
-    "test": "npm run build && node --experimental-strip-types --test tests/rendered-html.test.mjs tests/backup.test.mjs tests/external-storage.test.mjs",
+    "test": "npm run build && node --experimental-strip-types --test tests/rendered-html.test.mjs tests/backup.test.mjs tests/external-storage.test.mjs tests/newbi.test.mjs tests/migration.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate"
   },

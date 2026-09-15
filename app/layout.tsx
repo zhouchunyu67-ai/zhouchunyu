@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Frame Vault · 本地素材终端",
-  description: "本地离线识别、预览和整理图片、视频、音频与文本素材。",
+  description: "离线优先的本地创作素材工作台，支持多媒体整理、New.bi AI 生成、外部目录同步和加密跨电脑迁移。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

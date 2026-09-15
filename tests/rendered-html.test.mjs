@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${pathname}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -40,6 +40,17 @@ test("server-renders the local material library with all five asset types", asyn
   assert.match(html, /添加链接素材/);
   assert.match(html, /IMAGE \/ VIDEO \/ AUDIO \/ TEXT · DROP HERE/);
   assert.match(html, /accept="[^"]*audio\/\*[^"]*\.mp3[^"]*\.wav[^"]*"/i);
+});
+
+test("server-renders the dedicated AI creation workspace", async () => {
+  const response = await render("/ai");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /生成工作台/);
+  assert.match(html, /引用素材库/);
+  assert.match(html, /Seedance 2\.0/);
+  assert.match(html, /画幅比例/);
+  assert.match(html, /返回素材库/);
 });
 
 test("keeps material persistence and audio handling in the local application", async () => {

@@ -2,6 +2,7 @@
 
 import {
   ChangeEvent,
+  type CSSProperties,
   DragEvent,
   PointerEvent as ReactPointerEvent,
   useCallback,
@@ -12,10 +13,26 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import {
+  AiRequestError,
+  createAiGeneration,
+  downloadAiAsset,
+  loadAiConfig,
+  queryAiGeneration,
+  type AiConfig,
+  type AiGeneratedAsset,
+  type AiGeneration,
+  type AiModelId,
+} from "./ai";
+import {
   createFrameVaultBackup,
   parseFrameVaultBackup,
   type ParsedFrameVaultBackup,
 } from "./backup";
+import {
+  createEncryptedMigrationPackage,
+  parseEncryptedMigrationPackage,
+  type ParsedMigrationPackage,
+} from "./migration";
 import {
   chooseExternalDirectory,
   readExternalWorkspace,
@@ -53,9 +70,24 @@ type Filter = "all" | AssetKind | `category:${string}`;
 type WorkspaceMode = "assets" | "prompts";
 type PromptScope = "category" | "favorites" | "recent";
 type BackupDialogMode = "export" | "restore" | null;
+type MigrationDialogMode = "export" | "import" | null;
 type ExternalStorageStatus = "browser" | "connecting" | "connected" | "permission" | "error";
 type PanPoint = { x: number; y: number };
 type PanDrag = PanPoint & { panX: number; panY: number };
+
+const AI_MODEL_OPTIONS: Array<{
+  id: AiModelId;
+  label: string;
+  family: string;
+  kind: "image" | "video";
+  detail: string;
+  accent: string;
+}> = [
+  { id: "gpt-image-2", label: "GPT Image 2", family: "OPENAI IMAGE", kind: "image", detail: "最高 4K · 按次生成", accent: "#f18eae" },
+  { id: "seedream-5", label: "Seedream 5.0", family: "DOUBAO IMAGE", kind: "image", detail: "高质感图片 · 按量计费", accent: "#8e9cff" },
+  { id: "minimax-h3", label: "MiniMax H3", family: "MINIMAX VIDEO", kind: "video", detail: "768P · 5–15 秒", accent: "#70cabb" },
+  { id: "seedance-2", label: "Seedance 2.0", family: "DOUBAO VIDEO", kind: "video", detail: "720P · 4–15 秒", accent: "#f1c46f" },
+];
 
 type MediaAsset = {
   id: string;
@@ -279,6 +311,16 @@ export default function Home() {
   const [backupFailure, setBackupFailure] = useState("");
   const [isBackupWorking, setIsBackupWorking] = useState(false);
   const [replaceConfirmed, setReplaceConfirmed] = useState(false);
+  const [migrationDialogMode, setMigrationDialogMode] = useState<MigrationDialogMode>(null);
+  const [migrationPassword, setMigrationPassword] = useState("");
+  const [migrationPasswordConfirm, setMigrationPasswordConfirm] = useState("");
+  const [migrationDevVars, setMigrationDevVars] = useState("");
+  const [migrationCandidate, setMigrationCandidate] = useState<ParsedMigrationPackage | null>(null);
+  const [migrationCandidateName, setMigrationCandidateName] = useState("");
+  const [migrationMessage, setMigrationMessage] = useState("");
+  const [migrationFailure, setMigrationFailure] = useState("");
+  const [isMigrationWorking, setIsMigrationWorking] = useState(false);
+  const migrationInputRef = useRef<HTMLInputElement>(null);
   const [isLocalStatusExpanded, setIsLocalStatusExpanded] = useState(false);
   const [externalDirectory, setExternalDirectory] = useState<StoredExternalDirectory | null>(null);
   const [externalStorageStatus, setExternalStorageStatus] = useState<ExternalStorageStatus>("browser");
@@ -290,6 +332,24 @@ export default function Home() {
   const [viewerPan, setViewerPan] = useState<PanPoint>({ x: 0, y: 0 });
   const [isPreviewPanning, setIsPreviewPanning] = useState(false);
   const [isViewerPanning, setIsViewerPanning] = useState(false);
+  const [isAiStudioOpen, setIsAiStudioOpen] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AiConfig | null>(null);
+  const [aiModel, setAiModel] = useState<AiModelId>("gpt-image-2");
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiImageSize, setAiImageSize] = useState("1024x1024");
+  const [aiImageQuality, setAiImageQuality] = useState("medium");
+  const [aiVideoDuration, setAiVideoDuration] = useState(5);
+  const [aiVideoRatio, setAiVideoRatio] = useState("16:9");
+  const [aiGenerateAudio, setAiGenerateAudio] = useState(true);
+  const [aiAccessToken, setAiAccessToken] = useState("");
+  const [aiGeneration, setAiGeneration] = useState<AiGeneration | null>(null);
+  const [aiSubmittedPrompt, setAiSubmittedPrompt] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiConfigLoading, setAiConfigLoading] = useState(false);
+  const [aiPollingPaused, setAiPollingPaused] = useState(false);
+  const [aiPollAttempt, setAiPollAttempt] = useState(0);
+  const [aiMessage, setAiMessage] = useState("");
+  const [aiError, setAiError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
   const previewStageRef = useRef<HTMLDivElement>(null);
@@ -363,6 +423,15 @@ export default function Home() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isCategoryBrowserOpen]);
+
+  useEffect(() => {
+    if (!isAiStudioOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !aiBusy) setIsAiStudioOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [aiBusy, isAiStudioOpen]);
 
   useEffect(() => {
     const preview = previewStageRef.current;
@@ -943,6 +1012,171 @@ export default function Home() {
     }
   }, [filter, readMetadata]);
 
+  const openAiStudio = async () => {
+    const preferredModel: AiModelId = selected?.kind === "video" || filter === "video" ? "minimax-h3" : "gpt-image-2";
+    const savedToken = window.sessionStorage.getItem("frame-vault-ai-access-token");
+    if (!aiAccessToken && savedToken) setAiAccessToken(savedToken);
+    setAiModel(preferredModel);
+    if (selected?.prompt.trim()) setAiPrompt(selected.prompt.trim());
+    setAiError("");
+    setAiMessage("");
+    setIsAiStudioOpen(true);
+    setAiConfigLoading(true);
+    try {
+      const config = await loadAiConfig();
+      setAiConfig(config);
+      const preferredAvailable = config.models.some((model) => model.id === preferredModel && model.available);
+      const firstAvailable = config.models.find((model) => model.available);
+      if (!preferredAvailable && firstAvailable) setAiModel(firstAvailable.id);
+    } catch {
+      setAiConfig(null);
+      setAiError("无法读取 AI 服务配置，请确认本地服务仍在运行。");
+    } finally {
+      setAiConfigLoading(false);
+    }
+  };
+
+  const storeAiAssets = useCallback(async (
+    generatedAssets: AiGeneratedAsset[],
+    prompt: string,
+    accessToken: string,
+  ) => {
+    if (!generatedAssets.length) throw new AiRequestError("任务完成但没有可保存的素材。", "EMPTY_RESULT");
+    const files = await Promise.all(generatedAssets.map((asset) => downloadAiAsset(asset, accessToken)));
+    const now = Date.now();
+    const imported = files.map((file, index) => {
+      const kind = inferKind(file);
+      if (kind !== "image" && kind !== "video") throw new AiRequestError("生成结果不是受支持的图片或视频。", "UNSUPPORTED_RESULT");
+      return {
+        id: crypto.randomUUID(),
+        file,
+        url: URL.createObjectURL(file),
+        name: file.name,
+        kind,
+        extension: file.name.includes(".") ? file.name.split(".").pop()?.toUpperCase() ?? "AI" : "AI",
+        mime: file.type || (kind === "image" ? "image/webp" : "video/mp4"),
+        size: file.size,
+        status: "reading" as const,
+        prompt,
+        category: DEFAULT_ASSET_CATEGORY,
+        collection: "library" as const,
+        createdAt: now + index,
+      } satisfies MediaAsset;
+    });
+
+    setAssets((current) => [...imported, ...current]);
+    setFilter("all");
+    setQuery("");
+    setSelectedId(imported[0].id);
+    await Promise.all(imported.map((asset) => saveStoredAsset(toStoredRecord(asset))));
+    imported.forEach((asset) => readMetadata(asset));
+    setNotice(`AI 生成完成，已加入素材库 ${imported.length} 个素材`);
+    window.setTimeout(() => setNotice(""), 3200);
+  }, [readMetadata]);
+
+  const submitAiGeneration = async () => {
+    const prompt = aiPrompt.trim();
+    if (!prompt) {
+      setAiError("请先输入生成提示词。");
+      return;
+    }
+    const option = AI_MODEL_OPTIONS.find((item) => item.id === aiModel)!;
+    setAiBusy(true);
+    setAiError("");
+    setAiMessage(option.kind === "video" ? "正在提交视频任务，请勿重复点击…" : "正在生成图片，请勿关闭页面…");
+    setAiGeneration(null);
+    setAiSubmittedPrompt(prompt);
+    setAiPollingPaused(false);
+    setAiPollAttempt(0);
+    if (aiAccessToken) window.sessionStorage.setItem("frame-vault-ai-access-token", aiAccessToken);
+
+    try {
+      const generation = await createAiGeneration({
+        model: aiModel,
+        prompt,
+        parameters: option.kind === "image"
+          ? { size: aiImageSize, quality: aiImageQuality, format: "webp" }
+          : { duration: aiVideoDuration, ratio: aiVideoRatio, generateAudio: aiGenerateAudio },
+      }, aiAccessToken);
+      setAiGeneration(generation);
+      if (generation.status === "succeeded" && generation.assets?.length) {
+        setAiMessage("生成成功，正在写入本地素材库…");
+        await storeAiAssets(generation.assets, prompt, aiAccessToken);
+        setAiMessage("已保存到本机素材库。你可以关闭窗口查看。 ");
+      } else if (generation.taskId) {
+        setAiMessage("任务已提交，工作台会自动查询生成进度。");
+      } else {
+        throw new AiRequestError("服务没有返回可查询的任务编号。", "MISSING_TASK_ID");
+      }
+    } catch (error) {
+      setAiGeneration(null);
+      setAiError(error instanceof Error ? error.message : "生成请求失败，请稍后重试。");
+      setAiMessage("");
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAiStudioOpen || aiPollingPaused || !aiGeneration?.taskId) return;
+    if (aiGeneration.status === "succeeded" || aiGeneration.status === "failed") return;
+    const reachedPollingLimit = aiPollAttempt >= 80;
+    const delay = reachedPollingLimit ? 0 : Math.min(15_000, 3_000 + aiPollAttempt * 1_500);
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      if (reachedPollingLimit) {
+        setAiPollingPaused(true);
+        setAiError("任务查询已持续约 20 分钟，已暂停自动查询。任务可能仍在 New.bi 继续运行。");
+        return;
+      }
+      void queryAiGeneration(aiGeneration.model, aiGeneration.taskId!, aiAccessToken)
+        .then(async (generation) => {
+          if (cancelled) return;
+          if (generation.status === "succeeded" && generation.assets?.length) {
+            setAiBusy(true);
+            setAiMessage("视频生成完成，正在下载到本机素材库…");
+            try {
+              await storeAiAssets(generation.assets, aiSubmittedPrompt, aiAccessToken);
+              if (cancelled) return;
+              setAiGeneration(generation);
+              setAiMessage("视频已保存到本机素材库。你可以关闭窗口查看。");
+            } catch (error) {
+              if (cancelled) return;
+              setAiGeneration(generation);
+              setAiError(error instanceof Error ? `视频已生成，但写入本地素材库失败：${error.message}` : "视频已生成，但写入本地素材库失败。");
+              setAiMessage("");
+            } finally {
+              if (!cancelled) setAiBusy(false);
+            }
+          } else if (generation.status === "failed") {
+            setAiGeneration(generation);
+            setAiError("上游任务生成失败。请在 New.bi 任务日志中查看详细原因。");
+            setAiMessage("");
+          } else {
+            setAiGeneration(generation);
+            setAiMessage(generation.status === "queued" ? "任务仍在队列中…" : "正在生成视频…");
+            setAiPollAttempt((attempt) => attempt + 1);
+          }
+        })
+        .catch((error) => {
+          if (cancelled) return;
+          const requestError = error instanceof AiRequestError ? error : null;
+          if (requestError && [401, 403, 503].includes(requestError.status)) {
+            setAiPollingPaused(true);
+            setAiError(requestError.message);
+            setAiMessage("");
+            return;
+          }
+          setAiMessage("暂时无法查询进度，稍后会自动再试…");
+          setAiPollAttempt((attempt) => attempt + 1);
+        });
+    }, delay);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [aiAccessToken, aiGeneration, aiPollAttempt, aiPollingPaused, aiSubmittedPrompt, isAiStudioOpen, storeAiAssets]);
+
   const addTextAsset = () => {
     const textContent = textContentDraft.trim();
     if (!textContent) return;
@@ -1140,6 +1374,122 @@ export default function Home() {
     setBackupFailure("");
     setReplaceConfirmed(false);
     if (backupInputRef.current) backupInputRef.current.value = "";
+  };
+
+  const openMigrationDialog = (mode: Exclude<MigrationDialogMode, null>) => {
+    setMigrationDialogMode(mode);
+    setMigrationPassword("");
+    setMigrationPasswordConfirm("");
+    setMigrationDevVars("");
+    setMigrationCandidate(null);
+    setMigrationCandidateName("");
+    setMigrationMessage("");
+    setMigrationFailure("");
+  };
+
+  const closeMigrationDialog = () => {
+    if (isMigrationWorking) return;
+    setMigrationDialogMode(null);
+    setMigrationPassword("");
+    setMigrationPasswordConfirm("");
+    setMigrationDevVars("");
+    setMigrationCandidate(null);
+    setMigrationCandidateName("");
+    setMigrationMessage("");
+    setMigrationFailure("");
+    if (migrationInputRef.current) migrationInputRef.current.value = "";
+  };
+
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  };
+
+  const exportEncryptedMigration = async () => {
+    if (migrationPassword.length < 8) {
+      setMigrationFailure("迁移密码至少需要 8 个字符。");
+      return;
+    }
+    if (migrationPassword !== migrationPasswordConfirm) {
+      setMigrationFailure("两次输入的迁移密码不一致。");
+      return;
+    }
+    if (!migrationDevVars.trim()) {
+      setMigrationFailure("请粘贴 .dev.vars 内容；密钥只会在本机加密，不会上传。");
+      return;
+    }
+    setIsMigrationWorking(true);
+    setMigrationFailure("");
+    setMigrationMessage("正在加密素材和配置，请稍候…");
+    try {
+      const records = assets.map((asset) => {
+        const record = toStoredRecord(asset);
+        if (asset.kind !== "text") return record;
+        const file = new Blob([asset.textContent ?? ""], { type: asset.mime || "text/plain;charset=utf-8" });
+        return { ...record, file, size: file.size };
+      });
+      const promptState: StoredPromptState = {
+        id: "workspace",
+        favorites: favoritePromptIds,
+        recent: recentPromptIds,
+        drafts: promptDrafts,
+        assetCategories,
+        updatedAt: Date.now(),
+      };
+      const result = await createEncryptedMigrationPackage(records, promptState, migrationDevVars, migrationPassword);
+      const timestamp = new Date().toISOString().slice(0, 19).replaceAll(":", "-").replace("T", "_");
+      downloadBlob(result.blob, `FrameVault-Migration-${timestamp}.framevault-migration`);
+      setMigrationMessage(`已生成加密迁移包：${result.assetCount} 个素材，共 ${formatBytes(result.totalBytes)}。请妥善保存迁移密码。`);
+    } catch (error) {
+      setMigrationMessage("");
+      setMigrationFailure(error instanceof Error ? error.message : "迁移包生成失败，请重试。");
+    } finally {
+      setIsMigrationWorking(false);
+    }
+  };
+
+  const prepareMigrationFile = async (file?: File) => {
+    if (!file) return;
+    setIsMigrationWorking(true);
+    setMigrationCandidate(null);
+    setMigrationCandidateName(file.name);
+    setMigrationFailure("");
+    setMigrationMessage("正在解密并校验迁移包…");
+    try {
+      const parsed = await parseEncryptedMigrationPackage(file, migrationPassword);
+      setMigrationCandidate(parsed);
+      setMigrationDevVars(parsed.devVars);
+      setMigrationMessage(`解密完成：${parsed.backup.manifest.assetCount} 个素材，共 ${formatBytes(parsed.backup.manifest.totalBytes)}。`);
+    } catch (error) {
+      setMigrationMessage("");
+      setMigrationFailure(error instanceof Error ? error.message : "无法读取这个加密迁移包。");
+    } finally {
+      setIsMigrationWorking(false);
+    }
+  };
+
+  const restoreEncryptedMigration = async () => {
+    if (!migrationCandidate) return;
+    setIsMigrationWorking(true);
+    setMigrationFailure("");
+    setMigrationMessage("正在恢复素材库…");
+    try {
+      const result = await restoreStoredWorkspace(migrationCandidate.backup.assets, migrationCandidate.backup.promptState, "merge");
+      const envBlob = new Blob([migrationCandidate.devVars], { type: "text/plain;charset=utf-8" });
+      downloadBlob(envBlob, ".dev.vars");
+      setMigrationMessage(`恢复完成：新增 ${result.imported} 个素材，跳过 ${result.skipped} 个重复素材。已下载 .dev.vars，请放回项目根目录后重启服务。`);
+      window.setTimeout(() => window.location.reload(), 1600);
+    } catch (error) {
+      setMigrationMessage("");
+      setMigrationFailure(error instanceof Error ? error.message : "迁移恢复失败，请重试。");
+      setIsMigrationWorking(false);
+    }
   };
 
   const exportWorkspaceBackup = async () => {
@@ -1363,6 +1713,26 @@ export default function Home() {
       setNotice("复制失败，请在右侧文本框中手动复制");
     }
   };
+
+  const selectedAiOption = AI_MODEL_OPTIONS.find((item) => item.id === aiModel) ?? AI_MODEL_OPTIONS[0];
+  const aiPromptMaximum = aiModel === "gpt-image-2" ? 1000 : 4000;
+  const selectedAiConfig = aiConfig?.models.find((model) => model.id === aiModel);
+  const aiModelAvailable = selectedAiConfig?.available === true;
+  const aiTaskActive = aiGeneration?.status === "queued" || aiGeneration?.status === "running";
+  const aiEstimatedCost = aiModel === "gpt-image-2"
+    ? "约 ¥0.07 / 张"
+    : aiModel === "seedream-5"
+      ? "按 New.bi 实际用量"
+      : aiModel === "minimax-h3"
+        ? `约 ¥${(aiVideoDuration * 0.3).toFixed(2)}`
+        : `约 ¥${(aiVideoDuration * 0.85).toFixed(2)}`;
+  const aiCanSubmit = Boolean(
+    aiPrompt.trim()
+    && aiModelAvailable
+    && !aiBusy
+    && !aiTaskActive
+    && (!aiConfig?.accessTokenRequired || aiAccessToken.trim()),
+  );
 
   return (
     <main className="workspace-shell">
@@ -1593,6 +1963,8 @@ export default function Home() {
                   <div className="workspace-backup-actions">
                     <button onClick={() => openBackupDialog("export")}>⇩ 整库备份</button>
                     <button onClick={() => openBackupDialog("restore")}>⇧ 恢复素材库</button>
+                    <button onClick={() => openMigrationDialog("export")}>🔐 加密迁移包</button>
+                    <button onClick={() => openMigrationDialog("import")}>⇧ 导入迁移包</button>
                   </div>
                   <div className={`external-storage-actions ${externalStorageStatus}`}>
                     {!externalDirectory ? (
@@ -1655,6 +2027,9 @@ export default function Home() {
               <p>{isLoadingSaved ? "正在读取本机素材库…" : visibleAssets.length ? `${visibleAssets.length} 个素材 · ${formatBytes(visibleSize)}` : "当前区域等待导入素材"}</p>
             </div>
             <div className="toolbar-actions">
+              <a className="ai-studio-button" href="/ai">
+                <span aria-hidden="true">✦</span> AI 生成
+              </a>
               <label className="search-box">
                 <i aria-hidden="true" />
                 <input
@@ -2248,6 +2623,197 @@ export default function Home() {
         </aside>
       </section>
 
+      {isAiStudioOpen && typeof document !== "undefined" && createPortal((
+        <div
+          className="ai-studio-overlay"
+          role="presentation"
+        >
+          <section
+            className="ai-studio-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="ai-studio-title"
+          >
+            <header className="ai-studio-header">
+              <div>
+                <span>NEW.BI CREATION GATEWAY</span>
+                <h3 id="ai-studio-title">AI 素材生成</h3>
+                <p>选择模型、输入提示词，生成结果会自动保存进本机素材库。</p>
+              </div>
+              <button
+                type="button"
+                disabled={aiBusy}
+                onClick={() => setIsAiStudioOpen(false)}
+                aria-label="关闭 AI 生成窗口"
+              >×</button>
+            </header>
+
+            <div className="ai-studio-scroll">
+              <section className="ai-studio-section">
+                <div className="ai-section-heading">
+                  <span>01</span>
+                  <div><strong>选择模型</strong><small>图片与视频分别使用独立密钥组</small></div>
+                </div>
+                <div className="ai-model-grid">
+                  {AI_MODEL_OPTIONS.map((option) => {
+                    const configured = aiConfig?.models.find((model) => model.id === option.id)?.available === true;
+                    return (
+                      <button
+                        type="button"
+                        key={option.id}
+                        className={`ai-model-card ${aiModel === option.id ? "active" : ""}`}
+                        style={{ "--ai-accent": option.accent } as CSSProperties}
+                        onClick={() => {
+                          setAiModel(option.id);
+                          if (option.id === "minimax-h3" && aiVideoDuration < 5) setAiVideoDuration(5);
+                          setAiError("");
+                          setAiGeneration(null);
+                        }}
+                      >
+                        <span className="ai-model-family">{option.family}</span>
+                        <strong>{option.label}</strong>
+                        <small>{option.detail}</small>
+                        <i className={configured ? "ready" : "missing"}>{configured ? "已配置" : "待配置"}</i>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section className="ai-studio-section">
+                <div className="ai-section-heading">
+                  <span>02</span>
+                  <div><strong>描述画面</strong><small>不会自动重试，避免重复计费</small></div>
+                </div>
+                <textarea
+                  className="ai-prompt-input"
+                  value={aiPrompt}
+                  onChange={(event) => setAiPrompt(event.target.value)}
+                  placeholder={selectedAiOption.kind === "image"
+                    ? "例如：雨夜霓虹街道中的电影感人物肖像，柔和侧光，细腻皮肤质感…"
+                    : "例如：一名旅人站在海边悬崖，风吹动外套，镜头缓慢环绕，电影感自然光…"}
+                  rows={5}
+                  maxLength={aiPromptMaximum}
+                  disabled={aiBusy || aiTaskActive}
+                />
+                <div className="ai-prompt-meta"><span>{aiPrompt.length} / {aiPromptMaximum}</span><span>当前：{selectedAiOption.label}</span></div>
+              </section>
+
+              <section className="ai-studio-section">
+                <div className="ai-section-heading">
+                  <span>03</span>
+                  <div><strong>生成参数</strong><small>模型不支持的参数不会发送</small></div>
+                </div>
+                {selectedAiOption.kind === "image" ? (
+                  <div className="ai-parameter-grid">
+                    <label>
+                      <span>画布尺寸</span>
+                      <select value={aiImageSize} onChange={(event) => setAiImageSize(event.target.value)} disabled={aiBusy || aiTaskActive}>
+                        <option value="1024x1024">1:1 · 1024 × 1024</option>
+                        <option value="1536x1024">3:2 · 1536 × 1024</option>
+                        <option value="1024x1536">2:3 · 1024 × 1536</option>
+                      </select>
+                    </label>
+                    <label>
+                      <span>生成质量</span>
+                      <select value={aiImageQuality} onChange={(event) => setAiImageQuality(event.target.value)} disabled={aiBusy || aiTaskActive}>
+                        <option value="low">快速</option>
+                        <option value="medium">标准</option>
+                        <option value="high">高质量</option>
+                      </select>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="ai-parameter-grid">
+                    <label>
+                      <span>视频时长</span>
+                      <select value={aiVideoDuration} onChange={(event) => setAiVideoDuration(Number(event.target.value))} disabled={aiBusy || aiTaskActive}>
+                        {(aiModel === "minimax-h3" ? [5, 6, 8, 10, 12, 15] : [4, 5, 6, 8, 10, 12, 15]).map((seconds) => (
+                          <option key={seconds} value={seconds}>{seconds} 秒</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>画面比例</span>
+                      <select value={aiVideoRatio} onChange={(event) => setAiVideoRatio(event.target.value)} disabled={aiBusy || aiTaskActive}>
+                        <option value="16:9">横屏 16:9</option>
+                        <option value="9:16">竖屏 9:16</option>
+                        <option value="1:1">方形 1:1</option>
+                      </select>
+                    </label>
+                    {aiModel === "seedance-2" && (
+                      <label className="ai-toggle-parameter" aria-label="生成音频">
+                        <span><strong>生成音频</strong><small>由模型同步生成画面声音</small></span>
+                        <input type="checkbox" checked={aiGenerateAudio} onChange={(event) => setAiGenerateAudio(event.target.checked)} disabled={aiBusy || aiTaskActive} />
+                      </label>
+                    )}
+                  </div>
+                )}
+                <div className="ai-cost-line"><span>本次预估</span><strong>{aiEstimatedCost}</strong><small>最终以 New.bi 账单为准</small></div>
+              </section>
+
+              {aiConfig?.accessTokenRequired && (
+                <section className="ai-studio-section ai-access-section">
+                  <div className="ai-section-heading">
+                    <span>04</span>
+                    <div><strong>工作台访问口令</strong><small>只保存在当前浏览器会话，不写入仓库</small></div>
+                  </div>
+                  <input
+                    type="password"
+                    value={aiAccessToken}
+                    onChange={(event) => setAiAccessToken(event.target.value)}
+                    placeholder="输入 MEDIA_DESK_AI_ACCESS_TOKEN"
+                    autoComplete="off"
+                    disabled={aiBusy || aiTaskActive}
+                  />
+                </section>
+              )}
+
+              {aiConfigLoading && <div className="ai-config-notice">正在读取本机 AI 配置…</div>}
+              {!aiConfigLoading && aiConfig?.publicDisabled && (
+                <div className="ai-config-notice warning">
+                  线上 AI 接口已安全停用。部署时需要同时配置服务端密钥和工作台访问口令。
+                </div>
+              )}
+              {!aiConfigLoading && aiConfig && !aiModelAvailable && !aiConfig.publicDisabled && (
+                <div className="ai-config-notice warning">
+                  {selectedAiOption.label} 尚未配置服务端密钥。请按仓库中的 <code>.dev.vars.example</code> 在本机创建 <code>.dev.vars</code>，密钥不会进入 Git。
+                </div>
+              )}
+              {!aiConfigLoading && !aiConfig && aiError && <div className="ai-config-notice warning">AI 服务配置暂时不可用。</div>}
+
+              {(aiGeneration || aiMessage || aiError) && (
+                <div className={`ai-generation-status ${aiError ? "failure" : aiGeneration?.status === "succeeded" ? "success" : ""}`} role="status">
+                  <span className="ai-status-icon" aria-hidden="true">{aiError ? "!" : aiGeneration?.status === "succeeded" ? "✓" : "↻"}</span>
+                  <div>
+                    <strong>{aiError ? "请求未完成" : aiGeneration?.status === "succeeded" ? "生成完成" : "任务处理中"}</strong>
+                    <p>{aiError || aiMessage}</p>
+                    {aiGeneration?.taskId && <small>任务编号：{aiGeneration.taskId}</small>}
+                  </div>
+                  {aiTaskActive && (
+                    <button type="button" onClick={() => setAiPollingPaused((paused) => !paused)}>
+                      {aiPollingPaused ? "继续查询" : "暂停查询"}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <footer className="ai-studio-footer">
+              <p><span>▣</span> New.bi API Key 仅由 Worker 读取，浏览器和仓库都看不到。</p>
+              <div>
+                <button type="button" disabled={aiBusy} onClick={() => setIsAiStudioOpen(false)}>
+                  {aiGeneration?.status === "succeeded" ? "查看已保存素材" : "取消"}
+                </button>
+                <button type="button" className="primary" disabled={!aiCanSubmit} onClick={() => void submitAiGeneration()}>
+                  {aiBusy ? "处理中…" : aiTaskActive ? "任务进行中" : `生成 ${selectedAiOption.kind === "image" ? "图片" : "视频"}`}
+                </button>
+              </div>
+            </footer>
+          </section>
+        </div>
+      ), document.body)}
+
       {backupDialogMode && (
         <div className="backup-overlay" role="presentation" onClick={closeBackupDialog}>
           <section
@@ -2348,6 +2914,60 @@ export default function Home() {
                 >
                   {isBackupWorking ? "正在恢复…" : restoreMode === "replace" ? "完全恢复" : "合并到本机"}
                 </button>
+              )}
+            </footer>
+          </section>
+        </div>
+      )}
+
+      {migrationDialogMode && (
+        <div className="backup-overlay" role="presentation" onClick={closeMigrationDialog}>
+          <section className="backup-dialog migration-dialog" role="dialog" aria-modal="true" aria-labelledby="migration-dialog-title" onClick={(event) => event.stopPropagation()}>
+            <header>
+              <div>
+                <span>ENCRYPTED DEVICE TRANSFER</span>
+                <h3 id="migration-dialog-title">{migrationDialogMode === "export" ? "导出加密迁移包" : "导入加密迁移包"}</h3>
+                <p>{migrationDialogMode === "export" ? "使用 AES-256-GCM 在本机加密素材、分类、提示词和 .dev.vars 配置。" : "输入迁移密码，解密并恢复素材，同时下载其中的 .dev.vars 配置。"}</p>
+              </div>
+              <button disabled={isMigrationWorking} onClick={closeMigrationDialog} aria-label="关闭迁移窗口">×</button>
+            </header>
+
+            {migrationDialogMode === "export" ? (
+              <div className="migration-fields">
+                <label>
+                  <span>.dev.vars 配置</span>
+                  <textarea value={migrationDevVars} onChange={(event) => setMigrationDevVars(event.target.value)} placeholder={'NEWBI_BASE_URL="https://api.new.bi"\nNEWBI_IMAGE_API_KEY="..."\nNEWBI_VIDEO_GROUP_API_KEY="..."'} spellCheck={false} autoComplete="off" disabled={isMigrationWorking} />
+                  <small>请从项目根目录的 .dev.vars 复制；内容只在当前浏览器内存中处理。</small>
+                </label>
+                <div className="migration-password-grid">
+                  <label><span>迁移密码</span><input type="password" value={migrationPassword} onChange={(event) => setMigrationPassword(event.target.value)} minLength={8} autoComplete="new-password" disabled={isMigrationWorking} /></label>
+                  <label><span>确认迁移密码</span><input type="password" value={migrationPasswordConfirm} onChange={(event) => setMigrationPasswordConfirm(event.target.value)} minLength={8} autoComplete="new-password" disabled={isMigrationWorking} /></label>
+                </div>
+                <div className="backup-safety-note"><i>⌾</i><p>密码不会保存，也无法找回。迁移包采用 PBKDF2-SHA-256（310,000 次）派生密钥，并使用 AES-256-GCM 认证加密。</p></div>
+                {totalSize > 1024 ** 3 && <div className="backup-safety-note warning"><i>!</i><p>当前素材约 {formatBytes(totalSize)}，加密时浏览器需要临时占用额外内存；超过 1.5 GB 会被阻止。大体积素材建议使用外部硬盘目录迁移。</p></div>}
+              </div>
+            ) : (
+              <div className="migration-fields">
+                <label><span>迁移密码</span><input type="password" value={migrationPassword} onChange={(event) => { setMigrationPassword(event.target.value); setMigrationCandidate(null); setMigrationDevVars(""); }} minLength={8} autoComplete="current-password" disabled={isMigrationWorking} /></label>
+                <div className={`backup-drop-zone ${migrationCandidate ? "ready" : ""}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); void prepareMigrationFile(event.dataTransfer.files[0]); }}>
+                  <span>{migrationCandidate ? "✓" : "⇧"}</span>
+                  <strong>{migrationCandidate ? migrationCandidateName : "选择 .framevault-migration 文件"}</strong>
+                  <small>{migrationCandidate ? `${migrationCandidate.backup.manifest.assetCount} 个素材 · ${formatBytes(migrationCandidate.backup.manifest.totalBytes)}` : "先输入密码，再选择或拖入加密迁移包"}</small>
+                  <button disabled={isMigrationWorking || migrationPassword.length < 8} onClick={() => { if (!migrationInputRef.current) return; migrationInputRef.current.value = ""; migrationInputRef.current.click(); }}>{migrationCandidate ? "重新选择" : "选择迁移包"}</button>
+                  <input ref={migrationInputRef} className="visually-hidden" type="file" accept=".framevault-migration,application/x-framevault-migration" onChange={(event) => void prepareMigrationFile(event.target.files?.[0])} />
+                </div>
+                {migrationCandidate && <div className="backup-safety-note"><i>✓</i><p>素材将安全合并到当前本地库，不覆盖同编号素材。恢复后浏览器会下载 .dev.vars，请将其放到项目根目录并重启服务。</p></div>}
+              </div>
+            )}
+
+            {(migrationMessage || migrationFailure) && <div className={`backup-status ${migrationFailure ? "failure" : ""}`} role="status"><i>{migrationFailure ? "!" : isMigrationWorking ? "…" : "✓"}</i><span>{migrationFailure || migrationMessage}</span></div>}
+            <footer>
+              <small>{migrationDialogMode === "export" ? "加密在本机完成 · 不会上传密钥" : "外部硬盘目录仍需在新电脑重新授权"}</small>
+              <button disabled={isMigrationWorking} onClick={closeMigrationDialog}>取消</button>
+              {migrationDialogMode === "export" ? (
+                <button className="primary" disabled={isMigrationWorking || migrationPassword.length < 8 || !migrationDevVars.trim()} onClick={() => void exportEncryptedMigration()}>{isMigrationWorking ? "正在加密…" : "生成加密迁移包"}</button>
+              ) : (
+                <button className="primary" disabled={isMigrationWorking || !migrationCandidate} onClick={() => void restoreEncryptedMigration()}>{isMigrationWorking ? "正在恢复…" : "安全合并并下载配置"}</button>
               )}
             </footer>
           </section>

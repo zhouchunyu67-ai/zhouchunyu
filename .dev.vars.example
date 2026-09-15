@@ -1,0 +1,23 @@
+# Copy this file to .dev.vars for local development. Never put real keys here.
+NEWBI_BASE_URL="https://api.new.bi"
+
+# Create this key in the New.bi-gpt-image-2 group for GPT Image 2.
+NEWBI_IMAGE_API_KEY="replace-with-your-image-group-key"
+
+# Create this key in a New.bi group that enables doubao-seedream-5-0-260128.
+NEWBI_SEEDREAM_API_KEY="replace-with-your-seedream-group-key"
+
+# Create this key in the New.bi video group. MiniMax H3, Seedance 2.0,
+# and Seedance 2.5 currently use this group.
+NEWBI_VIDEO_GROUP_API_KEY="replace-with-your-video-group-key"
+
+# Required on a public deployment. Visitors enter this separate workbench
+# password in the UI; it is not a New.bi API key.
+MEDIA_DESK_AI_ACCESS_TOKEN="replace-with-a-long-random-password"
+
+# Optional model overrides. Keep these aligned with the model names shown by New.bi.
+# NEWBI_MODEL_GPT_IMAGE_2="gpt-image-2-d"
+# NEWBI_MODEL_SEEDREAM_5="doubao-seedream-5-0-260128"
+# NEWBI_MODEL_MINIMAX_H3="minimax-h3-768p"
+# NEWBI_MODEL_SEEDANCE_2="doubao-seedance-2-0-260128"
+# NEWBI_MODEL_SEEDANCE_2_5="sd-2-5"
