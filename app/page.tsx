@@ -1302,6 +1302,17 @@ export default function Home() {
     }
   };
 
+  const copySelectedAssetPrompt = async () => {
+    if (!selected || (selected.kind !== "image" && selected.kind !== "video") || !selected.prompt.trim()) return;
+    try {
+      await navigator.clipboard.writeText(selected.prompt);
+      setNotice("素材提示词已复制");
+      window.setTimeout(() => setNotice(""), 1600);
+    } catch {
+      setNotice("复制失败，请在提示词框中手动复制");
+    }
+  };
+
   const moveSelectedAsset = (destination: string) => {
     if (!selected) return;
     if (destination === "__library__") {
@@ -2451,6 +2462,12 @@ export default function Home() {
                       <span>素材比例</span>
                       <strong>{ratioLabel(selected.width, selected.height)}</strong>
                       <i>{orientationLabel(selected.width, selected.height)}</i>
+                      <button
+                        type="button"
+                        onClick={() => void copySelectedAssetPrompt()}
+                        disabled={!selected.prompt.trim()}
+                        aria-label="复制当前素材提示词"
+                      >复制提示词</button>
                     </div>
                   </div>
                 </>

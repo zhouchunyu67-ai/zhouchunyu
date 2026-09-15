@@ -661,6 +661,8 @@ body {
 .prompt-footer { border-color: rgba(99,132,190,.16); background: linear-gradient(90deg,#f1f7ff,#fff4f8); }
 .prompt-footer span,.prompt-footer i { color: #8290aa; }
 .prompt-footer strong { color: #557db9; }
+.prompt-footer button { min-height: 24px; margin-left: 8px; padding: 0 8px; border: 1px solid rgba(99,132,190,.2); border-radius: 6px; background: rgba(255,255,255,.72); color: #6079a5; cursor: pointer; font-size: 8px; white-space: nowrap; }
+.prompt-footer button:disabled { opacity: .45; cursor: not-allowed; }
 .toast { border-color: rgba(101,146,210,.34); border-radius: 12px; background: rgba(255,255,255,.95); color: #486da8; box-shadow: 0 16px 40px rgba(77,95,138,.18); }
 
 /* Full anime interface language: character crops, manga panels and playful motifs. */
@@ -1352,7 +1354,22 @@ body {
 .creation-task-status > span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: white; color: #748dc0; font-size: 11px; }
 .creation-task-status > div { min-width: 0; display: grid; gap: 3px; }.creation-task-status strong { color: #4e5e79; font-size: 9px; }.creation-task-status p { margin: 0; color: #7d89a0; font-size: 8px; line-height: 1.45; }.creation-task-status small { overflow: hidden; color: #9aa3b3; font: 7px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace; text-overflow: ellipsis; white-space: nowrap; }
 .creation-task-status button { min-height: 28px; padding: 0 8px; border: 1px solid rgba(96,127,185,.17); border-radius: 7px; background: white; color: #62789c; cursor: pointer; font-size: 7px; }
-.creation-result-grid { margin-top: 11px; display: grid; gap: 8px; }.creation-result-grid img,.creation-result-grid video { width: 100%; max-height: 220px; border-radius: 11px; object-fit: contain; background: #e7ebf3; }
+.creation-result-grid { margin-top: 11px; display: grid; gap: 8px; }
+.creation-result-prompt { position: relative; padding: 11px 12px 12px; border: 1px solid rgba(119,116,205,.2); border-radius: 11px; background: linear-gradient(135deg,rgba(246,244,255,.86),rgba(255,244,248,.82)); }
+.creation-result-prompt > div { display: flex; align-items: center; gap: 8px; }
+.creation-result-prompt strong { color: #5b5b91; font-size: 9px; }
+.creation-result-prompt span { color: #9a9eb4; font: 7px/1 ui-monospace,SFMono-Regular,Consolas,monospace; }
+.creation-result-prompt p { margin: 7px 66px 0 0; color: #66718d; font-size: 9px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.creation-result-prompt button { position: absolute; top: 10px; right: 10px; min-height: 26px; padding: 0 8px; border: 1px solid rgba(119,116,205,.2); border-radius: 7px; background: rgba(255,255,255,.75); color: #6f6ba0; cursor: pointer; font-size: 8px; }
+.creation-result-item { overflow: hidden; border: 1px solid rgba(96,127,185,.15); border-radius: 11px; background: rgba(255,255,255,.56); }
+.creation-result-item.unsaved { border-color: rgba(215,111,143,.35); background: rgba(255,241,246,.62); }
+.creation-result-item img,.creation-result-item video { display: block; width: 100%; max-height: 220px; border-radius: 10px 10px 0 0; object-fit: contain; background: #e7ebf3; }
+.creation-result-item-footer { min-height: 34px; padding: 6px 8px; display: flex; align-items: center; gap: 7px; }
+.creation-result-item-footer > span { min-width: 0; overflow: hidden; color: #66728d; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.creation-result-item-footer small { min-width: 0; overflow: hidden; color: #7a9a8e; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.creation-result-item.unsaved .creation-result-item-footer small { color: #b36d82; }
+.creation-result-item-footer button,.creation-result-item-footer a { flex: 0 0 auto; min-height: 24px; padding: 0 7px; border: 1px solid rgba(96,127,185,.17); border-radius: 6px; display: inline-flex; align-items: center; background: rgba(255,255,255,.75); color: #65789e; cursor: pointer; font-size: 7px; text-decoration: none; white-space: nowrap; }
+.creation-result-item-footer a { margin-left: auto; }
 .creation-submit { width: 100%; min-height: 48px; margin-top: 14px; border: 1px solid rgba(119,115,203,.32); border-radius: 12px; background: linear-gradient(135deg,#dfe9ff,#ffe8f1); color: #615b98; box-shadow: 0 11px 26px rgba(101,94,171,.13); cursor: pointer; font-size: 10px; font-weight: 700; }
 .creation-submit span { margin-right: 6px; color: #ce6f93; }.creation-submit:disabled { opacity: .46; cursor: not-allowed; box-shadow: none; }
 .creation-charge-note { margin: 9px 2px 0; color: #929caf; font-size: 7px; line-height: 1.55; text-align: center; }

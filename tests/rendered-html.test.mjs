@@ -54,9 +54,10 @@ test("server-renders the dedicated AI creation workspace", async () => {
 });
 
 test("keeps material persistence and audio handling in the local application", async () => {
-  const [page, storage] = await Promise.all([
+  const [page, storage, aiPage] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/storage.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/ai/page.tsx", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /file\.type\.startsWith\("audio\/"\)/);
@@ -75,6 +76,8 @@ test("keeps material persistence and audio handling in the local application", a
   assert.doesNotMatch(page, /videoExpanded|setVideoExpanded/);
   assert.match(page, /selected\.kind === "video" \? \([\s\S]*?video-preview-controls/);
   assert.match(page, /\(selected\.kind === "image" \|\| selected\.kind === "video"\) && \([\s\S]*?prompt-heading/);
+  assert.match(page, /const copySelectedAssetPrompt = async \(\) =>/);
+  assert.match(page, /复制当前素材提示词/);
   assert.doesNotMatch(page, /selected\.kind === "audio" \? "记录声音内容/);
   assert.match(page, /if \(!event\.ctrlKey \|\| selected\?\.kind !== "image"\) return;/);
   assert.match(page, /filter === "all"\s*\? \(keyword \? true : asset\.collection === "library"\)/);
@@ -102,6 +105,11 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(storage, /saveStoredExternalDirectory/);
   assert.match(storage, /SETTINGS_STORE_NAME/);
   assert.match(storage, /database\.transaction\(\[STORE_NAME, PROMPT_STORE_NAME\], "readwrite"\)/);
+  assert.match(aiPage, /Register the downloaded file before IndexedDB is touched/);
+  assert.match(aiPage, /retrySaveGeneratedResult/);
+  assert.match(aiPage, /下载原文件/);
+  assert.match(aiPage, /本次生成提示词/);
+  assert.match(aiPage, /复制提示词/);
 });
 
 test("keeps the sidebar usable when the available viewport height changes", async () => {

@@ -31,6 +31,9 @@ type SavedResult = {
   kind: "image" | "video";
   name: string;
   url: string;
+  file: File;
+  saved: boolean;
+  saveError?: string;
 };
 
 const MODELS: Array<{
@@ -330,38 +333,81 @@ export default function AiCreationPage() {
     editor.focus();
   };
 
+  const saveGeneratedResult = useCallback(async (result: SavedResult, usedPrompt: string) => {
+    const now = Date.now();
+    const record: StoredAssetRecord = {
+      id: result.id,
+      file: result.file,
+      name: result.name,
+      kind: result.kind,
+      extension: result.name.includes(".") ? result.name.split(".").pop()?.toUpperCase() ?? "AI" : "AI",
+      mime: result.file.type || (result.kind === "image" ? "image/webp" : "video/mp4"),
+      size: result.file.size,
+      status: "reading",
+      prompt: usedPrompt,
+      category: "未分类",
+      collection: "library",
+      createdAt: now,
+      updatedAt: now,
+    };
+    try {
+      await saveStoredAsset(record);
+      setSavedResults((current) => current.map((item) => item.id === result.id
+        ? { ...item, saved: true, saveError: undefined }
+        : item));
+      return true;
+    } catch (caught) {
+      const saveError = caught instanceof Error ? caught.message : "本地素材库写入失败。";
+      setSavedResults((current) => current.map((item) => item.id === result.id
+        ? { ...item, saved: false, saveError }
+        : item));
+      return false;
+    }
+  }, []);
+
   const storeAssets = useCallback(async (assets: AiGeneratedAsset[], usedPrompt: string) => {
     if (!assets.length) throw new AiRequestError("任务完成但没有可保存的素材。", "EMPTY_RESULT");
-    const files = await Promise.all(assets.map((asset) => downloadAiAsset(asset, accessToken)));
-    const now = Date.now();
     const results: SavedResult[] = [];
-    await Promise.all(files.map(async (file, index) => {
+    for (const asset of assets) {
+      const file = await downloadAiAsset(asset, accessToken);
       const kind = kindFromFile(file);
       if (kind !== "image" && kind !== "video") throw new AiRequestError("生成结果不是受支持的图片或视频。", "UNSUPPORTED_RESULT");
       const id = crypto.randomUUID();
-      const record: StoredAssetRecord = {
+      const result: SavedResult = {
         id,
-        file,
-        name: file.name,
         kind,
-        extension: file.name.includes(".") ? file.name.split(".").pop()?.toUpperCase() ?? "AI" : "AI",
-        mime: file.type || (kind === "image" ? "image/webp" : "video/mp4"),
-        size: file.size,
-        status: "reading",
-        prompt: usedPrompt,
-        category: "未分类",
-        collection: "library",
-        createdAt: now + index,
-        updatedAt: now,
+        name: file.name,
+        url: URL.createObjectURL(file),
+        file,
+        saved: false,
       };
-      await saveStoredAsset(record);
-      const url = URL.createObjectURL(file);
-      objectUrlsRef.current.push(url);
-      results.push({ id, kind, name: file.name, url });
-    }));
-    setSavedResults(results);
+      objectUrlsRef.current.push(result.url);
+      results.push(result);
+      // Register the downloaded file before IndexedDB is touched, so a write
+      // failure cannot make a completed generation disappear from the page.
+      setSavedResults((current) => [...current, result]);
+      result.saved = await saveGeneratedResult(result, usedPrompt);
+    }
     return results;
-  }, [accessToken]);
+  }, [accessToken, saveGeneratedResult]);
+
+  const copyGeneratedPrompt = async () => {
+    const value = submittedPrompt || prompt.trim();
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setMessage("本次提示词已复制。生成结果会保留在此页面，直到提交新的生成任务或关闭页面。");
+    } catch {
+      setError("提示词复制失败，请在编辑区手动复制。");
+    }
+  };
+
+  const retrySaveGeneratedResult = async (result: SavedResult) => {
+    setMessage(`正在重新保存“${result.name}”…`);
+    const saved = await saveGeneratedResult(result, submittedPrompt || prompt.trim());
+    if (saved) setMessage(`“${result.name}”已保存到本机素材库。生成结果和提示词仍保留在当前页面。`);
+    else setError(`“${result.name}”仍未保存。请先下载原文件并检查浏览器存储空间后重试。`);
+  };
 
   const submit = async () => {
     const cleanPrompt = prompt.trim();
@@ -389,9 +435,12 @@ export default function AiCreationPage() {
       }, accessToken, selectedReferences);
       if (next.status === "succeeded" && next.assets?.length) {
         setMessage("生成成功，正在写入本机素材库…");
-        await storeAssets(next.assets, cleanPrompt);
+        const results = await storeAssets(next.assets, cleanPrompt);
         setGeneration(next);
-        setMessage("生成结果已保存到本机素材库。 ");
+        const failedCount = results.filter((result) => !result.saved).length;
+        setMessage(failedCount
+          ? `生成完成。${failedCount} 个素材暂未写入本地库，但预览、原文件下载和提示词仍保留在本页，可重试保存。`
+          : "生成结果已保存到本机素材库；预览和本次提示词会保留在本页。");
       } else if (next.taskId) {
         setGeneration(next);
         setMessage("任务已经提交，工作台会自动查询进度。 ");
@@ -421,9 +470,12 @@ export default function AiCreationPage() {
             setBusy(true);
             setMessage("视频生成完成，正在保存到本机素材库…");
             try {
-              await storeAssets(next.assets, submittedPrompt);
+              const results = await storeAssets(next.assets, submittedPrompt);
               setGeneration(next);
-              setMessage("视频已保存到本机素材库。 ");
+              const failedCount = results.filter((result) => !result.saved).length;
+              setMessage(failedCount
+                ? `视频生成完成。${failedCount} 个素材暂未写入本地库，但预览、原文件下载和提示词仍保留在本页，可重试保存。`
+                : "视频已保存到本机素材库；预览和本次提示词会保留在本页。");
             } catch (caught) {
               setGeneration(next);
               setError(caught instanceof Error ? `视频已生成，但本地保存失败：${caught.message}` : "视频已生成，但本地保存失败。 ");
@@ -674,9 +726,28 @@ export default function AiCreationPage() {
 
           {savedResults.length > 0 && (
             <div className="creation-result-grid">
-              {savedResults.map((result) => result.kind === "image"
-                ? <img src={result.url} alt={result.name} key={result.id} />
-                : <video src={result.url} controls key={result.id}><track kind="captions" /></video>)}
+              <div className="creation-result-prompt">
+                <div><strong>本次生成提示词</strong><span>{submittedPrompt.length} 字符</span></div>
+                <p>{submittedPrompt}</p>
+                <button type="button" onClick={() => void copyGeneratedPrompt()}>复制提示词</button>
+              </div>
+              {savedResults.map((result) => (
+                <article className={`creation-result-item ${result.saved ? "saved" : "unsaved"}`} key={result.id}>
+                  {result.kind === "image"
+                    ? <img src={result.url} alt={result.name} />
+                    : <video src={result.url} controls><track kind="captions" /></video>}
+                  <div className="creation-result-item-footer">
+                    <span title={result.name}>{result.name}</span>
+                    {result.saved
+                      ? <small>已保存到本机素材库</small>
+                      : <>
+                        <small>{result.saveError || "本地保存失败，结果仍保留在本页"}</small>
+                        <button type="button" onClick={() => void retrySaveGeneratedResult(result)}>重试保存</button>
+                      </>}
+                    <a href={result.url} download={result.name}>下载原文件</a>
+                  </div>
+                </article>
+              ))}
             </div>
           )}
 
