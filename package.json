@@ -1,7 +1,7 @@
 {
   "name": "media-desk",
   "version": "0.1.0",
-  "description": "离线优先的本地创作素材工作台，支持图片、视频、音频、文本和链接管理、New.bi AI 生成、外部目录同步与加密跨电脑迁移。",
+  "description": "Frame Vault：离线优先的本地创作素材工作台，支持图片、视频、音频、文本和链接管理、New.bi 多模态 AI 生成、外部目录同步与 AES-256-GCM 加密跨电脑迁移。",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
