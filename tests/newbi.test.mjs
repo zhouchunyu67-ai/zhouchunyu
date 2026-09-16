@@ -31,7 +31,8 @@ test("config reports model availability without exposing keys", async () => {
   const text = await response.text();
   const payload = JSON.parse(text);
   assert.equal(payload.publicDisabled, false);
-  assert.equal(payload.models.length, 5);
+  assert.equal(payload.models.length, 6);
+  assert.ok(payload.models.some((model) => model.id === "pixverse-mimic"));
   assert.ok(payload.models.every((model) => model.available));
   assert.doesNotMatch(text, /image-secret|video-secret/);
 });
@@ -164,6 +165,38 @@ test("MiniMax H3 task creation and status polling use the video-group key", asyn
   assert.equal(calls[0].init.headers.authorization, "Bearer video-secret");
   assert.equal(calls[0].url, "https://api.new.bi/minimax/v1/video_generation");
   assert.match(calls[1].url, /query\/video_generation\?task_id=h3-task-123$/);
+});
+
+test("MiniMax H3 forwards image, video and audio references as multimodal content", async () => {
+  let body;
+  const response = await handleNewBiRequest(
+    multipartRequest("http://localhost/api/ai/generations", { model: "minimax-h3", prompt: "test" }, [
+      { kind: "image", file: new File(["image"], "a.png", { type: "image/png" }) },
+      { kind: "video", file: new File(["video"], "b.mp4", { type: "video/mp4" }) },
+      { kind: "audio", file: new File(["audio"], "c.mp3", { type: "audio/mpeg" }) },
+    ]),
+    { NEWBI_VIDEO_GROUP_API_KEY: "video-secret" },
+    async (_url, init) => { body = JSON.parse(init.body); return new Response(JSON.stringify({ id: "h3-multi" })); },
+  );
+  assert.equal(response.status, 200);
+  assert.deepEqual(body.content.map((item) => item.type), ["text", "image_url", "video_url", "audio_url"]);
+});
+
+test("PixVerse Mimic requires one image and one motion video and forwards both", async () => {
+  let body;
+  const response = await handleNewBiRequest(
+    multipartRequest("http://localhost/api/ai/generations", { model: "pixverse-mimic", prompt: "copy the motion" }, [
+      { kind: "image", file: new File(["image"], "person.png", { type: "image/png" }) },
+      { kind: "video", file: new File(["video"], "motion.mp4", { type: "video/mp4" }) },
+    ]),
+    { NEWBI_VIDEO_GROUP_API_KEY: "video-secret" },
+    async (_url, init) => { body = JSON.parse(init.body); return new Response(JSON.stringify({ id: "mimic-task" })); },
+  );
+  assert.equal(response.status, 200);
+  assert.equal(body.model, "pixverse-mimic");
+  assert.deepEqual(body.content.map((item) => item.type), ["text", "image_url", "video_url"]);
+  assert.equal(body.content[1].role, "target_image");
+  assert.equal(body.content[2].role, "reference_video");
 });
 
 test("Seedream 5 uses the Ark-compatible image route, dedicated key and priced provider model", async () => {

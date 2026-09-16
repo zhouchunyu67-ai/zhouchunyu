@@ -1,4 +1,4 @@
-export type AiModelId = "gpt-image-2" | "seedream-5" | "minimax-h3" | "seedance-2" | "seedance-2-5";
+export type AiModelId = "gpt-image-2" | "seedream-5" | "minimax-h3" | "pixverse-mimic" | "seedance-2" | "seedance-2-5";
 export type AiAssetKind = "image" | "video";
 export type AiGenerationStatus = "queued" | "running" | "succeeded" | "failed";
 

@@ -45,7 +45,8 @@ const MODELS: Array<{
 }> = [
   { id: "gpt-image-2", label: "GPT Image 2", eyebrow: "OPENAI IMAGE", description: "文字生图 · 多图编辑", referenceText: "最多 4 张参考图片" },
   { id: "seedream-5", label: "Seedream 5.0", eyebrow: "DOUBAO IMAGE", description: "高质感生图 · 多图融合", referenceText: "最多 6 张参考图片" },
-  { id: "minimax-h3", label: "MiniMax H3", eyebrow: "MINIMAX VIDEO", description: "768P 视频 · 5–15 秒", referenceText: "首帧和尾帧图片" },
+  { id: "minimax-h3", label: "MiniMax H3", eyebrow: "MINIMAX VIDEO", description: "768P 视频 · 文本/图片/音频参考", referenceText: "图片、视频和音频参考" },
+  { id: "pixverse-mimic", label: "PixVerse Mimic", eyebrow: "PIXVERSE VIDEO", description: "动作迁移 · 人物模仿", referenceText: "1 张人物图片 + 1 段动作视频" },
   { id: "seedance-2", label: "Seedance 2.0", eyebrow: "DOUBAO VIDEO", description: "多模态视频 · 原生声音", referenceText: "图片、视频和音频" },
   { id: "seedance-2-5", label: "Seedance 2.5", eyebrow: "DOUBAO VIDEO", description: "720P 视频 · 4–30 秒", referenceText: "最多 30 张图片和 10 个音频" },
 ];
@@ -72,12 +73,15 @@ function kindFromFile(file: File): AiReferenceKind | undefined {
 
 function allowedKinds(model: AiModelId): AiReferenceKind[] {
   if (model === "seedance-2") return ["image", "video", "audio"];
+  if (model === "minimax-h3") return ["image", "video", "audio"];
+  if (model === "pixverse-mimic") return ["image", "video"];
   if (model === "seedance-2-5") return ["image", "audio"];
   return ["image"];
 }
 
 function referenceLimit(model: AiModelId): number {
-  if (model === "minimax-h3") return 2;
+  if (model === "pixverse-mimic") return 2;
+  if (model === "minimax-h3") return 10;
   if (model === "gpt-image-2") return 4;
   if (model === "seedance-2-5") return 40;
   return 6;
@@ -86,6 +90,7 @@ function referenceLimit(model: AiModelId): number {
 function referenceTypeLimit(model: AiModelId, kind: AiReferenceKind): number {
   if (!allowedKinds(model).includes(kind)) return 0;
   if (model === "seedance-2-5") return kind === "image" ? 30 : 10;
+  if (model === "pixverse-mimic") return 1;
   return referenceLimit(model);
 }
 
@@ -110,7 +115,7 @@ function compatibleRatios(model: AiModelId) {
 }
 
 function videoDurationRange(model: AiModelId): { minimum: number; maximum: number } {
-  if (model === "minimax-h3") return { minimum: 5, maximum: 15 };
+  if (model === "minimax-h3" || model === "pixverse-mimic") return { minimum: 5, maximum: 15 };
   if (model === "seedance-2-5") return { minimum: 4, maximum: 30 };
   return { minimum: 4, maximum: 15 };
 }

@@ -37,6 +37,7 @@ import {
   chooseExternalDirectory,
   readExternalWorkspace,
   syncExternalWorkspace,
+  supportsExternalDirectories,
   verifyExternalDirectoryPermission,
   type VaultDirectoryHandle,
 } from "./externalStorage";
@@ -85,7 +86,8 @@ const AI_MODEL_OPTIONS: Array<{
 }> = [
   { id: "gpt-image-2", label: "GPT Image 2", family: "OPENAI IMAGE", kind: "image", detail: "最高 4K · 按次生成", accent: "#f18eae" },
   { id: "seedream-5", label: "Seedream 5.0", family: "DOUBAO IMAGE", kind: "image", detail: "高质感图片 · 按量计费", accent: "#8e9cff" },
-  { id: "minimax-h3", label: "MiniMax H3", family: "MINIMAX VIDEO", kind: "video", detail: "768P · 5–15 秒", accent: "#70cabb" },
+  { id: "minimax-h3", label: "MiniMax H3", family: "MINIMAX VIDEO", kind: "video", detail: "768P · 图片/视频/音频参考", accent: "#70cabb" },
+  { id: "pixverse-mimic", label: "PixVerse Mimic", family: "PIXVERSE VIDEO", kind: "video", detail: "人物图 + 动作视频", accent: "#d59bf0" },
   { id: "seedance-2", label: "Seedance 2.0", family: "DOUBAO VIDEO", kind: "video", detail: "720P · 4–15 秒", accent: "#f1c46f" },
 ];
 
@@ -1422,6 +1424,40 @@ export default function Home() {
     window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
   };
 
+  const writeMigrationConfigToProject = async (devVars: string): Promise<"written" | "downloaded"> => {
+    // Directory access is optional; the caller downloads the config when it is unavailable.
+    if (!supportsExternalDirectories()) return "downloaded";
+
+    let projectRoot: VaultDirectoryHandle;
+    try {
+      projectRoot = await chooseExternalDirectory();
+    } catch (error) {
+      // Cancelling the picker is a normal fallback path; other picker errors should remain visible.
+      if (error instanceof DOMException && error.name === "AbortError") return "downloaded";
+      throw error;
+    }
+
+    let packageConfig: { name?: unknown };
+    try {
+      const packageFile = await (await projectRoot.getFileHandle("package.json")).getFile();
+      packageConfig = JSON.parse(await packageFile.text()) as { name?: unknown };
+    } catch {
+      throw new Error("请选择 Frame Vault 项目的根目录。");
+    }
+    if (packageConfig.name !== "media-desk") throw new Error("请选择 Frame Vault 项目的根目录。");
+
+    try {
+      const configHandle = await projectRoot.getFileHandle(".dev.vars", { create: true });
+      const writable = await configHandle.createWritable();
+      await writable.write(devVars);
+      await writable.close();
+      return "written";
+    } catch {
+      // A permission or filesystem error should not block material recovery.
+      return "downloaded";
+    }
+  };
+
   const exportEncryptedMigration = async () => {
     if (migrationPassword.length < 8) {
       setMigrationFailure("迁移密码至少需要 8 个字符。");
@@ -1491,11 +1527,13 @@ export default function Home() {
     setMigrationFailure("");
     setMigrationMessage("正在恢复素材库…");
     try {
-      const result = await restoreStoredWorkspace(migrationCandidate.backup.assets, migrationCandidate.backup.promptState, "merge");
+      const configResult = await writeMigrationConfigToProject(migrationCandidate.devVars);
+      await restoreStoredWorkspace(migrationCandidate.backup.assets, migrationCandidate.backup.promptState, "merge");
       const envBlob = new Blob([migrationCandidate.devVars], { type: "text/plain;charset=utf-8" });
-      downloadBlob(envBlob, ".dev.vars");
-      setMigrationMessage(`恢复完成：新增 ${result.imported} 个素材，跳过 ${result.skipped} 个重复素材。已下载 .dev.vars，请放回项目根目录后重启服务。`);
-      window.setTimeout(() => window.location.reload(), 1600);
+      if (configResult !== "written") downloadBlob(envBlob, ".dev.vars");
+      setMigrationMessage(configResult === "written"
+        ? "素材已恢复，.dev.vars 已直接写入项目根目录。请重启 npm run dev 后再打开 AI 页面。"
+        : "素材已恢复，已下载 .dev.vars。请将它放入项目根目录并重启 npm run dev 后再打开 AI 页面。");
     } catch (error) {
       setMigrationMessage("");
       setMigrationFailure(error instanceof Error ? error.message : "迁移恢复失败，请重试。");
@@ -1736,6 +1774,8 @@ export default function Home() {
       ? "按 New.bi 实际用量"
       : aiModel === "minimax-h3"
         ? `约 ¥${(aiVideoDuration * 0.3).toFixed(2)}`
+        : aiModel === "pixverse-mimic"
+          ? "按 New.bi 实际用量"
         : `约 ¥${(aiVideoDuration * 0.85).toFixed(2)}`;
   const aiCanSubmit = Boolean(
     aiPrompt.trim()
@@ -2682,7 +2722,7 @@ export default function Home() {
                         style={{ "--ai-accent": option.accent } as CSSProperties}
                         onClick={() => {
                           setAiModel(option.id);
-                          if (option.id === "minimax-h3" && aiVideoDuration < 5) setAiVideoDuration(5);
+                          if ((option.id === "minimax-h3" || option.id === "pixverse-mimic") && aiVideoDuration < 5) setAiVideoDuration(5);
                           setAiError("");
                           setAiGeneration(null);
                         }}
@@ -2944,7 +2984,7 @@ export default function Home() {
               <div>
                 <span>ENCRYPTED DEVICE TRANSFER</span>
                 <h3 id="migration-dialog-title">{migrationDialogMode === "export" ? "导出加密迁移包" : "导入加密迁移包"}</h3>
-                <p>{migrationDialogMode === "export" ? "使用 AES-256-GCM 在本机加密素材、分类、提示词和 .dev.vars 配置。" : "输入迁移密码，解密并恢复素材，同时下载其中的 .dev.vars 配置。"}</p>
+                <p>{migrationDialogMode === "export" ? "使用 AES-256-GCM 在本机加密素材、分类、提示词和 .dev.vars 配置。" : "输入迁移密码，解密并恢复素材，同时优先写入项目根目录的 .dev.vars 配置。"}</p>
               </div>
               <button disabled={isMigrationWorking} onClick={closeMigrationDialog} aria-label="关闭迁移窗口">×</button>
             </header>
@@ -2973,7 +3013,7 @@ export default function Home() {
                   <button disabled={isMigrationWorking || migrationPassword.length < 8} onClick={() => { if (!migrationInputRef.current) return; migrationInputRef.current.value = ""; migrationInputRef.current.click(); }}>{migrationCandidate ? "重新选择" : "选择迁移包"}</button>
                   <input ref={migrationInputRef} className="visually-hidden" type="file" accept=".framevault-migration,application/x-framevault-migration" onChange={(event) => void prepareMigrationFile(event.target.files?.[0])} />
                 </div>
-                {migrationCandidate && <div className="backup-safety-note"><i>✓</i><p>素材将安全合并到当前本地库，不覆盖同编号素材。恢复后浏览器会下载 .dev.vars，请将其放到项目根目录并重启服务。</p></div>}
+                {migrationCandidate && <div className="backup-safety-note"><i>✓</i><p>素材将安全合并到当前本地库，不覆盖同编号素材。恢复时会先尝试直接写入你选择的项目根目录；若浏览器不支持，将下载 .dev.vars，请放回项目根目录并重启服务。</p></div>}
               </div>
             )}
 
@@ -2984,7 +3024,7 @@ export default function Home() {
               {migrationDialogMode === "export" ? (
                 <button className="primary" disabled={isMigrationWorking || migrationPassword.length < 8 || !migrationDevVars.trim()} onClick={() => void exportEncryptedMigration()}>{isMigrationWorking ? "正在加密…" : "生成加密迁移包"}</button>
               ) : (
-                <button className="primary" disabled={isMigrationWorking || !migrationCandidate} onClick={() => void restoreEncryptedMigration()}>{isMigrationWorking ? "正在恢复…" : "安全合并并下载配置"}</button>
+                <button className="primary" disabled={isMigrationWorking || !migrationCandidate} onClick={() => void restoreEncryptedMigration()}>{isMigrationWorking ? "正在恢复…" : "安全合并并写入配置"}</button>
               )}
             </footer>
           </section>

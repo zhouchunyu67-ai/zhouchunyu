@@ -6,12 +6,13 @@ export type NewBiEnv = {
   NEWBI_MODEL_GPT_IMAGE_2?: string;
   NEWBI_MODEL_SEEDREAM_5?: string;
   NEWBI_MODEL_MINIMAX_H3?: string;
+  NEWBI_MODEL_PIXVERSE_MIMIC?: string;
   NEWBI_MODEL_SEEDANCE_2?: string;
   NEWBI_MODEL_SEEDANCE_2_5?: string;
   MEDIA_DESK_AI_ACCESS_TOKEN?: string;
 };
 
-type LogicalModelId = "gpt-image-2" | "seedream-5" | "minimax-h3" | "seedance-2" | "seedance-2-5";
+type LogicalModelId = "gpt-image-2" | "seedream-5" | "minimax-h3" | "pixverse-mimic" | "seedance-2" | "seedance-2-5";
 type CredentialKind = "image" | "seedream" | "video-group";
 type GenerationStatus = "queued" | "running" | "succeeded" | "failed";
 
@@ -25,6 +26,7 @@ type ModelDefinition = {
     | "NEWBI_MODEL_GPT_IMAGE_2"
     | "NEWBI_MODEL_SEEDREAM_5"
     | "NEWBI_MODEL_MINIMAX_H3"
+    | "NEWBI_MODEL_PIXVERSE_MIMIC"
     | "NEWBI_MODEL_SEEDANCE_2"
     | "NEWBI_MODEL_SEEDANCE_2_5";
 };
@@ -80,6 +82,14 @@ const MODEL_DEFINITIONS: Record<LogicalModelId, ModelDefinition> = {
     credential: "video-group",
     defaultProviderModel: "minimax-h3-768p",
     modelEnvKey: "NEWBI_MODEL_MINIMAX_H3",
+  },
+  "pixverse-mimic": {
+    id: "pixverse-mimic",
+    label: "PixVerse Mimic",
+    kind: "video",
+    credential: "video-group",
+    defaultProviderModel: "pixverse-mimic",
+    modelEnvKey: "NEWBI_MODEL_PIXVERSE_MIMIC",
   },
   "seedance-2": {
     id: "seedance-2",
@@ -378,8 +388,15 @@ function validateReferences(definition: ModelDefinition, references: ReferenceUp
   if ((definition.id === "gpt-image-2" || definition.id === "seedream-5") && references.some((reference) => reference.kind !== "image")) {
     return errorResponse(400, "INCOMPATIBLE_REFERENCE", `${definition.label} 当前只接受参考图片。`);
   }
-  if (definition.id === "minimax-h3" && (references.some((reference) => reference.kind !== "image") || references.length > 2)) {
-    return errorResponse(400, "INCOMPATIBLE_REFERENCE", "MiniMax H3 最多接受两张图片，依次作为首帧和尾帧。");
+  if (definition.id === "minimax-h3" && references.some((reference) => !["image", "video", "audio"].includes(reference.kind))) {
+    return errorResponse(400, "INCOMPATIBLE_REFERENCE", "MiniMax H3 支持图片、视频和音频参考。");
+  }
+  if (definition.id === "pixverse-mimic") {
+    const imageCount = references.filter((reference) => reference.kind === "image").length;
+    const videoCount = references.filter((reference) => reference.kind === "video").length;
+    if (references.some((reference) => reference.kind === "audio") || imageCount !== 1 || videoCount !== 1 || references.length !== 2) {
+      return errorResponse(400, "INCOMPATIBLE_REFERENCE", "PixVerse Mimic requires one character image and one motion reference video.");
+    }
   }
   if (definition.id === "seedance-2-5") {
     const imageCount = references.filter((reference) => reference.kind === "image").length;
@@ -617,7 +634,10 @@ async function createGeneration(
         }),
       }, apiKey, env, fetchImpl);
     } else if (definition.id === "minimax-h3") {
-      const referenceImages = await Promise.all(references.map((reference) => fileToDataUrl(reference.file)));
+      const referenceContent = await Promise.all(references.map(async (reference) => {
+        const type = `${reference.kind}_url`;
+        return { type, [type]: { url: await fileToDataUrl(reference.file) }, role: `reference_${reference.kind}` };
+      }));
       const ratio = getString(parameters.ratio);
       result = await upstreamFetch("/minimax/v1/video_generation", {
         method: "POST",
@@ -627,8 +647,23 @@ async function createGeneration(
           duration: clampInteger(parameters.duration, 5, 15, 5),
           resolution: "768P",
           ...(ratio && VIDEO_RATIOS.has(ratio) ? { aspect_ratio: ratio } : {}),
-          ...(referenceImages[0] ? { first_frame_image: referenceImages[0] } : {}),
-          ...(referenceImages[1] ? { last_frame_image: referenceImages[1] } : {}),
+          ...(referenceContent.length ? { content: [{ type: "text", text: prompt }, ...referenceContent] } : {}),
+        }),
+      }, apiKey, env, fetchImpl);
+    } else if (definition.id === "pixverse-mimic") {
+      const ratio = getString(parameters.ratio);
+      const referenceContent = await Promise.all(references.map(async (reference) => {
+        const type = `${reference.kind}_url`;
+        return { type, [type]: { url: await fileToDataUrl(reference.file) }, role: reference.kind === "image" ? "target_image" : "reference_video" };
+      }));
+      result = await upstreamFetch("/api/v3/contents/generations/tasks", {
+        method: "POST",
+        body: JSON.stringify({
+          model,
+          content: [{ type: "text", text: prompt }, ...referenceContent],
+          ratio: ratio && VIDEO_RATIOS.has(ratio) ? ratio : "16:9",
+          duration: clampInteger(parameters.duration, 5, 15, 5),
+          watermark: false,
         }),
       }, apiKey, env, fetchImpl);
     } else {

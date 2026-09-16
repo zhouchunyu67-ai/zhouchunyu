@@ -110,6 +110,12 @@ test("keeps material persistence and audio handling in the local application", a
   assert.match(aiPage, /下载原文件/);
   assert.match(aiPage, /本次生成提示词/);
   assert.match(aiPage, /复制提示词/);
+  assert.match(page, /writeMigrationConfigToProject/);
+  assert.match(page, /supportsExternalDirectories/);
+  assert.match(page, /package\.json/);
+  assert.match(page, /media-desk/);
+  assert.match(page, /configResult !== "written"/);
+  assert.match(page, /\.dev\.vars 已直接写入项目根目录/);
 });
 
 test("keeps the sidebar usable when the available viewport height changes", async () => {
