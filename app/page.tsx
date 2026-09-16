@@ -1534,9 +1534,14 @@ export default function Home() {
       setMigrationMessage(configResult === "written"
         ? "素材已恢复，.dev.vars 已直接写入项目根目录。请重启 npm run dev 后再打开 AI 页面。"
         : "素材已恢复，已下载 .dev.vars。请将它放入项目根目录并重启 npm run dev 后再打开 AI 页面。");
+      window.setTimeout(() => {
+        closeMigrationDialog();
+        window.location.reload();
+      }, 1500);
     } catch (error) {
       setMigrationMessage("");
       setMigrationFailure(error instanceof Error ? error.message : "迁移恢复失败，请重试。");
+    } finally {
       setIsMigrationWorking(false);
     }
   };
