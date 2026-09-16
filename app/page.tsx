@@ -1471,6 +1471,11 @@ export default function Home() {
       setMigrationFailure("请粘贴 .dev.vars 内容；密钥只会在本机加密，不会上传。");
       return;
     }
+    const PLACEHOLDER_PATTERN = /replace-with-|your-[\w-]*-key|placeholder/i;
+    if (PLACEHOLDER_PATTERN.test(migrationDevVars)) {
+      setMigrationFailure("检测到 .dev.vars 仍含占位符（如 replace-with-... / your-...-key / placeholder）。请先在 .dev.vars 中填入真实的 New.bi 密钥，确认无误后再导出迁移包；否则对方恢复后会出现“访问令牌不正确 / 上游 API 401”。");
+      return;
+    }
     setIsMigrationWorking(true);
     setMigrationFailure("");
     setMigrationMessage("正在加密素材和配置，请稍候…");
