@@ -12,8 +12,6 @@ export type AiModelConfig = {
 
 export type AiConfig = {
   baseUrl: string;
-  accessTokenRequired: boolean;
-  publicDisabled: boolean;
   models: AiModelConfig[];
 };
 
@@ -76,10 +74,6 @@ export class AiRequestError extends Error {
   }
 }
 
-function headers(accessToken?: string): HeadersInit {
-  return accessToken ? { "x-media-desk-token": accessToken } : {};
-}
-
 async function readJson<T>(response: Response): Promise<T> {
   let payload: T | AiErrorPayload;
   try {
@@ -101,10 +95,8 @@ export async function loadAiConfig(): Promise<AiConfig> {
 
 export async function createAiGeneration(
   input: CreateAiGenerationInput,
-  accessToken?: string,
   references: AiReferenceUpload[] = [],
 ): Promise<AiGeneration> {
-  const requestHeaders = headers(accessToken);
   let body: BodyInit;
   let combinedHeaders: HeadersInit;
   if (references.length) {
@@ -118,10 +110,10 @@ export async function createAiGeneration(
     }))));
     references.forEach(({ file }) => form.append("reference", file, file.name));
     body = form;
-    combinedHeaders = requestHeaders;
+    combinedHeaders = {};
   } else {
     body = JSON.stringify(input);
-    combinedHeaders = { "content-type": "application/json", ...requestHeaders };
+    combinedHeaders = { "content-type": "application/json" };
   }
   const response = await fetch("/api/ai/generations", {
     method: "POST",
@@ -134,19 +126,17 @@ export async function createAiGeneration(
 export async function queryAiGeneration(
   model: AiModelId,
   taskId: string,
-  accessToken?: string,
 ): Promise<AiGeneration> {
   const response = await fetch(`/api/ai/generations/${encodeURIComponent(model)}/${encodeURIComponent(taskId)}`, {
     cache: "no-store",
-    headers: headers(accessToken),
   });
   return readJson<AiGeneration>(response);
 }
 
-export async function downloadAiAsset(asset: AiGeneratedAsset, accessToken?: string): Promise<File> {
+export async function downloadAiAsset(asset: AiGeneratedAsset): Promise<File> {
   const source = asset.dataUrl ?? asset.downloadUrl;
   if (!source) throw new AiRequestError("生成结果缺少下载地址。", "MISSING_ASSET_URL");
-  const response = await fetch(source, { headers: source.startsWith("/api/ai/") ? headers(accessToken) : {} });
+  const response = await fetch(source);
   if (!response.ok) throw new AiRequestError("生成结果下载失败，请稍后重试。", "ASSET_DOWNLOAD_FAILED", response.status);
   const blob = await response.blob();
   const mimeType = blob.type || asset.mimeType;

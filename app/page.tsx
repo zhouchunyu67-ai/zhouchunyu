@@ -343,7 +343,6 @@ export default function Home() {
   const [aiVideoDuration, setAiVideoDuration] = useState(5);
   const [aiVideoRatio, setAiVideoRatio] = useState("16:9");
   const [aiGenerateAudio, setAiGenerateAudio] = useState(true);
-  const [aiAccessToken, setAiAccessToken] = useState("");
   const [aiGeneration, setAiGeneration] = useState<AiGeneration | null>(null);
   const [aiSubmittedPrompt, setAiSubmittedPrompt] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
@@ -434,6 +433,23 @@ export default function Home() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [aiBusy, isAiStudioOpen]);
+
+  useEffect(() => {
+    const clearDragState = () => setIsDragging(false);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") clearDragState();
+    };
+    window.addEventListener("blur", clearDragState);
+    window.addEventListener("dragend", clearDragState);
+    window.addEventListener("drop", clearDragState);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("blur", clearDragState);
+      window.removeEventListener("dragend", clearDragState);
+      window.removeEventListener("drop", clearDragState);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const preview = previewStageRef.current;
@@ -1016,8 +1032,6 @@ export default function Home() {
 
   const openAiStudio = async () => {
     const preferredModel: AiModelId = selected?.kind === "video" || filter === "video" ? "minimax-h3" : "gpt-image-2";
-    const savedToken = window.sessionStorage.getItem("frame-vault-ai-access-token");
-    if (!aiAccessToken && savedToken) setAiAccessToken(savedToken);
     setAiModel(preferredModel);
     if (selected?.prompt.trim()) setAiPrompt(selected.prompt.trim());
     setAiError("");
@@ -1041,10 +1055,9 @@ export default function Home() {
   const storeAiAssets = useCallback(async (
     generatedAssets: AiGeneratedAsset[],
     prompt: string,
-    accessToken: string,
   ) => {
     if (!generatedAssets.length) throw new AiRequestError("任务完成但没有可保存的素材。", "EMPTY_RESULT");
-    const files = await Promise.all(generatedAssets.map((asset) => downloadAiAsset(asset, accessToken)));
+    const files = await Promise.all(generatedAssets.map((asset) => downloadAiAsset(asset)));
     const now = Date.now();
     const imported = files.map((file, index) => {
       const kind = inferKind(file);
@@ -1090,8 +1103,6 @@ export default function Home() {
     setAiSubmittedPrompt(prompt);
     setAiPollingPaused(false);
     setAiPollAttempt(0);
-    if (aiAccessToken) window.sessionStorage.setItem("frame-vault-ai-access-token", aiAccessToken);
-
     try {
       const generation = await createAiGeneration({
         model: aiModel,
@@ -1099,11 +1110,11 @@ export default function Home() {
         parameters: option.kind === "image"
           ? { size: aiImageSize, quality: aiImageQuality, format: "webp" }
           : { duration: aiVideoDuration, ratio: aiVideoRatio, generateAudio: aiGenerateAudio },
-      }, aiAccessToken);
+      });
       setAiGeneration(generation);
       if (generation.status === "succeeded" && generation.assets?.length) {
         setAiMessage("生成成功，正在写入本地素材库…");
-        await storeAiAssets(generation.assets, prompt, aiAccessToken);
+        await storeAiAssets(generation.assets, prompt);
         setAiMessage("已保存到本机素材库。你可以关闭窗口查看。 ");
       } else if (generation.taskId) {
         setAiMessage("任务已提交，工作台会自动查询生成进度。");
@@ -1131,14 +1142,14 @@ export default function Home() {
         setAiError("任务查询已持续约 20 分钟，已暂停自动查询。任务可能仍在 New.bi 继续运行。");
         return;
       }
-      void queryAiGeneration(aiGeneration.model, aiGeneration.taskId!, aiAccessToken)
+      void queryAiGeneration(aiGeneration.model, aiGeneration.taskId!)
         .then(async (generation) => {
           if (cancelled) return;
           if (generation.status === "succeeded" && generation.assets?.length) {
             setAiBusy(true);
             setAiMessage("视频生成完成，正在下载到本机素材库…");
             try {
-              await storeAiAssets(generation.assets, aiSubmittedPrompt, aiAccessToken);
+              await storeAiAssets(generation.assets, aiSubmittedPrompt);
               if (cancelled) return;
               setAiGeneration(generation);
               setAiMessage("视频已保存到本机素材库。你可以关闭窗口查看。");
@@ -1177,7 +1188,7 @@ export default function Home() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [aiAccessToken, aiGeneration, aiPollAttempt, aiPollingPaused, aiSubmittedPrompt, isAiStudioOpen, storeAiAssets]);
+  }, [aiGeneration, aiPollAttempt, aiPollingPaused, aiSubmittedPrompt, isAiStudioOpen, storeAiAssets]);
 
   const addTextAsset = () => {
     const textContent = textContentDraft.trim();
@@ -1792,7 +1803,6 @@ export default function Home() {
     && aiModelAvailable
     && !aiBusy
     && !aiTaskActive
-    && (!aiConfig?.accessTokenRequired || aiAccessToken.trim()),
   );
 
   return (
@@ -2819,30 +2829,8 @@ export default function Home() {
                 <div className="ai-cost-line"><span>本次预估</span><strong>{aiEstimatedCost}</strong><small>最终以 New.bi 账单为准</small></div>
               </section>
 
-              {aiConfig?.accessTokenRequired && (
-                <section className="ai-studio-section ai-access-section">
-                  <div className="ai-section-heading">
-                    <span>04</span>
-                    <div><strong>工作台访问口令</strong><small>只保存在当前浏览器会话，不写入仓库</small></div>
-                  </div>
-                  <input
-                    type="password"
-                    value={aiAccessToken}
-                    onChange={(event) => setAiAccessToken(event.target.value)}
-                    placeholder="输入 MEDIA_DESK_AI_ACCESS_TOKEN"
-                    autoComplete="off"
-                    disabled={aiBusy || aiTaskActive}
-                  />
-                </section>
-              )}
-
               {aiConfigLoading && <div className="ai-config-notice">正在读取本机 AI 配置…</div>}
-              {!aiConfigLoading && aiConfig?.publicDisabled && (
-                <div className="ai-config-notice warning">
-                  线上 AI 接口已安全停用。部署时需要同时配置服务端密钥和工作台访问口令。
-                </div>
-              )}
-              {!aiConfigLoading && aiConfig && !aiModelAvailable && !aiConfig.publicDisabled && (
+              {!aiConfigLoading && aiConfig && !aiModelAvailable && (
                 <div className="ai-config-notice warning">
                   {selectedAiOption.label} 尚未配置服务端密钥。请按仓库中的 <code>.dev.vars.example</code> 在本机创建 <code>.dev.vars</code>，密钥不会进入 Git。
                 </div>

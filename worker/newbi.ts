@@ -9,7 +9,6 @@ export type NewBiEnv = {
   NEWBI_MODEL_PIXVERSE_MIMIC?: string;
   NEWBI_MODEL_SEEDANCE_2?: string;
   NEWBI_MODEL_SEEDANCE_2_5?: string;
-  MEDIA_DESK_AI_ACCESS_TOKEN?: string;
 };
 
 type LogicalModelId = "gpt-image-2" | "seedream-5" | "minimax-h3" | "pixverse-mimic" | "seedance-2" | "seedance-2-5";
@@ -57,6 +56,8 @@ type ResultTokenPayload = {
 };
 
 type JsonRecord = Record<string, unknown>;
+
+const API_KEY_PLACEHOLDER_PATTERN = /replace-with-|your-[\w-]*-key|placeholder/i;
 
 const MODEL_DEFINITIONS: Record<LogicalModelId, ModelDefinition> = {
   "gpt-image-2": {
@@ -179,36 +180,29 @@ function apiKeyFor(definition: ModelDefinition, env: NewBiEnv): string | undefin
   return getString(env.NEWBI_VIDEO_GROUP_API_KEY);
 }
 
-function isLocalRequest(url: URL): boolean {
-  return url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+function isPlaceholderApiKey(value: string | undefined): boolean {
+  return Boolean(value && API_KEY_PLACEHOLDER_PATTERN.test(value));
 }
 
-function authorize(request: Request, env: NewBiEnv): Response | undefined {
-  const expected = getString(env.MEDIA_DESK_AI_ACCESS_TOKEN);
-  if (!expected && !isLocalRequest(new URL(request.url))) {
-    return errorResponse(503, "PUBLIC_AI_DISABLED", "线上 AI 代理尚未设置访问口令，已安全停用。请由部署者配置后重试。");
-  }
-  if (expected && request.headers.get("x-media-desk-token") !== expected) {
-    return errorResponse(401, "ACCESS_TOKEN_REQUIRED", "访问口令不正确。");
-  }
-  return undefined;
+function missingCredentialMessage(definition: ModelDefinition, apiKey: string | undefined): string {
+  return isPlaceholderApiKey(apiKey)
+    ? `${definition.label} 的 New.bi 密钥仍是示例占位符。请在 .dev.vars 填入真实密钥并重启服务。`
+    : `${definition.label} 尚未配置可用的 New.bi 密钥。`;
 }
 
-function requestConfig(request: Request, env: NewBiEnv): Response {
-  const url = new URL(request.url);
-  const accessTokenRequired = Boolean(getString(env.MEDIA_DESK_AI_ACCESS_TOKEN));
-  const publicDisabled = !isLocalRequest(url) && !accessTokenRequired;
-  const models = Object.values(MODEL_DEFINITIONS).map((definition) => ({
-    id: definition.id,
-    label: definition.label,
-    kind: definition.kind,
-    providerModel: providerModel(definition, env),
-    available: !publicDisabled && Boolean(apiKeyFor(definition, env)),
-  }));
+function requestConfig(env: NewBiEnv): Response {
+  const models = Object.values(MODEL_DEFINITIONS).map((definition) => {
+    const apiKey = apiKeyFor(definition, env);
+    return {
+      id: definition.id,
+      label: definition.label,
+      kind: definition.kind,
+      providerModel: providerModel(definition, env),
+      available: Boolean(apiKey) && !isPlaceholderApiKey(apiKey),
+    };
+  });
   return json({
     baseUrl: baseUrl(env),
-    accessTokenRequired,
-    publicDisabled,
     models,
   });
 }
@@ -585,7 +579,7 @@ async function createGeneration(
     return errorResponse(400, "INVALID_PROMPT", `提示词不能为空，且不能超过 ${maximumPromptLength} 个字符。`);
   }
   const apiKey = apiKeyFor(definition, env);
-  if (!apiKey) return errorResponse(503, "MODEL_NOT_CONFIGURED", `${definition.label} 尚未配置可用的 New.bi 密钥。`);
+  if (!apiKey || isPlaceholderApiKey(apiKey)) return errorResponse(503, "MODEL_NOT_CONFIGURED", missingCredentialMessage(definition, apiKey));
   const parameters = isRecord(body.parameters) ? body.parameters : {};
   const model = providerModel(definition, env);
 
@@ -727,7 +721,7 @@ async function queryGeneration(
   if (!definition || definition.kind !== "video") return errorResponse(400, "UNSUPPORTED_MODEL", "该视频模型不在工作台允许列表中。");
   if (!/^[a-zA-Z0-9._:-]{1,180}$/.test(taskId)) return errorResponse(400, "INVALID_TASK_ID", "任务编号格式无效。");
   const apiKey = apiKeyFor(definition, env);
-  if (!apiKey) return errorResponse(503, "MODEL_NOT_CONFIGURED", `${definition.label} 尚未配置可用的 New.bi 密钥。`);
+  if (!apiKey || isPlaceholderApiKey(apiKey)) return errorResponse(503, "MODEL_NOT_CONFIGURED", missingCredentialMessage(definition, apiKey));
 
   try {
     let result = definition.id === "minimax-h3"
@@ -790,10 +784,7 @@ export async function handleNewBiRequest(
 ): Promise<Response | undefined> {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/api/ai/")) return undefined;
-  if (url.pathname === "/api/ai/config" && request.method === "GET") return requestConfig(request, env);
-
-  const authorizationFailure = authorize(request, env);
-  if (authorizationFailure) return authorizationFailure;
+  if (url.pathname === "/api/ai/config" && request.method === "GET") return requestConfig(env);
 
   if (url.pathname === "/api/ai/generations" && request.method === "POST") {
     return createGeneration(request, env, fetchImpl);

@@ -142,7 +142,6 @@ export default function AiCreationPage() {
   const [quality, setQuality] = useState("medium");
   const [duration, setDuration] = useState(6);
   const [generateAudio, setGenerateAudio] = useState(true);
-  const [accessToken, setAccessToken] = useState("");
   const [libraryReferences, setLibraryReferences] = useState<ReferenceCandidate[]>([]);
   const [selectedReferences, setSelectedReferences] = useState<ReferenceCandidate[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(true);
@@ -196,8 +195,6 @@ export default function AiCreationPage() {
       .then(([nextConfig, records]) => {
         if (!active) return;
         setConfig(nextConfig);
-        const savedToken = window.sessionStorage.getItem("frame-vault-ai-access-token");
-        if (savedToken) setAccessToken(savedToken);
         const references = records.flatMap((record): ReferenceCandidate[] => {
           if (record.kind !== "image" && record.kind !== "video" && record.kind !== "audio") return [];
           const file = asFile(record);
@@ -374,7 +371,7 @@ export default function AiCreationPage() {
     if (!assets.length) throw new AiRequestError("任务完成但没有可保存的素材。", "EMPTY_RESULT");
     const results: SavedResult[] = [];
     for (const asset of assets) {
-      const file = await downloadAiAsset(asset, accessToken);
+      const file = await downloadAiAsset(asset);
       const kind = kindFromFile(file);
       if (kind !== "image" && kind !== "video") throw new AiRequestError("生成结果不是受支持的图片或视频。", "UNSUPPORTED_RESULT");
       const id = crypto.randomUUID();
@@ -394,7 +391,7 @@ export default function AiCreationPage() {
       result.saved = await saveGeneratedResult(result, usedPrompt);
     }
     return results;
-  }, [accessToken, saveGeneratedResult]);
+  }, [saveGeneratedResult]);
 
   const copyGeneratedPrompt = async () => {
     const value = submittedPrompt || prompt.trim();
@@ -419,9 +416,6 @@ export default function AiCreationPage() {
     if (!cleanPrompt) return setError("请先描述你想生成的画面。 ");
     if (!modelAvailable) return setError(`${selectedModel.label} 尚未配置可用密钥。`);
     if (invalidReferences.length || tooManyReferences) return setError("当前参考素材与所选模型不兼容，请先调整。 ");
-    if (config?.accessTokenRequired && !accessToken.trim()) return setError("请输入工作台访问口令。 ");
-    if (accessToken) window.sessionStorage.setItem("frame-vault-ai-access-token", accessToken);
-
     setBusy(true);
     setError("");
     setMessage(modelKind === "image" ? "正在生成图片，请不要重复提交…" : "正在提交视频任务…");
@@ -437,7 +431,7 @@ export default function AiCreationPage() {
         parameters: modelKind === "image"
           ? { ratio, resolution, quality, format: "webp" }
           : { ratio, resolution: model === "minimax-h3" ? "768P" : "720P", duration, generateAudio },
-      }, accessToken, selectedReferences);
+      }, selectedReferences);
       if (next.status === "succeeded" && next.assets?.length) {
         setMessage("生成成功，正在写入本机素材库…");
         const results = await storeAssets(next.assets, cleanPrompt);
@@ -469,7 +463,7 @@ export default function AiCreationPage() {
         setError("已经查询约 20 分钟，自动查询已暂停；任务可能仍在 New.bi 运行。 ");
         return;
       }
-      void queryAiGeneration(generation.model, generation.taskId!, accessToken)
+      void queryAiGeneration(generation.model, generation.taskId!)
         .then(async (next) => {
           if (next.status === "succeeded" && next.assets?.length) {
             setBusy(true);
@@ -509,7 +503,7 @@ export default function AiCreationPage() {
         });
     }, reachedLimit ? 0 : Math.min(15_000, 3_000 + pollAttempt * 1_500));
     return () => window.clearTimeout(timer);
-  }, [accessToken, generation, pollAttempt, pollingPaused, storeAssets, submittedPrompt]);
+  }, [generation, pollAttempt, pollingPaused, storeAssets, submittedPrompt]);
 
   const canSubmit = Boolean(
     prompt.trim()
@@ -518,7 +512,6 @@ export default function AiCreationPage() {
     && !taskActive
     && !invalidReferences.length
     && !tooManyReferences
-    && (!config?.accessTokenRequired || accessToken.trim()),
   );
 
   return (
@@ -713,13 +706,8 @@ export default function AiCreationPage() {
             <div><span>本次预估</span><strong>{estimate}</strong></div>
           </div>
 
-          {config?.accessTokenRequired && (
-            <label className="creation-access-token"><span>工作台访问口令</span><input type="password" value={accessToken} onChange={(event) => setAccessToken(event.target.value)} placeholder="不是 New.bi API Key" autoComplete="off" /></label>
-          )}
-
           {configLoading && <div className="creation-notice">正在读取 AI 配置…</div>}
-          {!configLoading && config?.publicDisabled && <div className="creation-notice warning">公网 AI 接口尚未设置访问保护，已安全停用。</div>}
-          {!configLoading && config && !modelAvailable && !config.publicDisabled && <div className="creation-notice warning">{selectedModel.label} 尚未配置服务端密钥。配置完成并重启后即可使用。</div>}
+          {!configLoading && config && !modelAvailable && <div className="creation-notice warning">{selectedModel.label} 尚未配置服务端密钥。配置完成并重启后即可使用。</div>}
 
           {(generation || message || error) && (
             <div className={`creation-task-status ${error ? "failure" : generation?.status === "succeeded" ? "success" : ""}`} role="status">

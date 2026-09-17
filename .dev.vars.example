@@ -11,10 +11,6 @@ NEWBI_SEEDREAM_API_KEY="replace-with-your-seedream-group-key"
 # and Seedance 2.5 currently use this group.
 NEWBI_VIDEO_GROUP_API_KEY="replace-with-your-video-group-key"
 
-# Required on a public deployment. Visitors enter this separate workbench
-# password in the UI; it is not a New.bi API key.
-MEDIA_DESK_AI_ACCESS_TOKEN="replace-with-a-long-random-password"
-
 # Optional model overrides. Keep these aligned with the model names shown by New.bi.
 # NEWBI_MODEL_GPT_IMAGE_2="gpt-image-2-d"
 # NEWBI_MODEL_SEEDREAM_5="doubao-seedream-5-0-260128"

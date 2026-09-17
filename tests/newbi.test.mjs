@@ -30,20 +30,46 @@ test("config reports model availability without exposing keys", async () => {
   assert.equal(response.status, 200);
   const text = await response.text();
   const payload = JSON.parse(text);
-  assert.equal(payload.publicDisabled, false);
+  assert.equal(Object.hasOwn(payload, "accessTokenRequired"), false);
+  assert.equal(Object.hasOwn(payload, "publicDisabled"), false);
   assert.equal(payload.models.length, 6);
   assert.ok(payload.models.some((model) => model.id === "pixverse-mimic"));
   assert.ok(payload.models.every((model) => model.available));
   assert.doesNotMatch(text, /image-secret|video-secret/);
 });
 
-test("production generation is fail-closed without a workbench access token", async () => {
+test("placeholder API keys are unavailable and never sent upstream", async () => {
+  let called = false;
+  const env = {
+    NEWBI_IMAGE_API_KEY: "replace-with-your-image-group-key",
+    NEWBI_SEEDREAM_API_KEY: "your-seedream-key",
+    NEWBI_VIDEO_GROUP_API_KEY: "placeholder",
+  };
+  const configResponse = await handleNewBiRequest(new Request("http://localhost/api/ai/config"), env);
+  const config = await configResponse.json();
+  assert.ok(config.models.every((model) => model.available === false));
+
+  const response = await handleNewBiRequest(
+    jsonRequest("http://localhost/api/ai/generations", { model: "gpt-image-2", prompt: "test" }),
+    env,
+    async () => {
+      called = true;
+      return new Response();
+    },
+  );
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).error.code, "MODEL_NOT_CONFIGURED");
+  assert.equal(called, false);
+});
+
+test("production generation can use the configured New.bi key without a workbench access token", async () => {
   const response = await handleNewBiRequest(
     jsonRequest("https://desk.example/api/ai/generations", { model: "gpt-image-2", prompt: "test" }),
     { NEWBI_IMAGE_API_KEY: "image-secret" },
+    async () => new Response(JSON.stringify({ data: [{ b64_json: "aGVsbG8=" }] })),
   );
-  assert.equal(response.status, 503);
-  assert.equal((await response.json()).error.code, "PUBLIC_AI_DISABLED");
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).status, "succeeded");
 });
 
 test("allowlist rejects unknown models before making an upstream request", async () => {
@@ -366,27 +392,4 @@ test("image-only models reject audio and video references before upstream billin
   assert.equal(response.status, 400);
   assert.equal(called, false);
   assert.equal((await response.json()).error.code, "INCOMPATIBLE_REFERENCE");
-});
-
-test("configured workbench access token protects production requests", async () => {
-  const env = {
-    NEWBI_IMAGE_API_KEY: "image-secret",
-    MEDIA_DESK_AI_ACCESS_TOKEN: "desk-password",
-  };
-  const rejected = await handleNewBiRequest(
-    jsonRequest("https://desk.example/api/ai/generations", { model: "gpt-image-2", prompt: "test" }),
-    env,
-  );
-  assert.equal(rejected.status, 401);
-
-  const accepted = await handleNewBiRequest(
-    jsonRequest(
-      "https://desk.example/api/ai/generations",
-      { model: "gpt-image-2", prompt: "test" },
-      { "x-media-desk-token": "desk-password" },
-    ),
-    env,
-    async () => new Response(JSON.stringify({ data: [{ b64_json: "aGVsbG8=" }] })),
-  );
-  assert.equal(accepted.status, 200);
 });
