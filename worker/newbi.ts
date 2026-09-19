@@ -231,6 +231,29 @@ class UpstreamRequestError extends Error {
   }
 }
 
+class UpstreamInvalidJsonError extends Error {
+  detail?: string;
+
+  constructor(detail?: string) {
+    super("UPSTREAM_INVALID_JSON");
+    this.name = "UpstreamInvalidJsonError";
+    this.detail = detail;
+  }
+}
+
+function safeNonJsonSnippet(text: string): string | undefined {
+  if (!text.trim()) return undefined;
+  return text
+    .replace(/<script[\s\S]*?<\/script>/gi, "[script]")
+    .replace(/<style[\s\S]*?<\/style>/gi, "[style]")
+    .replace(/Bearer\s+\S+/gi, "Bearer [已隐藏]")
+    .replace(/\b(?:sk-|key-)?[A-Za-z0-9_-]{28,}\b/g, "[已隐藏]")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200) || undefined;
+}
+
 function safeUpstreamErrorDetail(text: string): string | undefined {
   if (!text.trim()) return undefined;
   try {
@@ -260,7 +283,14 @@ async function readUpstreamJson(response: Response): Promise<unknown> {
   try {
     return JSON.parse(text) as unknown;
   } catch {
-    throw new Error("UPSTREAM_INVALID_JSON");
+    const contentType = response.headers.get("content-type") ?? undefined;
+    const isHtml = Boolean(contentType && contentType.toLowerCase().includes("text/html"));
+    const detail = [
+      isHtml ? "上游返回了 HTML 页面而非 JSON，通常是请求路径不存在、被网关兜底到网页" : undefined,
+      contentType ? `content-type: ${contentType}` : undefined,
+      safeNonJsonSnippet(text),
+    ].filter(Boolean).join("；");
+    throw new UpstreamInvalidJsonError(detail || "响应体为空或不是 JSON");
   }
 }
 
@@ -435,10 +465,6 @@ function extractTaskId(value: unknown): string | undefined {
 
 function extractRawStatus(value: unknown): string | undefined {
   return findFirstString(value, new Set(["task_status", "taskstatus", "status", "state"]));
-}
-
-function extractFileId(value: unknown): string | undefined {
-  return findFirstString(value, new Set(["file_id", "fileid"]));
 }
 
 function collectAssetCandidates(root: unknown): Array<{ url?: string; base64?: string; mimeType?: string }> {
@@ -627,60 +653,37 @@ async function createGeneration(
           watermark: false,
         }),
       }, apiKey, env, fetchImpl);
-    } else if (definition.id === "minimax-h3") {
-      const referenceContent = await Promise.all(references.map(async (reference) => {
-        const type = `${reference.kind}_url`;
-        return { type, [type]: { url: await fileToDataUrl(reference.file) }, role: `reference_${reference.kind}` };
-      }));
+    } else {
+      // New.bi（new-api 网关）统一视频任务端点：提交 POST /v1/video/generations，
+      // 之后用返回的任务 id 轮询 GET /v1/video/generations/{task_id}。
+      // 注意：供应商原生路径（/minimax/v1/video_generation、/api/v3/contents/generations/tasks）
+      // 在该网关上不存在，会被兜底返回 HTML 首页，导致 UPSTREAM_INVALID_JSON。
+      const unsupportedReferences = references.filter((reference) => reference.kind !== "image");
+      if (unsupportedReferences.length) {
+        return errorResponse(400, "UNSUPPORTED_REFERENCE", "当前 New.bi 统一视频端点仅支持图片参考；音频/视频参考暂不支持，请移除后重试。");
+      }
+      const imageDataUrls = await Promise.all(references.map((reference) => fileToDataUrl(reference.file)));
       const ratio = getString(parameters.ratio);
-      result = await upstreamFetch("/minimax/v1/video_generation", {
+      const resolution = definition.id === "minimax-h3" ? "768p" : getString(parameters.resolution);
+      const duration = definition.id === "seedance-2-5"
+        ? clampInteger(parameters.duration, 4, 30, 5)
+        : definition.id === "minimax-h3"
+          ? clampInteger(parameters.duration, 5, 15, 5)
+          : clampInteger(parameters.duration, 4, 15, 5);
+      const metadata: Record<string, unknown> = {
+        ...(ratio && VIDEO_RATIOS.has(ratio) ? { ratio, aspect_ratio: ratio } : {}),
+        ...(resolution ? { resolution } : {}),
+        watermark: false,
+      };
+      if (imageDataUrls.length > 1) metadata.image_urls = imageDataUrls;
+      result = await upstreamFetch("/v1/video/generations", {
         method: "POST",
         body: JSON.stringify({
           model,
           prompt,
-          duration: clampInteger(parameters.duration, 5, 15, 5),
-          resolution: "768P",
-          ...(ratio && VIDEO_RATIOS.has(ratio) ? { aspect_ratio: ratio } : {}),
-          ...(referenceContent.length ? { content: [{ type: "text", text: prompt }, ...referenceContent] } : {}),
-        }),
-      }, apiKey, env, fetchImpl);
-    } else if (definition.id === "pixverse-mimic") {
-      const ratio = getString(parameters.ratio);
-      const referenceContent = await Promise.all(references.map(async (reference) => {
-        const type = `${reference.kind}_url`;
-        return { type, [type]: { url: await fileToDataUrl(reference.file) }, role: reference.kind === "image" ? "target_image" : "reference_video" };
-      }));
-      result = await upstreamFetch("/api/v3/contents/generations/tasks", {
-        method: "POST",
-        body: JSON.stringify({
-          model,
-          content: [{ type: "text", text: prompt }, ...referenceContent],
-          ratio: ratio && VIDEO_RATIOS.has(ratio) ? ratio : "16:9",
-          duration: clampInteger(parameters.duration, 5, 15, 5),
-          watermark: false,
-        }),
-      }, apiKey, env, fetchImpl);
-    } else {
-      const ratio = getString(parameters.ratio);
-      const referenceContent = await Promise.all(references.map(async (reference) => {
-        const type = `${reference.kind}_url`;
-        return {
-          type,
-          [type]: { url: await fileToDataUrl(reference.file) },
-          role: `reference_${reference.kind}`,
-        };
-      }));
-      result = await upstreamFetch("/api/v3/contents/generations/tasks", {
-        method: "POST",
-        body: JSON.stringify({
-          model,
-          content: [{ type: "text", text: prompt }, ...referenceContent],
-          generate_audio: parameters.generateAudio !== false,
-          ratio: ratio && VIDEO_RATIOS.has(ratio) ? ratio : "16:9",
-          duration: definition.id === "seedance-2-5"
-            ? clampInteger(parameters.duration, 4, 30, 5)
-            : clampInteger(parameters.duration, 4, 15, 5),
-          watermark: false,
+          duration,
+          ...(imageDataUrls.length === 1 ? { image: imageDataUrls[0] } : {}),
+          metadata,
         }),
       }, apiKey, env, fetchImpl);
     }
@@ -695,8 +698,10 @@ async function createGeneration(
     }
     return json({ model: definition.id, providerModel: model, status: "queued", taskId });
   } catch (error) {
+    if (error instanceof UpstreamInvalidJsonError) {
+      return errorResponse(502, "UPSTREAM_INVALID_JSON", `New.bi 返回了无法识别的响应${error.detail ? `（${error.detail}）` : "。"}`);
+    }
     const message = error instanceof Error ? error.message : "UPSTREAM_ERROR";
-    if (message === "UPSTREAM_INVALID_JSON") return errorResponse(502, "UPSTREAM_INVALID_JSON", "New.bi 返回了无法识别的响应。");
     if (error instanceof UpstreamRequestError) {
       const detail = error.detail ? `：${error.detail}` : "";
       return errorResponse(error.status === 429 ? 429 : 502, "NEWBI_REQUEST_FAILED", `New.bi 调用失败（${error.status}）${detail}`);
@@ -724,27 +729,19 @@ async function queryGeneration(
   if (!apiKey || isPlaceholderApiKey(apiKey)) return errorResponse(503, "MODEL_NOT_CONFIGURED", missingCredentialMessage(definition, apiKey));
 
   try {
-    let result = definition.id === "minimax-h3"
-      ? await upstreamFetch(`/minimax/v1/query/video_generation?task_id=${encodeURIComponent(taskId)}`, { method: "GET" }, apiKey, env, fetchImpl)
-      : await upstreamFetch(`/api/v3/contents/generations/tasks/${encodeURIComponent(taskId)}`, { method: "GET" }, apiKey, env, fetchImpl);
-    let assets = await normalizeAssets(result, definition, apiKey);
+    const result = await upstreamFetch(`/v1/video/generations/${encodeURIComponent(taskId)}`, { method: "GET" }, apiKey, env, fetchImpl);
+    const assets = await normalizeAssets(result, definition, apiKey);
     const rawStatus = extractRawStatus(result);
-    let status = normalizeStatus(result, assets.length > 0);
-
-    if (definition.id === "minimax-h3" && status === "succeeded" && !assets.length) {
-      const fileId = extractFileId(result);
-      if (fileId) {
-        result = await upstreamFetch(`/minimax/v1/files/retrieve?file_id=${encodeURIComponent(fileId)}`, { method: "GET" }, apiKey, env, fetchImpl);
-        assets = await normalizeAssets(result, definition, apiKey);
-        status = normalizeStatus(result, assets.length > 0);
-      }
-    }
+    const status = normalizeStatus(result, assets.length > 0);
 
     if (status === "succeeded" && !assets.length) {
       return errorResponse(502, "RESULT_NOT_READY", "任务已完成，但暂未取得可下载的视频地址，请稍后再查一次。");
     }
     return json({ model: definition.id, providerModel: providerModel(definition, env), taskId, status, rawStatus, assets });
   } catch (error) {
+    if (error instanceof UpstreamInvalidJsonError) {
+      return errorResponse(502, "UPSTREAM_INVALID_JSON", `查询 New.bi 任务失败：返回了无法识别的响应${error.detail ? `（${error.detail}）` : ""}。`);
+    }
     const message = error instanceof Error ? error.message : "UPSTREAM_ERROR";
     if (message.startsWith("UPSTREAM_")) {
       const status = Number(message.slice("UPSTREAM_".length));
