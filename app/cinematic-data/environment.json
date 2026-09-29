@@ -1,0 +1,26 @@
+[
+  {
+    "alt": "大气透视 AI 生成电影感示例图",
+    "description": "远景的色彩衰减与柔化程度。[N] 替换为 0–100，默认参考值 50；不使用时省略。百分比为创意提示强度，不是物理测量值。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-atmosphere-0.png",
+    "index": 1,
+    "prompt": "大气透视 [N]%",
+    "title": "大气透视"
+  },
+  {
+    "alt": "空气透视 AI 生成电影感示例图",
+    "description": "纵深处的蓝移与明度衰减。[N] 替换为 0–100，默认参考值 50；不使用时省略。百分比为创意提示强度，不是物理测量值。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-atmosphere-1.png",
+    "index": 2,
+    "prompt": "空气透视薄雾 [N]%",
+    "title": "空气透视"
+  },
+  {
+    "alt": "空气雾气 / 湿度 AI 生成电影感示例图",
+    "description": "画面湿润感、光晕与朦胧柔焦。[N] 替换为 0–100，默认参考值 50；不使用时省略。百分比为创意提示强度，不是物理测量值。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-atmosphere-2.png",
+    "index": 3,
+    "prompt": "大气湿度 [N]%",
+    "title": "空气雾气 / 湿度"
+  }
+]

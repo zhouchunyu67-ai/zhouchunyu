@@ -1,0 +1,306 @@
+[
+  {
+    "alt": "三点照明灯光示例剧照",
+    "description": "基础照明设置使用三个光源：主光源作为主要光源，柔化阴影的补光，以及将主体与背景分开的背光。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/three-point-lighting.jpg",
+    "index": 1,
+    "prompt": "[Subject] 上的经典三点照明，45 度的主光创建清晰的阴影，柔和的填充光轻轻地打开阴影，暖色调的背光在边缘镶上薄薄的金色光晕，平衡的相互作用将形状雕刻成三维，使用 80 毫米肖像镜头在 f/2.8 的中画幅上拍摄，柯达 Portra 色彩科学具有奶油色肤色和深天鹅绒般的黑色",
+    "title": "三点照明"
+  },
+  {
+    "alt": "主光灯光示例剧照",
+    "description": "场景中主要且最亮的光源，其位置、强度和质量定义了整体情绪并确定了光影的主导方向。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/key-light.jpg",
+    "index": 2,
+    "prompt": "来自单一光源的强定向主光照亮 [Subject]，光线雕刻出清晰的阴影，定义每个轮廓，可见光束中漂浮的灰尘微粒，建立整个情绪的单一光源权威，具有明确光束边缘的菲涅尔聚光灯质量，3200K 的暖钨丝灯色温与冷蓝色环境阴影",
+    "title": "主光"
+  },
+  {
+    "alt": "高调照明灯光示例剧照",
+    "description": "明亮、均匀的照明风格，阴影最少，营造出乐观、干净或空灵的氛围，常见于喜剧、广告和梦境场景中。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/high-key-lighting.jpg",
+    "index": 3,
+    "prompt": "高调灯光淹没 [Subject]，明亮均匀，几乎看不到阴影，整体曝光推高了三分之一档热度，营造出一种空气感爆棚的感觉，在 Alexa 上以 1280 ISO 拍摄，使用 Cooke S7 玻璃，在高光周围产生柔和的光晕，梦幻般的灯光美感，温暖无阴影，乐观无黑暗",
+    "title": "高调照明"
+  },
+  {
+    "alt": "低调的灯光灯光示例剧照",
+    "description": "一种以深阴影和高对比度为主的戏剧性照明风格，仅照亮选定的区域，营造出神秘、紧张和黑色般的氛围。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/low-key-lighting.jpg",
+    "index": 4,
+    "prompt": "[Subject] 上的低调照明，深不可穿透的阴影占据了画面的 80%，只有一个光源照亮了一小部分区域，高光和阴影之间的对比度提高到 8:1，使用 40 毫米 Baltar 镜头在柯达 Double-X 黑白库存上拍摄，经典黑色电影的墨黑色和银色高光，John Alton 级别的黑暗掌握作为活跃的构图元素",
+    "title": "低调的灯光"
+  },
+  {
+    "alt": "明暗对比灯光示例剧照",
+    "description": "明暗之间的极端对比，受到文艺复兴时期绘画的启发，创造出具有丰富阴影和选择性照明的深度雕刻的绘画图像。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/chiaroscuro.jpg",
+    "index": 5,
+    "prompt": "[Subject] 上的明暗对比照明，以一根蜡烛或火焰作为唯一光源，温暖的琥珀色光描绘脸部和手部，而手臂触及不到的一切都消失在绝对的黑暗中，对比度接近无穷大，用 50 毫米大光圈镜头模拟油画，卡拉瓦乔与戈登·威利斯将光视为一种道德力量，以同等程度的揭示和隐藏",
+    "title": "明暗对比"
+  },
+  {
+    "alt": "伦勃朗灯光灯光示例剧照",
+    "description": "以荷兰画家的名字命名——光线的位置在脸部的阴影侧形成一个小三角形的光线，这是一种传达深度和性格的经典肖像技术。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/rembrandt-lighting.jpg",
+    "index": 6,
+    "prompt": "伦勃朗用光拍摄的 [Subject] 肖像，主光位置较高，呈 45 度角，在阴影一侧的脸颊上形成标志性的三角形光线，照明一侧的温暖琥珀色调过渡到另一侧的丰富棕色阴影，使用 105 毫米肖像镜头，f/2 拍摄，绘画般的品质使伦勃朗的作品不朽，转化为摄影光",
+    "title": "伦勃朗灯光"
+  },
+  {
+    "alt": "轮廓灯光示例剧照",
+    "description": "主体在明亮的背景下呈现为黑色形状，消除了所有表面细节，将角色简化为纯粹的形式，并创造出标志性、神话性或匿名的图像。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/silhouette.jpg",
+    "index": 7,
+    "prompt": "[Subject] 在强烈明亮的背光源下减少为纯黑色轮廓，消除所有表面细节，只留下标志性的形状和轮廓，强边缘光追踪边缘，高对比度，柯达 Double-X 黑白库存",
+    "title": "轮廓"
+  },
+  {
+    "alt": "黄金时段灯光示例剧照",
+    "description": "日出后或日落前不久出现的温暖、柔和、定向的光线，投射出长长的阴影，让一切都沐浴在温暖的琥珀色光芒中，使皮肤和风景更加美丽。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/golden-hour.jpg",
+    "index": 8,
+    "prompt": "日落前三十分钟的黄金时刻，[Subject] 沐浴在温暖的琥珀色背光中，长得不可思议的阴影，水平条纹的镜头光晕，整个世界都变成了液体黄金和蜂蜜，在柯达 Vision3 50D 上拍摄，以在日光下获得最大的色彩饱和度，85 毫米镜头将背景压缩成浓密的金色挂毯，这是马利克和卢贝兹基赖以生存的转瞬即逝的魔力",
+    "title": "黄金时段"
+  },
+  {
+    "alt": "蓝色时刻灯光示例剧照",
+    "description": "日出前或日落后天空变成深蓝色时发出的凉爽漫射光，营造出忧郁、沉思或神秘的氛围。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/blue-hour.jpg",
+    "index": 9,
+    "prompt": "日落二十分钟后的蓝色时刻黄昏笼罩着 [Subject]，天空从内部发出明亮的深钴蓝色，温暖的琥珀色人造光源与无处不在的蓝色氛围形成鲜明对比，在 Alexa 上以高 ISO 拍摄，Cooke S4 玻璃将实用的灯光渲染为柔和温暖的光芒，Michael Mann 视觉语言的沉思忧郁",
+    "title": "蓝色时刻"
+  },
+  {
+    "alt": "实用照明灯光示例剧照",
+    "description": "使用场景中的可见光源（灯、蜡烛、霓虹灯、电视屏幕）作为实际照明，创造自然、积极的照明和丰富的氛围。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/practical-lighting.jpg",
+    "index": 10,
+    "prompt": "[Subject] 上的实用照明仅由画面内的可见光源照亮，每种实用的照明都创建了自己的色彩世界，多种色温的相互作用产生了丰富的分层色彩氛围，没有隐藏的电影灯，在蔡司 Super Speed 上以 T1.3 全开拍摄，吸收每个光子，克里斯托弗·道尔 (Christopher Doyle) 的视觉语言",
+    "title": "实用照明"
+  },
+  {
+    "alt": "强光灯光示例剧照",
+    "description": "来自小光源或远光源的光线可以产生锐利、轮廓分明的阴影，增加纹理、戏剧性和图形质量，这些效果可能是刺眼的、不讨人喜欢的，也可能是极其大胆的。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/hard-light.jpg",
+    "index": 11,
+    "prompt": "来自头顶裸露光源的强光在 [Subject] 上投射出锐利的阴影，定义的阴影边缘非常清晰，看起来像是用刀切割的，每个表面纹理都通过倾斜照明放大，使用柯达 Double-X 黑白库存拍摄以实现最大对比度，35 毫米蔡司平面镜头，黑色电影的图形严肃性，其中光本身成为压力的工具",
+    "title": "强光"
+  },
+  {
+    "alt": "柔光灯光示例剧照",
+    "description": "来自大光源的漫射光环绕拍摄对象，产生柔和的阴影过渡，使皮肤更加讨人喜欢，并营造出梦幻或亲密的品质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/soft-light.jpg",
+    "index": 12,
+    "prompt": "柔和的漫射光环绕着 [Subject]，几乎察觉不到阴影过渡，巨大的窗户或漫射源在脸部和肩膀周围轻轻弯曲光线，皮肤以夜光陶瓷品质渲染，使用以柔和渲染和高光微妙光晕而闻名的 Cooke S7 镜头拍摄，Fujifilm Eterna 色彩科学具有精致柔和的色调，维米尔般的无定向日光质量",
+    "title": "柔光"
+  },
+  {
+    "alt": "向上照明灯光示例剧照",
+    "description": "光线从主体下方向上投射，这对人类体验来说是不自然的，创造出怪异、险恶或超自然的效果——经典的“下巴下的手电筒”恐怖外观。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/uplighting.jpg",
+    "index": 13,
+    "prompt": "从下方向上照射 [Subject]，不自然的向上投射光扭转了人类本能地期望的每一个阴影，阴影从眉脊向上落下，在眼睛应该在的地方形成了深黑色的水池，橙色闪烁的火光导致阴影跳舞，用 50mm 镜头拍摄，具有明火的温暖 2000K 色温，来自下方的光具有深刻的生物错误性",
+    "title": "向上照明"
+  },
+  {
+    "alt": "侧面照明灯光示例剧照",
+    "description": "光线从90度角照射到拍摄对象，照亮一半而另一半处于阴影中，将脸部或人物分割开来，产生强烈的立体感和视觉张力。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/side-lighting.jpg",
+    "index": 14,
+    "prompt": "来自单一光源的侧光以 90 度照射 [Subject]，一半明亮地照亮，而另一半则消失在完全阴影中，形成完美的垂直划分，受光侧的每一个纹理都呈现出水晶般的细节，而阴影侧什么也没有透露，使用 80mm 镜头以大画幅拍摄，单源侧光的极端维度，二元性变得可见",
+    "title": "侧面照明"
+  },
+  {
+    "alt": "镜头光晕灯光示例剧照",
+    "description": "当明亮的光源照射到玻璃上时，光会通过镜头元件发生散射——曾经被认为是一种缺陷，现在被故意用来增加能量、真实感或梦幻的科幻品质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/lens-flare.jpg",
+    "index": 15,
+    "prompt": "[Subject] 上的戏剧性镜头光晕，青色和洋红色的水平变形光斑条纹延伸到整个画面，二次幻影光斑在几何链的镜头元件之间弹跳，使用以其激进而美丽的光斑特性而闻名的老式变形 Panavision C 系列镜头拍摄，日出的温暖琥珀色与凉爽的蓝色涂层伪影相映成趣",
+    "title": "镜头光晕"
+  },
+  {
+    "alt": "补光灯灯光示例剧照",
+    "description": "用于柔化或填充主光创建的阴影的辅助光，控制场景的对比度 - 填充越多意味着越柔和，填充越少意味着越生动。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/fill-light.jpg",
+    "index": 16,
+    "prompt": "填充光软化 [Subject] 上的阴影，柔和的辅助光源创建 4:1 对比度，阴影侧保留细节和颜色而不是变成黑色，填充大而扩散，因此它可以包裹起来，而不会产生竞争阴影，使用 65mm 镜头在 35mm Kodak Vision3 上拍摄，细致入微的照明比将专业摄影与业余摄影区分开来",
+    "title": "补光灯"
+  },
+  {
+    "alt": "背光灯光示例剧照",
+    "description": "光线位于拍摄对象后面，在其边缘周围形成一圈光，将拍摄对象与背景分开，并增添光晕般的空灵质感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/backlight.jpg",
+    "index": 17,
+    "prompt": "背光 [Subject]，白金光的明亮边缘描绘出每一个轮廓，头发变成了单独背光线的发光光环，大气尘埃和颗粒像漂浮的星星一样照亮，上帝的光线流过人物，在库克 S4 上拍摄，过度曝光的高光上有轻微的光晕，背光的空灵分离将形式变成了神圣的东西",
+    "title": "背光"
+  },
+  {
+    "alt": "反射光灯光示例剧照",
+    "description": "光线在照射到拍摄对象之前从表面（墙壁、天花板或反射器）反射，创造出具有自然品质的柔和、间接照明。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/bounce-light.jpg",
+    "index": 18,
+    "prompt": "反射光轻轻地包裹着 [Subject]，光从附近的表面反射，产生柔和温暖的照明，没有可辨别的定向阴影，墙壁本身成为发光的辅助光源，使用 Cooke S7 镜头在 Alexa 上拍摄，以柔和地滚降为高光，斯文·尼克维斯特 (Sven Nykvist) 花了一生的时间来完善自然主义的隐形照明，光线服务于主体而不显露自身",
+    "title": "反射光"
+  },
+  {
+    "alt": "十字照明灯光示例剧照",
+    "description": "两个光源位于拍摄对象的两侧，形成高光和阴影的复杂相互作用，从多个方向塑造形状。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/cross-lighting.jpg",
+    "index": 19,
+    "prompt": "[Subject] 上两个相对光源的交叉照明，一侧的暖钨丝光源投射出琥珀色高光，而另一侧的冷蓝白色光源则呈现出钢色调，两种竞争的颜色在一条狭窄的混合光带中相遇，每个表面均由双光源独立雕刻，使用 35 毫米柯达 Vision3 500T 拍摄，以处理丰富的混合色温，50 毫米镜头捕捉雕塑般的维度",
+    "title": "十字照明"
+  },
+  {
+    "alt": "踢球灯灯光示例剧照",
+    "description": "放置在拍摄对象后面和侧面的光，添加比背光更有针对性的重点光边缘，提供分离感和立体感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/kicker-light.jpg",
+    "index": 20,
+    "prompt": "[Subject] 上的踢球灯强调，从后面和侧面聚焦的光束正好捕捉到颧骨边缘、耳朵边缘和肩膀曲线，在黑暗中形成一条细亮线，踢球的微妙创造了深度和三维度，在 T2 下使用 135mm 长焦镜头拍摄，温暖的 3000K 色温暗示钨丝灯实用光源",
+    "title": "踢球灯"
+  },
+  {
+    "alt": "动机照明灯光示例剧照",
+    "description": "灯光似乎来自故事中的逻辑源——窗户、壁炉、路灯——即使用电影灯增强，效果看起来自然合理。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/motivated-lighting.jpg",
+    "index": 21,
+    "prompt": "[Subject] 上的激励照明，场景中的每个光源都在逻辑上合理，阴影全部逻辑地指向远离各自可见源的方向，隐藏的增强保持纯粹自然照明的幻觉，使用 Panavision Primo 镜头在 35mm 上拍摄，使精致的照明看起来像自然的隐形工艺，罗杰·迪金斯 (Roger Deakins) 级别的激励严谨",
+    "title": "动机照明"
+  },
+  {
+    "alt": "环境光灯光示例剧照",
+    "description": "在添加任何附加照明之前环境中存在的现有非定向光，是设置整体亮度和情绪的基础照明层。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/ambient-light.jpg",
+    "index": 22,
+    "prompt": "仅 [Subject] 上的环境光，现有的机构或自然照明提供唯一的光源，没有戏剧性的阴影或电影增强，实时真实地点的诚实的未经处理的光线，在大开的快速镜头上拍摄以处理较低的光照水平，空间本身决定视觉情绪的纪实自然主义",
+    "title": "环境光"
+  },
+  {
+    "alt": "可用光灯光示例剧照",
+    "description": "仅使用场景中自然存在的光线进行拍摄（不添加人造电影灯），从而创造出真实的纪录片质量，需要仔细的曝光管理。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/available-light.jpg",
+    "index": 23,
+    "prompt": "[Subject] 上的可用光线，没有额外的电影照明，纯粹由现有的自然或实际光源照明，真实光线的诚实缺陷造成轻微的曝光不均匀，使用 f/0.95 的极快镜头拍摄以捕捉低环境水平，仅使用自然和建筑提供的纪律，巴里·林登（Barry Lyndon）的朴素",
+    "title": "可用光"
+  },
+  {
+    "alt": "远大照明灯光示例剧照",
+    "description": "面向相机的脸部一侧接收主光，扩大了明显的脸部形状，营造出更明亮、更开放的外观。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/broad-lighting.jpg",
+    "index": 24,
+    "prompt": "[Subject] 上的广泛照明，按键照亮更宽的面向相机的一侧，创建一个开放而温暖的外观，最小化阴影可见，加宽效果使脸部显得更饱满和更有吸引力，软框键与匹配的软填充创建低对比度，在 f/4 的 85mm 镜头上拍摄，浪漫喜剧特写镜头的均匀干净照明，柯达 Portra 风格的温暖皮肤渲染",
+    "title": "远大照明"
+  },
+  {
+    "alt": "短照明灯光示例剧照",
+    "description": "远离相机的脸部一侧接收主光，将更广泛的可见区域置于阴影中，从而创造出瘦削、更具戏剧性和喜怒无常的肖像。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/short-lighting.jpg",
+    "index": 25,
+    "prompt": "[Subject] 上的短光照明，按键击中较窄的远端，将较宽的面向相机的一侧置于阴影中，小的明亮区域营造出被黑暗包围的重音，使用 T1.4 的快速 85mm 镜头拍摄，背景降至黑色，黑色电影肖像心理，隐藏的东西比显示的东西更重要",
+    "title": "短照明"
+  },
+  {
+    "alt": "色温灯光示例剧照",
+    "description": "以开尔文测量的光的温暖或冷度 - 暖光（橙色/琥珀色）表示舒适和亲密，而冷光（蓝色）表示超然、技术或夜晚。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/color-temperature.jpg",
+    "index": 26,
+    "prompt": "[Subject] 上的混合色温，温暖的 2700K 钨丝光源投射出金色光芒，与冷色的 6500K 日光平衡光源以寒冷的无菌色调洗涤，两个色彩世界在拍摄对象的形状上相遇，使用 Kodak Vision3 500T 平衡钨丝灯拍摄，因此温暖的光源呈现中性，而日光则呈现强烈的蓝色，混合色温的视觉诗意映射了情感地理",
+    "title": "色温"
+  },
+  {
+    "alt": "斑驳的光灯光示例剧照",
+    "description": "光线穿过树木、百叶窗或其他半透明物体，在主体上形成光影图案，唤起自然环境和沉思。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/dappled-light.jpg",
+    "index": 27,
+    "prompt": "斑驳的光线透过树冠过滤到 [Subject] 上，数十个小亮点和较大的软斑散布在不断变化的马赛克中，相互作用在表面上创造出自然的点彩画，整体光线从穿过树叶时变为温暖和绿色，T1.4 的 85mm 镜头将背景变成发光的绿色散景，柯达 Vision3 50D 饱和日光库存，自然光的马利克-卢贝兹基祈祷",
+    "title": "斑驳的光"
+  },
+  {
+    "alt": "边缘光灯光示例剧照",
+    "description": "细细的光线描绘出拍摄对象的轮廓，将其与背景分开，营造出精致的电影外观，增加深度和视觉效果。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/edge-light.jpg",
+    "index": 28,
+    "prompt": "边缘光在黑暗中追踪 [Subject] 的完整轮廓，从头顶到指尖的每个轮廓都有一条细亮的线，脸部和前面处于完全阴影中，没有填充，只有明亮的边缘可见，单独的发丝产生光纤光晕效果，在 T2 的 135mm 镜头上拍摄，将背景压缩成无缝的空隙，仅通过轮廓定义形式的电影优雅",
+    "title": "边缘光"
+  },
+  {
+    "alt": "眼光灯光示例剧照",
+    "description": "一个小型专用光源，用于产生聚光灯（主体眼睛中的明亮反射），使眼睛栩栩如生，并与观看者建立重要的联系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/eye-light.jpg",
+    "index": 29,
+    "prompt": "[Subject] 的眼部灯光特写，虹膜中闪烁着明亮的聚光灯，摄影机上方的专用小光源产生双点反射光，使整个脸部栩栩如生，有和没有此灯的眼睛之间的细微差别就像活生生的肖像和死亡面具之间的区别，在 T2.8 的 100mm 微距镜头上拍摄特写，温暖的金色肤色，将专业电影摄影与业余工作区分开来的微小技术细节",
+    "title": "眼光"
+  },
+  {
+    "alt": "图案灯灯光示例剧照",
+    "description": "光线由放置在光源前面的模板（图案片）塑造，投射图案阴影（窗框、百叶窗、树枝），无需物理布景即可添加叙事纹理。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/lighting-stills-v1/gobo-lighting.jpg",
+    "index": 30,
+    "prompt": "Gobo 照明在 [Subject] 上投射图案阴影，以一定角度穿过形状的明暗条纹水平条，阴影图案在穿过三维轮廓时破裂和包裹，由单个硬源通过模板投射，柯达 Double-X 黑白库存可实现灯条和阴影条之间的最大对比度，典型的黑色电影视觉纹理",
+    "title": "图案灯"
+  },
+  {
+    "alt": "正午硬光 (Harsh Midday) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-03.png",
+    "index": 31,
+    "prompt": "正午强烈阳光，浓重阴影，高反差，明亮高光",
+    "title": "正午硬光 (Harsh Midday)"
+  },
+  {
+    "alt": "阴天柔光 (Overcast) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-04.png",
+    "index": 32,
+    "prompt": "阴天柔光，均匀漫射照明，无强烈阴影",
+    "title": "阴天柔光 (Overcast)"
+  },
+  {
+    "alt": "窗户光 (Window Light) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-05.png",
+    "index": 33,
+    "prompt": "窗户光，柔和定向自然光，维米尔式照明",
+    "title": "窗户光 (Window Light)"
+  },
+  {
+    "alt": "霓虹灯 (Neon Lights) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-06.png",
+    "index": 34,
+    "prompt": "霓虹灯，多彩人工照明，城市夜间，混合色温",
+    "title": "霓虹灯 (Neon Lights)"
+  },
+  {
+    "alt": "烛光 (Candlelight) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-08.png",
+    "index": 35,
+    "prompt": "烛光，温暖橙色辉光，亲密低照度，柔和闪烁照明",
+    "title": "烛光 (Candlelight)"
+  },
+  {
+    "alt": "轻微过曝 (Overexposed) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-09.png",
+    "index": 36,
+    "prompt": "轻微过曝，明亮通透，提亮阴影，梦幻质感",
+    "title": "轻微过曝 (Overexposed)"
+  },
+  {
+    "alt": "欠曝暗调 (Underexposed) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-10.png",
+    "index": 37,
+    "prompt": "欠曝，忧郁暗调，深邃阴影，戏剧氛围",
+    "title": "欠曝暗调 (Underexposed)"
+  },
+  {
+    "alt": "推冲处理 (Push +1) AI 生成电影感示例图",
+    "description": "MOKE Vision One · 光线条件。用于描述视觉倾向，不代表物理相机的精确模拟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-4-11.png",
+    "index": 38,
+    "prompt": "增感冲洗 +1 档，提高反差，增加颗粒，更强烈影调",
+    "title": "推冲处理 (Push +1)"
+  }
+]

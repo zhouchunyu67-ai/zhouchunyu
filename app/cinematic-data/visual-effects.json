@@ -1,0 +1,66 @@
+[
+  {
+    "alt": "颜色分级视觉特效示例剧照",
+    "description": "在后期制作中改变和增强色彩以创造特定情绪、时代或视觉特征的过程——电影的最后画笔，将原始素材转化为视觉艺术。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/color-grading.png",
+    "index": 1,
+    "prompt": "[Subject] 的大量颜色分级场景以独特的青色和橙色互补调色板渲染，阴影深入青青色，而肤色和实用效果隔离为深琥珀色，积极的色彩处理，使后期制作色彩成为与原始摄影同等的主导创造力，是电影制作流程中的最后创作行为",
+    "title": "颜色分级"
+  },
+  {
+    "alt": "去饱和度 AI 生成电影感示例图",
+    "description": "降低图像中的颜色强度，转向灰度以创建暗淡、纪实或梦幻般的品质 - 部分去饱和可以隔离单一颜色以获得戏剧性效果。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/desaturation.png",
+    "index": 2,
+    "prompt": "[Subject] 接近单色的去饱和场景，除了单个生动元素外，所有颜色都变成接近灰色，选择性颜色隔离的斯皮尔伯格“辛德勒的名单”技术，周围的灰色将世界渲染为暗淡，而单一颜色坚持认为重要的东西仍然存在，分级中严重去饱和，仅留下一个颜色通道处于活动状态",
+    "title": "去饱和度"
+  },
+  {
+    "alt": "棕褐色调视觉特效示例剧照",
+    "description": "温暖的棕黄色处理让人想起古老的照片和历史时期，立即标志着“过去”，并增添了浪漫、风化的品质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/sepia-tone.png",
+    "index": 3,
+    "prompt": "[Subject] 上的棕褐色调处理，温暖的棕黄色将图像转变成看起来像旧照相底片的图像，整个色谱塌陷为琥珀色和棕色的变化，高光带有浅金色，阴影变成巧克力棕色，可见的颗粒和轻微的渐晕增强了古董品质，通用的视觉语言告诉观众“这是很久以前的事了”",
+    "title": "棕褐色调"
+  },
+  {
+    "alt": "Film Grain视觉特效示例剧照",
+    "description": "化学胶片的可见纹理——密度和颜色的随机变化赋予模拟镜头有机的、触觉的特征，通常以数字方式添加以营造温暖和怀旧的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/film-grain.png",
+    "index": 4,
+    "prompt": "[Subject] 上可见厚重的胶片颗粒，高速 35mm 胶片的有机随机纹理在处理中推了两步，每一帧都充满了舞动的卤化银晶体，阴影中的颗粒更粗，高光中的颗粒更精细，塔伦蒂诺和诺兰坚持保留的柯达 Vision3 500T 纹理，日益数字化的世界中赛璐珞的有机灵魂",
+    "title": "Film Grain"
+  },
+  {
+    "alt": "散景视觉特效示例剧照",
+    "description": "离焦区域的美学品质，尤其是变成柔和圆形球体的光源——美丽的散景创造了一个梦幻般的明亮背景，可以提升任何拍摄对象的质感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/bokeh.png",
+    "index": 5,
+    "prompt": "[Subject] 背后的美丽散景，数百个离焦光源转变成柔和的发光色球，每个都从 85mm 快速镜头的大开光圈中完美地呈现出来，蔡司或徕卡镜头的独特奶油色渲染，其中离焦过渡是黄油般平滑，浅景深的视觉魔力将背景变成印象派的光画",
+    "title": "散景"
+  },
+  {
+    "alt": "强迫视角视觉特效示例剧照",
+    "description": "利用摄像机位置和物体放置之间的关系来创造尺寸的视错觉——霍比特人通过精确的舞台布置而不是 CGI 在甘道夫旁边显得很小。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/forced-perspective.png",
+    "index": 6,
+    "prompt": "通过精确的相机对准和放置，[Subject] 出现不可能的大或小，景深足够深，使近处和远处的元素都显得锐利，前景和背景之间的照明匹配，Peter Jackson 技术，无需数字操作，只需物理和精确对准即可使不可能的事情看起来真实，从而产生强制透视错觉",
+    "title": "强迫视角"
+  },
+  {
+    "alt": "镜头畸变视觉特效示例剧照",
+    "description": "特定镜头产生的光学像差会弯曲、拉伸或扭曲图像——广角桶形畸变、变形椭圆形散景或老式镜头眩光——每个镜头都有自己的个性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/lens-distortion.png",
+    "index": 7,
+    "prompt": "[Subject] 上可见老式变形镜头的镜头畸变、桶形畸变将帧边缘处的直线弯曲成微妙的弧线、椭圆形散景、水平耀斑条纹、边缘比锐利的中心更柔和且更漩涡、色差产生轻微的彩色边纹、累积的缺陷赋予临床现代镜头刻意避免的图像特征",
+    "title": "镜头畸变"
+  },
+  {
+    "alt": "变形/溶解效果视觉特效示例剧照",
+    "description": "一种数字转换效果，其中一种形式平滑地溶解、转变或重塑为另一种形式——角色溶解成粒子、液态金属转变、以太溶解、物质转变。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/morphing.png",
+    "index": 8,
+    "prompt": "[Subject] 捕捉到了转变过程中的情况，形态溶解为粒子、液体或光，在两个身份之间的阈值状态中同时存在和不存在的特征，应用于人体形态的数字变形的数学平滑性，甚至确保变换清晰读取的照明，流动中的身份和转变中的物质的令人不安的美感",
+    "title": "变形/溶解效果"
+  }
+]

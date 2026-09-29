@@ -1,0 +1,42 @@
+[
+  {
+    "alt": "都市夜景 · 霓虹电影感 AI 生成电影感示例图",
+    "description": "保留文件中的组合模板与胶片风格片段，不新增胶片库条目。仅作视觉创意参考；其中固定镜头相机与额外镜头的搭配不能视为真实器材配置。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-recipe-0.png",
+    "index": 1,
+    "prompt": "Cinestill 800T，明亮高光周围的暖红橙色光晕，钨丝灯平衡电影感，霓虹光晕，城市夜景氛围, 使用 ARRI ALEXA 35 拍摄，ARRI 色彩科学，电影级画面，宽动态范围，自然胶片质感, 变形宽银幕镜头，2 倍压缩，椭圆散景，水平蓝色耀光，2.39:1 电影画幅, 霓虹灯，多彩人工照明，城市夜间，混合色温, 浓郁黑色，深邃阴影，高反差，饱和色彩，强烈影调, 大气透视 70%, 空气透视薄雾 55%, 大气湿度 85%\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "都市夜景 · 霓虹电影感"
+  },
+  {
+    "alt": "温柔人像 · 奶油肤色 AI 生成电影感示例图",
+    "description": "保留文件中的组合模板与胶片风格片段，不新增胶片库条目。仅作视觉创意参考；其中固定镜头相机与额外镜头的搭配不能视为真实器材配置。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-recipe-1.png",
+    "index": 2,
+    "prompt": "Kodak Portra 400，柔和粉彩，奶油肤色，自然暖色，细腻胶片颗粒, Contax T2，钛机身便携相机，Carl Zeiss Sonnar 38mm f/2.8 镜头, 85mm f/1.8 人像镜头，悦目的透视，优美的背景分离，平滑散景, 窗户光，柔和定向自然光，维米尔式照明, 奶油色调，柔和粉彩，哑光效果，低反差，平滑影调过渡, 大气透视 40%, 空气透视薄雾 45%, 大气湿度 40%\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "温柔人像 · 奶油肤色"
+  },
+  {
+    "alt": "史诗风光 · 极致通透 AI 生成电影感示例图",
+    "description": "保留文件中的组合模板与胶片风格片段，不新增胶片库条目。仅作视觉创意参考；其中固定镜头相机与额外镜头的搭配不能视为真实器材配置。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-recipe-2.png",
+    "index": 3,
+    "prompt": "Fuji Velvia 50，极高饱和，浓郁红绿，高反差，极细颗粒，风光胶片, 使用 ARRI ALEXA 65 拍摄，65mm 大画幅，IMAX 级解析力，非凡细节，史诗电影尺度, Carl Zeiss Planar 镜头，出色锐度，平滑成像，立体感, 黄金时段，温暖定向阳光，长阴影，金色暖光, 大气透视 20%, 空气透视薄雾 85%, 大气湿度 15%\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "史诗风光 · 极致通透"
+  },
+  {
+    "alt": "黑白纪实 · 街头决定性瞬间 AI 生成电影感示例图",
+    "description": "保留文件中的组合模板与胶片风格片段，不新增胶片库条目。仅作视觉创意参考；其中固定镜头相机与额外镜头的搭配不能视为真实器材配置。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-recipe-3.png",
+    "index": 4,
+    "prompt": "Kodak Tri-X 400，经典黑白，高反差，可见颗粒，浓郁黑色，经典新闻纪实观感, Leica M6 旁轴，精确手动对焦，极简设计, 35mm f/2 广角镜头，环境信息，轻微桶形畸变, 正午强烈阳光，浓重阴影，高反差，明亮高光, 纪实风格，街头摄影感，抓拍，原始质感，决定性瞬间, 大气透视 60%, 空气透视薄雾 40%, 大气湿度 45%\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "黑白纪实 · 街头决定性瞬间"
+  },
+  {
+    "alt": "梦境超现实 · 红外伪色 AI 生成电影感示例图",
+    "description": "保留文件中的组合模板与胶片风格片段，不新增胶片库条目。仅作视觉创意参考；其中固定镜头相机与额外镜头的搭配不能视为真实器材配置。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/vision-one-stills-v1/vision-one-recipe-4.png",
+    "index": 5,
+    "prompt": "Kodak Aerochrome 红外胶片，伪色，粉红洋红植物，超现实梦幻风景，红外摄影, Hasselblad 500CM，6×6 中画幅，方形画幅，Carl Zeiss Planar 80mm 镜头, Helios 44-2 58mm f/2，旋涡散景，复古苏联镜头特征, 逆光，轮廓光，镜头耀光，剪影边缘，光晕效果, 梦幻，空灵，柔焦，朦胧氛围，通透明亮, 大气透视 60%, 空气透视薄雾 70%, 大气湿度 40%\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "梦境超现实 · 红外伪色"
+  }
+]

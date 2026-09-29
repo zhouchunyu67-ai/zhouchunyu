@@ -1,0 +1,98 @@
+[
+  {
+    "alt": "倒叙 AI 生成电影感示例图",
+    "description": "将观众带回到较早时间点的场景，揭示背景故事，为当前行为提供背景，或重新背景化我们认为我们知道的事情。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/flashback.png",
+    "index": 1,
+    "prompt": "[Subject] 的闪回场景以稍微过度曝光的暖移色调渲染，图像比现在更柔和，仿佛通过不完美的回忆镜头观看，调色板推向琥珀色和金色，镜头光晕和光晕赋予图像梦幻般的发光质量，Kodak Vision3 50D 推动和交叉处理复古怀旧的外观，Malick-Lubezki 记忆语言为金色光芒",
+    "title": "倒叙"
+  },
+  {
+    "alt": "铺垫 AI 生成电影感示例图",
+    "description": "植入即将发生的事件的微妙暗示——一面破裂的镜子、一行对话、一种颜色选择——这些细节在第一次观看时似乎无害，但在重看时却变得具有毁灭性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/foreshadowing.png",
+    "index": 2,
+    "prompt": "预示细节隐藏在 [Subject] 周围的明显视野中，一个看似普通的细节几乎不可见，观众只有在第二次观看时才会意识到这是预言，每个元素在第一次观看时显得无辜，但回想起来却充满了不祥的含义，温暖的琥珀色家庭照明使场景感到安全，即使视觉线索低语安全是暂时的",
+    "title": "铺垫"
+  },
+  {
+    "alt": "打破第四堵墙 AI 生成电影感示例图",
+    "description": "角色直接向观众讲话或向观众致意，打破虚构世界的幻象，创造亲密感、喜剧性或存在意识。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/breaking-fourth-wall.png",
+    "index": 3,
+    "prompt": "[Subject] 突然转过头来，带着一种会意的表情直视镜头，其他人物都僵在了自己的活动中，没有意识到这种突破，直接的眼神接触与观看者建立了即时的阴谋联系，摄像机准确地定位在观察者会让观看者同谋的位置，一个比自己世界中的任何人都更信任观众的角色的 Fleabag-Ferris Bueller 亲密感",
+    "title": "打破第四堵墙"
+  },
+  {
+    "alt": "在媒体研究中 AI 生成电影感示例图",
+    "description": "故事从情节的中间开始，而不是从时间顺序开始，立即吸引了观众，并为我们如何到达这里创造了神秘感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/in-medias-res.png",
+    "index": 4,
+    "prompt": "在带有 [Subject] 的媒体资源中，在没有上下文的情况下，将其放入已经进行中的激烈动作中，没有说明或设置，没有解释，观众肾上腺素激增，被迫从碎片中拼凑出故事，手持摄影机的能量和不饱和的色彩等级，从中间开始让观众向前倾斜的塔伦蒂诺-诺兰原则",
+    "title": "在媒体研究中"
+  },
+  {
+    "alt": "悬念 AI 生成电影感示例图",
+    "description": "在悬念最高的时刻结束一个场景、情节或表演，让结果悬而未决，并利用人类对结束的需求来让观众渴望更多。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/cliffhanger.png",
+    "index": 5,
+    "prompt": "[Subject] 将悬念定格在悬念最高的时刻，图像捕捉了分辨率之前的确切瞬间，观看者对结束的需求武器化为绝望的期待，戏剧性的侧光创造了强调身体压力的硬阴影，未解决的紧张需要继续的视觉语言",
+    "title": "悬念"
+  },
+  {
+    "alt": "闪进 AI 生成电影感示例图",
+    "description": "在返回当前时间线之前跳转到显示未来事件的场景，通过在旅程之前揭示目的地来创造戏剧性的讽刺、恐惧或期待。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/flashforward.png",
+    "index": 6,
+    "prompt": "闪现显示 [Subject] 处于未来状态，视觉处理比现在的场景更酷、更不饱和，摄像机定位在与早期镜头相同的角度，使变化相比起来更具破坏性，闪现产生戏剧性的讽刺，因为观众在观看现在展开的同时带着对未来的了解",
+    "title": "闪进"
+  },
+  {
+    "alt": "非线性叙事 AI 生成电影感示例图",
+    "description": "一个不按时间顺序讲述的故事——重新安排时间以创造神秘感、主题共鸣或观众组装的谜题。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/non-linear-narrative.png",
+    "index": 7,
+    "prompt": "[Subject] 可视化的非线性叙事在不同时刻同时存在，每个时间片段都在自己独特的视觉世界中，具有独特的色彩科学，诺兰和塔伦蒂诺的拼图式结构使视觉化，时间顺序是创造性选择而不是义务的非线性原理",
+    "title": "非线性叙事"
+  },
+  {
+    "alt": "平行故事情节 AI 生成电影感示例图",
+    "description": "多个叙事线索同时运行，通常在关键时刻汇聚，通过展示不同的角色如何体验同一个世界来创造主题平行并丰富故事。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/parallel-storylines.png",
+    "index": 8,
+    "prompt": "[Subject] 的平行故事情节同时发生在多个不同的视觉象限中，每个象限都有自己的色彩世界和情感记录，但通过主题连接起来，奥特曼-安德森原则，世界是同时发生的故事的交响乐，无形的线索连接着共享时间而不自知的生活",
+    "title": "平行故事情节"
+  },
+  {
+    "alt": "框架叙事 AI 生成电影感示例图",
+    "description": "故事中的故事结构——一个角色讲述一个故事，我们看着它展开——创造了多层次的视角、可靠性问题和令人满意的叙事嵌套。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/frame-narrative.png",
+    "index": 9,
+    "prompt": "以 [Subject] 作为故事讲述者，在温暖的琥珀色灯光下构建叙事，图像开始融入正在讲述的故事中，两个现实在溶解中短暂共存，温暖的家庭框架让位于嵌套故事的冒险调色板，嵌套结构引发了关于什么是真实的、什么是被修饰的问题",
+    "title": "框架叙事"
+  },
+  {
+    "alt": "画外音旁白 AI 生成电影感示例图",
+    "description": "角色的声音在视觉效果上说话，提供内部想法、背景或评论，可以根据语气创造亲密、讽刺或类似文章的品质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/voiceover-narration.png",
+    "index": 10,
+    "prompt": "场景设计为在沉思的视觉中伴随 [Subject] 的画外音旁白，图像故意安静和反射，为看不见的叙述者的声音创造空间，视觉情绪内省和开放，柔和的不饱和调色板，马利克-斯科塞斯理解正确的沉思图像与文字配对创造出比单独使用任何一个都更伟大的东西",
+    "title": "画外音旁白"
+  },
+  {
+    "alt": "主题 AI 生成电影感示例图",
+    "description": "一种反复出现的视觉、音频或叙事元素，通过重复积累意义——《教父》中的橙子、《黑天鹅》中的镜子、《水形物语》中的水——这些图案成为故事的视觉语言。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/motif.png",
+    "index": 11,
+    "prompt": "[Subject] 在叙事中第 n 次出现的反复出现的视觉主题，观众现在习惯于在视觉上感受到特定的情感，看似平凡的细节通过重复积累了毁灭性的联想重量，科波拉技术训练观众通过一致的放置来阅读视觉符号，主题的力量存在于累积的意义模式中",
+    "title": "主题"
+  },
+  {
+    "alt": "象征主义 AI 生成电影感示例图",
+    "description": "使用具体的视觉元素来代表抽象的想法或主题——笼子代表监禁，水代表重生，红色代表激情或危险——电影的视觉诗意。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/missing-stills-20260909/symbolism.png",
+    "index": 12,
+    "prompt": "[Subject] 的视觉象征意义超出了其字面形式的抽象意义，精确渲染的图像可以传达语言无法达到的真理，构图以纪念碑的敬畏来对待符号 - 集中，孤独，给予最大的视觉空间，塔可夫斯基理解具体的图像可以传达不可言喻的东西",
+    "title": "象征主义"
+  }
+]

@@ -1,0 +1,658 @@
+[
+  {
+    "alt": "Film Noir类型风格示例剧照",
+    "description": "这种类型的定义是高对比度的黑白摄影、城市环境、道德上模棱两可的人物、蛇蝎美人，以及普遍存在的愤世嫉俗和厄运感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/film-noir.png",
+    "index": 1,
+    "prompt": "[Subject] 的黑色电影美学，采用高对比度黑白、深黑色和银色高光、百叶窗阴影图案、雨坑中反射的霓虹灯标志，使用柯达 Double-X 黑白胶片拍摄，强光照明产生剃刀阴影，通过光明与黑暗之间的战争表达道德模糊性的约翰·奥尔顿视觉语言",
+    "title": "Film Noir"
+  },
+  {
+    "alt": "德国表现主义类型风格示例剧照",
+    "description": "这是一场 20 世纪早期的运动，利用扭曲的场景、极端的阴影和夸张的角度来外化内心的心理状态——现代恐怖和蒂姆·伯顿的视觉 DNA。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/german-expressionism.png",
+    "index": 2,
+    "prompt": "德国表现主义与 [Subject] 故意扭曲的建筑，以不可能的角度倾斜的建筑物，以尖锐的角度图案绘制的阴影，违背了实际的光源，令人眼花缭乱的白色和绝对黑色之间的极端对比，没有中间色调，卡里加里审美的世界被心理折磨弯曲，单色与夸张的戏剧照明",
+    "title": "德国表现主义"
+  },
+  {
+    "alt": "真实电影类型风格示例剧照",
+    "description": "一种使用手持相机、自然光和即兴时刻来捕捉真相的纪实方法——相机被认为是存在的，真相被激发而不仅仅是观察。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/cinema-verite.png",
+    "index": 3,
+    "prompt": "[Subject] 的电影级纪录片时刻，手持摄影机跟随动作，自然光提供不受控制的照明，取景不完美且反应性，偶尔的焦点搜索，环境的原始音频，整个美学致力于“不完美即真实”的原则，超级 16 毫米胶片颗粒，相机的存在激发真相的 Jean Rouch 原则",
+    "title": "真实电影"
+  },
+  {
+    "alt": "法国新浪潮类型风格示例剧照",
+    "description": "一场 20 世纪 60 年代的运动打破了一切规则——跳切、手持摄影机、外景拍摄、第四堵墙的打破，以及对精致工作室电影制作的叛逆拒绝，将电影视为对话。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/french-new-wave.png",
+    "index": 4,
+    "prompt": "[Subject] 的法国新浪潮场景手持拍摄，似乎是被偷来的时刻，摄影机跟随即兴的松散，刺眼的正午阳光创造出不讨人喜欢但诚实的照明，构图随意而不是沉稳，对工作室完美的视觉反叛，颗粒状 16mm 胶片上的高对比度黑白，Raoul Coutard 手持美学",
+    "title": "法国新浪潮"
+  },
+  {
+    "alt": "超现实主义类型风格示例剧照",
+    "description": "这是一场利用梦境、潜意识和非理性意象来创造违背逻辑的艺术的运动——融化的时钟、不可能的建筑、梦境逻辑取代了叙事因果关系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/surrealism.png",
+    "index": 5,
+    "prompt": "[Subject] 的超现实主义场景，在一个梦境逻辑取代物理现实的世界中，以纪录片的事实确定性呈现不可能的元素，从不存在的来源中不可能激发的照明，布努埃尔-林奇视觉语言，其中潜意识的建筑被渲染为物理空间，逻辑被感觉取代的世界的令人不安的美丽",
+    "title": "超现实主义"
+  },
+  {
+    "alt": "找到的镜头类型风格示例剧照",
+    "description": "一种将电影呈现为业余爱好者或监控录像的风格——《女巫布莱尔计划》、《超自然活动》，自以为你正在观看的是“真实的”原始镜头。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/found-footage.png",
+    "index": 6,
+    "prompt": "找到了通过消费级相机在夜视模式下拍摄的 [Subject] 的镜头，整个图像采用独特的绿色红外线，取景混乱且不受控制，镜头被数字伪影和压缩块损坏，时间戳在角落里运行，布莱尔女巫原则，你看不到的东西更加可怕，真实性的美学是恐怖最有效的武器",
+    "title": "找到的镜头"
+  },
+  {
+    "alt": "意大利式西部片类型风格示例剧照",
+    "description": "意大利制作的西部片的特点是极端特写、广角镜头、莫里康内风格的配乐、道德上灰色的反英雄，以及风格化、歌剧式的暴力处理方式。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/spaghetti-western.png",
+    "index": 7,
+    "prompt": "意大利西部片与 [Subject] 的对峙，镜头在眯着眼睛的极端特写和揭示广阔空旷空间的超广角镜头之间交替，尘暴在画面中盘旋，黄金时段的沙漠光线投射出长长的阴影，在 Techniscope 2-perf 35mm 上拍摄，呈现出坚韧的宽屏，埃尼奥·莫里康内的沉默张力延伸到了临界点",
+    "title": "意大利式西部片"
+  },
+  {
+    "alt": "意大利新现实主义类型风格示例剧照",
+    "description": "战后意大利运动使用非专业演员、真实地点和工人阶级日常生活的故事——原始、诚实和深刻的人文主义电影，剥离了其道德本质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/italian-neorealism.png",
+    "index": 8,
+    "prompt": "意大利新现实主义与[Subject]在真实的工人阶级街道上，非专业的面孔和真实的服装，提供布景的真实建筑，在尊重的距离观察的相机，提供平坦诚实照明的自然阴光，有尊严地捕捉贫困的黑白摄影，现实本身比编剧可以发明的任何东西都更具戏剧性的德西卡原则",
+    "title": "意大利新现实主义"
+  },
+  {
+    "alt": "道格梅95类型风格示例剧照",
+    "description": "1995 年的丹麦宣言要求手持摄影机、自然光、真实地点、没有类型惯例、没有导演功劳——这是一场彻底剥离电影本质的纯粹运动。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/dogme-95.png",
+    "index": 9,
+    "prompt": "Dogme 95 美学与 [Subject] 在消费级相机上拍摄，没有额外的照明，刺眼的头顶荧光灯作为唯一的照明，色彩平衡稍微偏离，手持呼吸运动，对零技巧的彻底承诺 - 没有音乐，没有效果，没有流派，只有真实空间中的人类，温特伯格·冯·特里尔的贞操誓言变得可见",
+    "title": "道格梅95"
+  },
+  {
+    "alt": "蒙布尔科尔类型风格示例剧照",
+    "description": "超低成本独立电影制作的重点是自然主义对话、即兴创作和年轻人关系的尴尬——微预算的亲密感作为审美。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/mumblecore.png",
+    "index": 10,
+    "prompt": "带有 [Subject] 的 Mumblecore 场景是在带有可用窗光的消费者 DSLR 上拍摄的，对话明显是即兴创作的，有中断的句子和尴尬的停顿，框架是功能性的而不是组合的，声音环境和轻微的回声，Bujalski-Swanberg 美学，其中缺乏预算成为图像的诚实，自然主义的窗光",
+    "title": "蒙布尔科尔"
+  },
+  {
+    "alt": "贾洛类型风格示例剧照",
+    "description": "意大利恐怖惊悚类型以生动的调色板、精心设计的谋杀序列、戴着皮手套的杀手以及优先考虑审美美感而非叙事逻辑的高度视觉风格而闻名。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/giallo.png",
+    "index": 11,
+    "prompt": "[Subject] 的 Giallo 风格场景浸透在生动的原色照明中，来自看不见的来源的深红色，一池强烈的蓝色创造了颜色边界，红色与深紫色中的蓝色相遇，构图更关注审美美感而不是叙事逻辑，每一帧都被设计成一幅画，达里奥·阿基托 (Dario Argento) 的恐怖可以是美丽的原则，《阴风阵阵》的饱和原色",
+    "title": "贾洛"
+  },
+  {
+    "alt": "纪录片类型风格示例剧照",
+    "description": "一部以纪录片风格呈现的虚构电影——头部谈话、观察性摄影作品、标题卡——通过严肃的形式和荒谬的内容之间的对比创造喜剧。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/mockumentary.png",
+    "index": 12,
+    "prompt": "对 [Subject] 的纪录片式头部采访，对看不见的采访者来说，看起来有点偏离镜头，标准纪录片中型特写镜头，带有不讨人喜欢的荧光灯，纪录片格式以战地记者自白的视觉重力来处理场景，手持摄像机偶尔会重新构图以维持纪录片的幻觉，克里斯托弗·客人理解荒诞喜剧需要面无表情的纪录片处理",
+    "title": "纪录片"
+  },
+  {
+    "alt": "诗意现实主义类型风格示例剧照",
+    "description": "一场 1930 年代的法国运动，将现实的工人阶级环境与抒情、梦幻般的视觉美融为一体——通过雾气笼罩的码头、鹅卵石上的雨水和忧郁的爱情，在平凡中寻找诗意。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/poetic-realism.png",
+    "index": 13,
+    "prompt": "[Subject]的诗意现实主义呈现出令人心碎的抒情之美，雾将每一个坚硬的边缘柔化为梦幻般的薄雾，平凡通过氛围转化为视觉诗意，Marcel Carne理解工人阶级的生活包含着与任何贵族戏剧一样的美丽和忧郁，柔和的黑白与丰富的中间色调，雾本身成为渴望的情感纹理",
+    "title": "诗意现实主义"
+  },
+  {
+    "alt": "慢电影类型风格示例剧照",
+    "description": "这是一场包含超长镜头、极少对话和耐心观察的当代运动，挑战观众放慢速度、观察并在持续时间本身中寻找意义。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/slow-cinema.png",
+    "index": 14,
+    "prompt": "[Subject] 在一个完整的构图中的慢速电影，摄像机绝对静止地以无限的耐心观察，自然光的唯一运动逐渐变化，持续时间本身成为主题，自然阴日光提供柔和均匀的照明，塔可夫斯基-贝拉塔尔原则相信观察就足够了，实时的流逝是电影最激进的主题",
+    "title": "慢电影"
+  },
+  {
+    "alt": "超链接电影院类型风格示例剧照",
+    "description": "这种叙事风格编织了多个故事情节，这些故事情节最初看似互不相关，但逐渐揭示出隐藏的链接——“崩溃”、“巴别塔”、“木兰花”——人类经验的相互关联的网络。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/hyperlink-cinema.png",
+    "index": 15,
+    "prompt": "[Subject] 的超链接电影可视化在同一时刻显示多个互不相连的生活，每个人都有自己的灯光世界和情感记录，但共享相同的空间，看不见的联系尚未明显但等待被揭示，罗伯特·奥特曼和保罗·托马斯·安德森同时平行故事的结构，整体大于总和，因为这些生活最终会碰撞",
+    "title": "超链接电影院"
+  },
+  {
+    "alt": "黑色科技类型风格示例剧照",
+    "description": "这是一种将黑色电影美学与科幻小说融合在一起的混合类型——被雨水浸透的霓虹城市、道德模棱两可的主角在高科技反乌托邦中航行，以及对黑色电影的存在主义恐惧被移植到技术未来。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/noir-tech.png",
+    "index": 16,
+    "prompt": "[Subject] 的科技黑色场景，在被雨水浸透的霓虹灯反乌托邦中，经典黑色的硬阴影和道德模糊性被移植到高科技未来，全息广告在潮湿的路面上的反射，《银翼杀手》的孤独，变形镜头耀斑在雨中划过，冷蓝色和热橙色在每一帧中相互竞争，烟雾和蒸汽被人造光轴捕获",
+    "title": "黑色科技"
+  },
+  {
+    "alt": "武侠类型风格示例剧照",
+    "description": "一种以受荣誉准则约束的武术武士为中心的中国流派，以反重力的战斗编排、飘逸的丝绸服装和如画的风景为特色。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/wuxia.png",
+    "index": 17,
+    "prompt": "武侠风格，[Subject] 反重力动作，袍子和布料像书法笔画一样在空中拖曳，李安和张艺谋的打斗舞蹈，背后如画的自然景观——竹林或迷雾山，动作定格在最芭蕾舞的时刻，Kodak Vision3 250D 的温暖，将武术的诗意渲染为视觉艺术",
+    "title": "武侠"
+  },
+  {
+    "alt": "酸性西部类型风格示例剧照",
+    "description": "这是对西方流派的迷幻颠覆，用幻觉的存在主义取代了天命乐观主义。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/acid-western.png",
+    "index": 18,
+    "prompt": "[Subject] 的酸性西部片，在广阔的超现实沙漠景观中，熟悉的西方图像通过迷幻镜头扭曲，过饱和的天空渗出不自然的色彩，灰尘和热雾扭曲地平线，佐杜洛夫斯基的神秘主义遇到贾木许的面无表情，一个孤独的人物在曾经是边疆的存在主义虚空中，16毫米胶片颗粒，美国神话变成了幻觉",
+    "title": "酸性西部"
+  },
+  {
+    "alt": "南哥特式类型风格示例剧照",
+    "description": "这种类型充满了腐朽、道德败坏和美国南部的鬼魂气氛——摇摇欲坠的种植园房屋、西班牙苔藓、令人压抑的湿度和背负黑暗历史的人物。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/southern-gothic.png",
+    "index": 19,
+    "prompt": "[Subject] 的南方哥特式氛围，在摇摇欲坠的建筑和侵蚀的自然中，西班牙苔藓像窗帘一样悬挂，金色的漫射光透过肮脏的窗户过滤，腐烂的美丽，在厚厚的潮湿空气中可见的压抑的温暖，柯达 Vision3 250D 推动温暖，过度曝光的高光渗透到阴影中，每个剥落的表面上都有历史的重量，劳顿梦幻般的威胁",
+    "title": "南哥特式"
+  },
+  {
+    "alt": "蒸汽波美学类型风格示例剧照",
+    "description": "一种源自网络文化的视觉风格，将 80 年代和 90 年代的商业美学——故障艺术、霓虹粉色和青色渐变、复古计算机界面、大理石半身像、日语文本和 VHS 退化——重新利用为对消费资本主义的怀旧批判。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/vaporwave.png",
+    "index": 20,
+    "prompt": "[Subject] 的蒸汽波美学沐浴在霓虹粉色和青色渐变灯光下，复古的数字文物和扫描线叠加，反光镀铬和玻璃表面，1990 年代购物中心关门时的怀旧忧郁，VHS 色彩渗色和跟踪错误，棕榈树和大理石柱，过时技术的美丽，一切都有点过于饱和和有点过于完美",
+    "title": "蒸汽波美学"
+  },
+  {
+    "alt": "宇宙恐怖类型风格示例剧照",
+    "description": "一种对不可知和不可理解的事物的视觉方法——超出人类理解的巨大实体、非欧几里得几何学，以及冷漠宇宙中微不足道的恐惧。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/library-stills-v2/cosmic-horror.png",
+    "index": 21,
+    "prompt": "[Subject] 的宇宙恐怖气氛被画面边缘巨大且难以理解的东西所衬托，非欧几里得几何在建筑中微妙地错误，湮灭的微光扭曲了有机形式，使人物形象变得无关紧要的尺度，隐藏着不应该存在的形状的深阴影，揭示了太多的冷酷的临床照明，了解自己有多么渺小的恐惧",
+    "title": "宇宙恐怖"
+  },
+  {
+    "alt": "写实风格类型风格示例剧照",
+    "description": "PBR、物理光照、次表面散射、微表面瑕疵。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-photorealism.png",
+    "index": 22,
+    "prompt": "[Subject]，写实风格渲染风格，PBR，物理光照，次表面散射，微表面瑕疵。",
+    "title": "写实风格"
+  },
+  {
+    "alt": "风格化 3D类型风格示例剧照",
+    "description": "半 PBR、夸张比例、清晰设计、风格化光影。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-stylized-3d.png",
+    "index": 23,
+    "prompt": "[Subject]，风格化 3D渲染风格，半 PBR，夸张比例，清晰设计，风格化光影。",
+    "title": "风格化 3D"
+  },
+  {
+    "alt": "卡通渲染 / 三渲二类型风格示例剧照",
+    "description": "边缘检测描边、色阶量化、平涂色块、NPR。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-cel-shading.png",
+    "index": 24,
+    "prompt": "[Subject]，卡通渲染 / 三渲二渲染风格，边缘检测描边，色阶量化，平涂色块，NPR。",
+    "title": "卡通渲染 / 三渲二"
+  },
+  {
+    "alt": "日式动画风格类型风格示例剧照",
+    "description": "大眼、天使环高光、速度线、受控面部阴影。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-anime-3d.png",
+    "index": 25,
+    "prompt": "[Subject]，日式动画风格渲染风格，大眼，天使环高光，速度线，受控面部阴影。",
+    "title": "日式动画风格"
+  },
+  {
+    "alt": "手绘 / 绘画风格类型风格示例剧照",
+    "description": "油画笔触、水彩晕染、画布纹理、非 PBR。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-painterly.png",
+    "index": 26,
+    "prompt": "[Subject]，手绘 / 绘画风格渲染风格，油画笔触，水彩晕染，画布纹理，非 PBR。",
+    "title": "手绘 / 绘画风格"
+  },
+  {
+    "alt": "低多边形类型风格示例剧照",
+    "description": "最少面数、平面着色、无贴图、硬边。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-low-poly.png",
+    "index": 27,
+    "prompt": "[Subject]，低多边形渲染风格，最少面数，平面着色，无贴图，硬边。",
+    "title": "低多边形"
+  },
+  {
+    "alt": "抽象 / 实验风格类型风格示例剧照",
+    "description": "程序化几何、粒子、混合媒介、故障艺术。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-abstract-experimental.png",
+    "index": 28,
+    "prompt": "[Subject]，抽象 / 实验风格渲染风格，程序化几何，粒子，混合媒介，故障艺术。",
+    "title": "抽象 / 实验风格"
+  },
+  {
+    "alt": "多风格融合类型风格示例剧照",
+    "description": "一画面多种渲染语言并存、故意的风格碰撞。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-multi-style-fusion.png",
+    "index": 29,
+    "prompt": "[Subject]，多风格融合渲染风格，一画面多种渲染语言并存，故意的风格碰撞。",
+    "title": "多风格融合"
+  },
+  {
+    "alt": "风格化写实类型风格示例剧照",
+    "description": "略微夸张的比例、偶像化五官、柔和 SSS。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-l1-stylized-realism.png",
+    "index": 30,
+    "prompt": "[Subject]，风格化写实渲染风格，略微夸张的比例，偶像化五官，柔和 SSS。",
+    "title": "风格化写实"
+  },
+  {
+    "alt": "半写实类型风格示例剧照",
+    "description": "人体比例准确、轻度风格化、干净皮肤。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-l2-semi-realistic.png",
+    "index": 31,
+    "prompt": "[Subject]，半写实渲染风格，人体比例准确，轻度风格化，干净皮肤。",
+    "title": "半写实"
+  },
+  {
+    "alt": "高度写实类型风格示例剧照",
+    "description": "接近真人、可见毛孔、毛发束级。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-l3-high-realism.png",
+    "index": 32,
+    "prompt": "[Subject]，高度写实渲染风格，接近真人，可见毛孔，毛发束级。",
+    "title": "高度写实"
+  },
+  {
+    "alt": "超写实类型风格示例剧照",
+    "description": "超越现实、微观瑕疵强化、电影感调色。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-l5-hyperrealism.png",
+    "index": 33,
+    "prompt": "[Subject]，超写实渲染风格，超越现实，微观瑕疵强化，电影感调色。",
+    "title": "超写实"
+  },
+  {
+    "alt": "恐怖谷效应类型风格示例剧照",
+    "description": "写实但微表情失真、眼神空洞、节奏错位。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-uncanny-valley.png",
+    "index": 34,
+    "prompt": "[Subject]，恐怖谷效应渲染风格，写实但微表情失真，眼神空洞，节奏错位。",
+    "title": "恐怖谷效应"
+  },
+  {
+    "alt": "轻度风格化类型风格示例剧照",
+    "description": "比例接近真实、形态圆润、暖色调。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-light-stylized.png",
+    "index": 35,
+    "prompt": "[Subject]，轻度风格化渲染风格，比例接近真实，形态圆润，暖色调。",
+    "title": "轻度风格化"
+  },
+  {
+    "alt": "中度风格化类型风格示例剧照",
+    "description": "比例适度夸张、清晰设计、明快色。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-medium-stylized.png",
+    "index": 36,
+    "prompt": "[Subject]，中度风格化渲染风格，比例适度夸张，清晰设计，明快色。",
+    "title": "中度风格化"
+  },
+  {
+    "alt": "重度风格化类型风格示例剧照",
+    "description": "比例极度夸张、强烈设计语言、高饱和。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-heavy-stylized.png",
+    "index": 37,
+    "prompt": "[Subject]，重度风格化渲染风格，比例极度夸张，强烈设计语言，高饱和。",
+    "title": "重度风格化"
+  },
+  {
+    "alt": "极致风格化类型风格示例剧照",
+    "description": "完全脱离人体比例、图形化剪影、抽象配色。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-extreme-stylized.png",
+    "index": 38,
+    "prompt": "[Subject]，极致风格化渲染风格，完全脱离人体比例，图形化剪影，抽象配色。",
+    "title": "极致风格化"
+  },
+  {
+    "alt": "硬边卡通类型风格示例剧照",
+    "description": "硬边描边、明暗二值、高对比色块。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-hard-edge-toon.png",
+    "index": 39,
+    "prompt": "[Subject]，硬边卡通渲染风格，硬边描边，明暗二值，高对比色块。",
+    "title": "硬边卡通"
+  },
+  {
+    "alt": "柔边卡通类型风格示例剧照",
+    "description": "羽化描边、柔和阴影渐变、水彩味。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-soft-edge-toon.png",
+    "index": 40,
+    "prompt": "[Subject]，柔边卡通渲染风格，羽化描边，柔和阴影渐变，水彩味。",
+    "title": "柔边卡通"
+  },
+  {
+    "alt": "描边风格类型风格示例剧照",
+    "description": "显眼黑线、平涂、漫画分格感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-outlined-style.png",
+    "index": 41,
+    "prompt": "[Subject]，描边风格渲染风格，显眼黑线，平涂，漫画分格感。",
+    "title": "描边风格"
+  },
+  {
+    "alt": "混合卡渲类型风格示例剧照",
+    "description": "卡通主体、3D 环境、真实光效。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-hybrid-toon.png",
+    "index": 42,
+    "prompt": "[Subject]，混合卡渲渲染风格，卡通主体，3D 环境，真实光效。",
+    "title": "混合卡渲"
+  },
+  {
+    "alt": "经典赛璐珞类型风格示例剧照",
+    "description": "两段式明暗、手感线稿、旧胶片质感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-classic-cel.png",
+    "index": 43,
+    "prompt": "[Subject]，经典赛璐珞渲染风格，两段式明暗，手感线稿，旧胶片质感。",
+    "title": "经典赛璐珞"
+  },
+  {
+    "alt": "新世代动画类型风格示例剧照",
+    "description": "精致渐变、透明发光、细腻面阴影。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-new-gen-anime.png",
+    "index": 44,
+    "prompt": "[Subject]，新世代动画渲染风格，精致渐变，透明发光，细腻面阴影。",
+    "title": "新世代动画"
+  },
+  {
+    "alt": "厚涂风动画类型风格示例剧照",
+    "description": "厚涂笔触、颜色堆叠、近看像油画。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-thick-paint.png",
+    "index": 45,
+    "prompt": "[Subject]，厚涂风动画渲染风格，厚涂笔触，颜色堆叠，近看像油画。",
+    "title": "厚涂风动画"
+  },
+  {
+    "alt": "极简动画类型风格示例剧照",
+    "description": "极少线、大块留白、纯色剪影。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-minimalist-animation.png",
+    "index": 46,
+    "prompt": "[Subject]，极简动画渲染风格，极少线，大块留白，纯色剪影。",
+    "title": "极简动画"
+  },
+  {
+    "alt": "原神类型风格示例剧照",
+    "description": "高饱和日系卡渲、柔和 SSS、动作番色板。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-genshin-impact.png",
+    "index": 47,
+    "prompt": "[Subject]，原神渲染风格，高饱和日系卡渲，柔和 SSS，动作番色板。",
+    "title": "原神"
+  },
+  {
+    "alt": "崩坏星穹铁道类型风格示例剧照",
+    "description": "科幻卡渲、细腻光斑、偶像式精致。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-honkai-star-rail.png",
+    "index": 48,
+    "prompt": "[Subject]，崩坏星穹铁道渲染风格，科幻卡渲，细腻光斑，偶像式精致。",
+    "title": "崩坏星穹铁道"
+  },
+  {
+    "alt": "美国末日类型风格示例剧照",
+    "description": "高写实 PBR、体积雾、潮湿材质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-the-last-of-us.png",
+    "index": 49,
+    "prompt": "[Subject]，美国末日渲染风格，高写实 PBR，体积雾，潮湿材质。",
+    "title": "美国末日"
+  },
+  {
+    "alt": "最终幻想类型风格示例剧照",
+    "description": "华丽材质、宝石光泽、电影化构图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-final-fantasy.png",
+    "index": 50,
+    "prompt": "[Subject]，最终幻想渲染风格，华丽材质，宝石光泽，电影化构图。",
+    "title": "最终幻想"
+  },
+  {
+    "alt": "看门狗类型风格示例剧照",
+    "description": "近未来都市 PBR、霓虹、反射。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-watch-dogs.png",
+    "index": 51,
+    "prompt": "[Subject]，看门狗渲染风格，近未来都市 PBR，霓虹，反射。",
+    "title": "看门狗"
+  },
+  {
+    "alt": "超凡双生类型风格示例剧照",
+    "description": "电影化数字人、灰调色彩、微动作。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-beyond-two-souls.png",
+    "index": 52,
+    "prompt": "[Subject]，超凡双生渲染风格，电影化数字人，灰调色彩，微动作。",
+    "title": "超凡双生"
+  },
+  {
+    "alt": "Clair Obscur: Expedition 33类型风格示例剧照",
+    "description": "油画风、暗金色调、古典构图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-clair-obscur-expedition-33.png",
+    "index": 53,
+    "prompt": "[Subject]，Clair Obscur: Expedition 33渲染风格，油画风，暗金色调，古典构图。",
+    "title": "Clair Obscur: Expedition 33"
+  },
+  {
+    "alt": "飞碟社 ufotable类型风格示例剧照",
+    "description": "高质感背景、数码光效、镜头感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-ufotable.png",
+    "index": 54,
+    "prompt": "[Subject]，飞碟社 ufotable渲染风格，高质感背景，数码光效，镜头感。",
+    "title": "飞碟社 ufotable"
+  },
+  {
+    "alt": "东映动画类型风格示例剧照",
+    "description": "经典少年漫、明快色、直接构图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-toei-animation.png",
+    "index": 55,
+    "prompt": "[Subject]，东映动画渲染风格，经典少年漫，明快色，直接构图。",
+    "title": "东映动画"
+  },
+  {
+    "alt": "霸权社 CloverWorks类型风格示例剧照",
+    "description": "精致青春日常、柔色、细节堆叠。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-cloverworks.png",
+    "index": 56,
+    "prompt": "[Subject]，霸权社 CloverWorks渲染风格，精致青春日常，柔色，细节堆叠。",
+    "title": "霸权社 CloverWorks"
+  },
+  {
+    "alt": "京都动画 KyoAni类型风格示例剧照",
+    "description": "生活光、柔和日常、写实作画。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-kyoani.png",
+    "index": 57,
+    "prompt": "[Subject]，京都动画 KyoAni渲染风格，生活光，柔和日常，写实作画。",
+    "title": "京都动画 KyoAni"
+  },
+  {
+    "alt": "鬼灭之刃类型风格示例剧照",
+    "description": "水墨打斗、数码光效、绚丽特效。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-demon-slayer.png",
+    "index": 58,
+    "prompt": "[Subject]，鬼灭之刃渲染风格，水墨打斗，数码光效，绚丽特效。",
+    "title": "鬼灭之刃"
+  },
+  {
+    "alt": "新世纪福音战士类型风格示例剧照",
+    "description": "工业感、宗教图像、高对比红蓝。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-evangelion.png",
+    "index": 59,
+    "prompt": "[Subject]，新世纪福音战士渲染风格，工业感，宗教图像，高对比红蓝。",
+    "title": "新世纪福音战士"
+  },
+  {
+    "alt": "CoMix Wave Films类型风格示例剧照",
+    "description": "透光云、城市景观、高明度天空。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-comix-wave.png",
+    "index": 60,
+    "prompt": "[Subject]，CoMix Wave Films渲染风格，透光云，城市景观，高明度天空。",
+    "title": "CoMix Wave Films"
+  },
+  {
+    "alt": "J.C.STAFF类型风格示例剧照",
+    "description": "干净 TV 动画、日常情绪、柔色。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-j-c-staff.png",
+    "index": 61,
+    "prompt": "[Subject]，J.C.STAFF渲染风格，干净 TV 动画，日常情绪，柔色。",
+    "title": "J.C.STAFF"
+  },
+  {
+    "alt": "皮克斯类型风格示例剧照",
+    "description": "半写实造型、全局光、温暖情绪。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-pixar.png",
+    "index": 62,
+    "prompt": "[Subject]，皮克斯渲染风格，半写实造型，全局光，温暖情绪。",
+    "title": "皮克斯"
+  },
+  {
+    "alt": "蓝天工作室类型风格示例剧照",
+    "description": "圆润设计、毛发细节、欢乐色彩。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-blue-sky.png",
+    "index": 63,
+    "prompt": "[Subject]，蓝天工作室渲染风格，圆润设计，毛发细节，欢乐色彩。",
+    "title": "蓝天工作室"
+  },
+  {
+    "alt": "梦工厂类型风格示例剧照",
+    "description": "锐利角色、电影感打光、深色调。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-dreamworks.png",
+    "index": 64,
+    "prompt": "[Subject]，梦工厂渲染风格，锐利角色，电影感打光，深色调。",
+    "title": "梦工厂"
+  },
+  {
+    "alt": "迪士尼动画类型风格示例剧照",
+    "description": "经典美术、高完成度、情绪色板。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-disney-animation.png",
+    "index": 65,
+    "prompt": "[Subject]，迪士尼动画渲染风格，经典美术，高完成度，情绪色板。",
+    "title": "迪士尼动画"
+  },
+  {
+    "alt": "照明娱乐类型风格示例剧照",
+    "description": "糖果色、简单形、喜剧节奏。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-illumination.png",
+    "index": 66,
+    "prompt": "[Subject]，照明娱乐渲染风格，糖果色，简单形，喜剧节奏。",
+    "title": "照明娱乐"
+  },
+  {
+    "alt": "尼克动画类型风格示例剧照",
+    "description": "夸张造型、电视感色彩、顽皮动作。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-nickelodeon.png",
+    "index": 67,
+    "prompt": "[Subject]，尼克动画渲染风格，夸张造型，电视感色彩，顽皮动作。",
+    "title": "尼克动画"
+  },
+  {
+    "alt": "索尼动画类型风格示例剧照",
+    "description": "实验混媒、漫画笔触、色彩错位。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-sony-pictures-animation.png",
+    "index": 68,
+    "prompt": "[Subject]，索尼动画渲染风格，实验混媒，漫画笔触，色彩错位。",
+    "title": "索尼动画"
+  },
+  {
+    "alt": "华纳兄弟动画类型风格示例剧照",
+    "description": "经典卡通、黑色幽默、高色对比。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-warner-bros.png",
+    "index": 69,
+    "prompt": "[Subject]，华纳兄弟动画渲染风格，经典卡通，黑色幽默，高色对比。",
+    "title": "华纳兄弟动画"
+  },
+  {
+    "alt": "新海诚类型风格示例剧照",
+    "description": "发光云、玻璃反射、情绪色温。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-makoto-shinkai.png",
+    "index": 70,
+    "prompt": "[Subject]，新海诚渲染风格，发光云，玻璃反射，情绪色温。",
+    "title": "新海诚"
+  },
+  {
+    "alt": "渡边信一郎类型风格示例剧照",
+    "description": "爵士色彩、都市夜景、成熟叙事。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-shinichiro-watanabe.png",
+    "index": 71,
+    "prompt": "[Subject]，渡边信一郎渲染风格，爵士色彩，都市夜景，成熟叙事。",
+    "title": "渡边信一郎"
+  },
+  {
+    "alt": "中国修仙 · 3D 美术风格类型风格示例剧照",
+    "description": "国风工笔质感、云气、玉/金材质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-chinese-xianxia-3d.png",
+    "index": 72,
+    "prompt": "[Subject]，中国修仙 · 3D 美术风格渲染风格，国风工笔质感，云气，玉/金材质。",
+    "title": "中国修仙 · 3D 美术风格"
+  },
+  {
+    "alt": "哪吒2 · 动画电影美术风格类型风格示例剧照",
+    "description": "细腻面部、火焰特效、戏剧用光。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-nezha-2.png",
+    "index": 73,
+    "prompt": "[Subject]，哪吒2 · 动画电影美术风格渲染风格，细腻面部，火焰特效，戏剧用光。",
+    "title": "哪吒2 · 动画电影美术风格"
+  },
+  {
+    "alt": "追光动画 · 电影美术风格类型风格示例剧照",
+    "description": "写实结合国风、精细布料、情感构图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-light-chaser.png",
+    "index": 74,
+    "prompt": "[Subject]，追光动画 · 电影美术风格渲染风格，写实结合国风，精细布料，情感构图。",
+    "title": "追光动画 · 电影美术风格"
+  },
+  {
+    "alt": "中国动画电影 · 美术风格类型风格示例剧照",
+    "description": "水墨/油画融合、东方色彩、壁画感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-chinese-animated-film.png",
+    "index": 75,
+    "prompt": "[Subject]，中国动画电影 · 美术风格渲染风格，水墨/油画融合，东方色彩，壁画感。",
+    "title": "中国动画电影 · 美术风格"
+  },
+  {
+    "alt": "中国古装剧集类型风格示例剧照",
+    "description": "写实服化、电影灯光、国风布景。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-chinese-costume-drama.png",
+    "index": 76,
+    "prompt": "[Subject]，中国古装剧集渲染风格，写实服化，电影灯光，国风布景。",
+    "title": "中国古装剧集"
+  },
+  {
+    "alt": "Arnold (Maya)类型风格示例剧照",
+    "description": "稳定 GI、干净皮肤、高动态范围。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-arnold.png",
+    "index": 77,
+    "prompt": "[Subject]，Arnold (Maya)渲染风格，稳定 GI，干净皮肤，高动态范围。",
+    "title": "Arnold (Maya)"
+  },
+  {
+    "alt": "Blender Cycles类型风格示例剧照",
+    "description": "路径追踪、自然光、开源审美。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-cycles.png",
+    "index": 78,
+    "prompt": "[Subject]，Blender Cycles渲染风格，路径追踪，自然光，开源审美。",
+    "title": "Blender Cycles"
+  },
+  {
+    "alt": "Unreal Engine 5类型风格示例剧照",
+    "description": "Nanite 细节、Lumen 动态光、实时感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-ue5.png",
+    "index": 79,
+    "prompt": "[Subject]，Unreal Engine 5渲染风格，Nanite 细节，Lumen 动态光，实时感。",
+    "title": "Unreal Engine 5"
+  },
+  {
+    "alt": "V-Ray类型风格示例剧照",
+    "description": "物理精确、建筑材质强、清冷调性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-v-ray.png",
+    "index": 80,
+    "prompt": "[Subject]，V-Ray渲染风格，物理精确，建筑材质强，清冷调性。",
+    "title": "V-Ray"
+  },
+  {
+    "alt": "Redshift类型风格示例剧照",
+    "description": "GPU 加速、高锐度、渲染速度。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-redshift.png",
+    "index": 81,
+    "prompt": "[Subject]，Redshift渲染风格，GPU 加速，高锐度，渲染速度。",
+    "title": "Redshift"
+  },
+  {
+    "alt": "Octane Render类型风格示例剧照",
+    "description": "光谱路径追踪、玻璃/金属极佳、高光爆炸感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/render-style-stills-v1/render-style-octane.png",
+    "index": 82,
+    "prompt": "[Subject]，Octane Render渲染风格，光谱路径追踪，玻璃/金属极佳，高光爆炸感。",
+    "title": "Octane Render"
+  }
+]

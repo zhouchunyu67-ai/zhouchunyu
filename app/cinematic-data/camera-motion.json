@@ -1,0 +1,330 @@
+[
+  {
+    "alt": "空中拍摄摄影示例剧照",
+    "description": "通常使用无人机或直升机从高空拍摄的镜头，提供风景、城市景观或大规模动作的全景视图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/aerial-shot.jpg",
+    "index": 1,
+    "prompt": "从 300 英尺高空拍摄的 [Subject] 全景航拍，拍摄于黄金时段，温暖的琥珀色光线描绘出地形的一侧，而另一侧则陷入深紫色阴影中，体积神射线穿透分散的积云，使用 ARRI Alexa 65 拍摄，采用哈苏玻璃，8K 分辨率，Kodak Vision3 250D 色彩科学，微妙的大气雾霾将深度融入景观中\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "空中拍摄"
+  },
+  {
+    "alt": "鸟瞰图摄影示例剧照",
+    "description": "从头顶正上方拍摄的镜头，直视拍摄对象，创造出上帝般的视角，可以使拍摄对象显得渺小无足轻重，或者揭示从地面看不到的图案。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/birds-eye-view.jpg",
+    "index": 2,
+    "prompt": "俯视 [Subject] 的鸟瞰图，摄像机直接位于头顶上方，创造出扁平化的上帝般的视角，其中深度被消除，一切都变成图案和几何形状，长长的阴影从每个元素延伸，使用 40 毫米等效镜头在中画幅数码相机上拍摄，柔和的青色和金色调色板，从边缘到边缘的法医清晰度\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "鸟瞰图"
+  },
+  {
+    "alt": "特写摄影示例剧照",
+    "description": "构图紧凑的镜头，让拍摄对象的脸部或特定细节充满屏幕，揭示宽镜头中不可见的情感、纹理和微妙细节。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/close-up.jpg",
+    "index": 3,
+    "prompt": "[Subject] 的紧密特写充满整个画面，每个毛孔和纹理都以清晰的细节呈现，浅景深，背景溶解为奶油色散景，来自单一来源的温暖侧光，在 T2 下使用 Cooke S4 75mm 拍摄，柯达 Vision3 500T 色彩科学\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "特写"
+  },
+  {
+    "alt": "荷兰角摄影示例剧照",
+    "description": "摄影机在其滚动轴上倾斜的镜头，形成一条对角地平线，以传达不安、迷失方向、紧张或角色不安的心理状态。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/dutch-angle.jpg",
+    "index": 4,
+    "prompt": "[Subject] 以 25 度荷兰角锐角取景，垂直线对角倾斜穿过画面，长形扭曲阴影，头顶灯光投射破碎的几何图案，35mm 胶片颗粒，Zeiss Super Speed 25mm，变形边缘失真\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "荷兰角"
+  },
+  {
+    "alt": "多莉射击摄影示例剧照",
+    "description": "平滑的摄像机移动，整个摄像机在轮式平台或轨道上物理地靠近、远离或沿着拍摄对象移动，从而营造出一种身临其境的空间运动感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/dolly-shot.jpg",
+    "index": 5,
+    "prompt": "平滑的移动镜头滑向 [Subject]，摄像机在视线水平位置以黄油般的精度在移动轨道上移动，视差效果将前景元素与中景主体与远地细节分开，使用 Panavision Primo 镜头在 35 毫米上拍摄，丰富的黑色和饱和的暖色调，精密移动轨道工作的优雅运动\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "多莉射击"
+  },
+  {
+    "alt": "建立镜头摄影示例剧照",
+    "description": "广角镜头通常在场景开始时用于设置背景，在切入更近的动作之前显示位置、一天中的时间和空间关系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/establishing-shot.jpg",
+    "index": 6,
+    "prompt": "[Subject] 在蓝色时刻的大范围拍摄，深靛蓝色的天空中残留着最后的夕阳痕迹，一些温暖的灯光从内部发出，大气的薄雾柔化了距离，使用 ARRI Alexa 和 Zeiss Master Prime 拍摄，去饱和的冷色调与选择性的温暖色调，建筑精度满足电影故事讲述\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "建立镜头"
+  },
+  {
+    "alt": "极端特写摄影示例剧照",
+    "description": "高度紧凑的镜头聚焦于一个非常具体的细节——一只眼睛、一只颤抖的手、一滴汗水——放大了意义，迫使观众与拍摄对象亲密接触。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/extreme-close-up.jpg",
+    "index": 7,
+    "prompt": "[Subject] 的极端微距特写充满整个画面，每一个微观细节都以临床精确度呈现，环形光形成圆形聚光灯，100 毫米微距镜头上 f/2.8 的极薄景深，Fujifilm Velvia 启发的饱和色彩科学，极度接近的法医亲密感\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "极端特写"
+  },
+  {
+    "alt": "极限远射摄影示例剧照",
+    "description": "广角镜头，拍摄对象在广阔的环境中显得很小，强调规模、孤立性或周围环境的压倒性本质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/extreme-long-shot.jpg",
+    "index": 8,
+    "prompt": "[Subject] 的远景镜头在延伸至地平线的广阔景观中几乎看不见，单个长阴影是完美水平世界中唯一的垂直元素，天空从地平线的淡白色渐变到头顶的深蓝色，使用大画幅 65mm 胶片拍摄，无限景深渲染一切从英尺到无穷远都锐利，《阿拉伯的劳伦斯》规模和荒凉\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "极限远射"
+  },
+  {
+    "alt": "平视拍摄摄影示例剧照",
+    "description": "在拍摄对象眼高处拍摄的中性镜头，这是最自然、最常见的拍摄角度，在观看者和拍摄对象之间营造出一种平等和客观的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/eye-level-shot.jpg",
+    "index": 9,
+    "prompt": "[Subject] 的眼平镜头，相机精确定位在观看者的眼睛高度，与观看者建立直接且平等的关系，自然光提供柔和的定向照明，没有戏剧性的角度或操纵，使用 16 毫米胶片拍摄，具有柔和的颗粒、自然的调色板、亲密的纪录片静止感\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "平视拍摄"
+  },
+  {
+    "alt": "手持拍摄摄影示例剧照",
+    "description": "操作员手持的相机没有稳定性，导致自然的抖动和运动，从而根据环境创造出原始的即时性、纪实现实主义或疯狂的能量。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/handheld-shot.jpg",
+    "index": 10,
+    "prompt": "手持相机跟随 [Subject]，画面中的自然抖动和呼吸运动，快速移动元素上的运动模糊，超级 16mm 胶片的粗糙纹理在处理过程中推了两步，色彩饱和度高且高光溢出，原始的未经过滤的能量处于瞬间而不是观察它\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "手持拍摄"
+  },
+  {
+    "alt": "正面射击摄影示例剧照",
+    "description": "拍摄对象移动或直接面向相机的镜头，当拍摄对象接近或直接凝视观看者时，会产生一种对抗性、强大的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/head-on-shot.jpg",
+    "index": 11,
+    "prompt": "[Subject] 直接向摄像机移动的正面镜头，双边对称，随着人物在画面中变大，摄像机保持地面不动，使用变形 40mm Panavision C 系列玻璃拍摄，轻微的桶形畸变增加了威胁、青色阴影和琥珀色高光，直接接近的对抗能量\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "正面射击"
+  },
+  {
+    "alt": "高角度拍摄摄影示例剧照",
+    "description": "相机位于拍摄对象上方，俯视，使拍摄对象显得更小、更弱或更脆弱，同时也提供了更广阔的场景布局视图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/high-angle-shot.jpg",
+    "index": 12,
+    "prompt": "俯视 [Subject] 的高角度镜头，视角使它们显得难以置信的小和脆弱，相机位于上方高处，使用 21 毫米宽镜头在 Arriflex 上拍摄，以夸大空间扭曲，带有单一颜色强调的柔和的机构调色板\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "高角度拍摄"
+  },
+  {
+    "alt": "插入镜头摄影示例剧照",
+    "description": "对场景中特定细节的特写镜头——滴答作响的时钟、一封信、拔出的武器——将观众的注意力引导到关键的叙事元素上。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/insert-shot.jpg",
+    "index": 13,
+    "prompt": "插入 [Subject] 的镜头，在紧凑的取景中孤立，温暖的灯光投射出金色的光芒，而周围的空间陷入阴影，使用 f/2 微距镜头拍摄，形成极薄的焦点，柯达 5219 500T 胶片温暖，结果的重量集中在单个物体上\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "插入镜头"
+  },
+  {
+    "alt": "远射摄影示例剧照",
+    "description": "显示主体在其环境中的全身，平衡人物和背景，同时建立空间关系并保持主体的可识别性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/long-shot.jpg",
+    "index": 14,
+    "prompt": "[Subject]的长镜头，从头到脚的完整人物可见，环境的尺度使人物相形见绌，人物的姿势散发着安静的权威，65mm大画幅，50mm镜头拍摄，浓郁的彩色暖色调，经典电影的神话取景\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "远射"
+  },
+  {
+    "alt": "低角度拍摄摄影示例剧照",
+    "description": "相机位于拍摄对象下方，向上看，使拍摄对象显得占主导地位、强大、英雄或气势磅礴。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/low-angle-shot.jpg",
+    "index": 15,
+    "prompt": "从下方仰视[Subject]的低角度拍摄，相机置于地面通过垂直汇聚线向上拍摄，Cooke S4 18mm广角镜头拍摄夸大高度畸变，高对比度柯达Double-X黑白美学，《公民凯恩》大气磅礴\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "低角度拍摄"
+  },
+  {
+    "alt": "主镜头摄影示例剧照",
+    "description": "从头到尾捕捉整个场景的连续广角镜头，作为剪辑中分层更近距离覆盖的基础。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/master-shot.jpg",
+    "index": 16,
+    "prompt": "[Subject] 的广角主镜头，所有元素同时可见，每个人物都被精确遮挡，形成了交叉眼线和微妙张力的构图，使用三脚架上的 27mm 镜头在 35mm 上拍摄，经典的好莱坞舞台与奥特曼式的分层自然主义\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "主镜头"
+  },
+  {
+    "alt": "中景摄影示例剧照",
+    "description": "从腰部以上开始拍摄主体，这是对话场景的主力——距离足够近，可以读取表情，但又足够宽，可以捕捉肢体语言和手势。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/medium-shot.jpg",
+    "index": 17,
+    "prompt": "[Subject] 的中景镜头，从腰部以上取景，完美的对话距离，展现面部表情和雄辩的手部语言，使用 50 毫米镜头、T2.8、柯达 Vision3 200T 拍摄，具有丰富的温暖中间色调\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "中景"
+  },
+  {
+    "alt": "过肩式摄影示例剧照",
+    "description": "从一个角色背后拍摄，越过他们的肩膀看着另一个角色，这是对话的标准覆盖范围，创造了空间关系和一种身临其境的对话感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/over-the-shoulder.jpg",
+    "index": 18,
+    "prompt": "过肩拍摄，近处人物的肩膀和下巴在前景中柔和而黑暗，[Subject] 在中景中焦点清晰，两个人物之间的空间深度充满张力，在 T2 处使用 65mm 镜头拍摄，创造出狭窄的景深，丰富的明暗对比照明，带有深棕色阴影和温暖的金色高光\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "过肩式"
+  },
+  {
+    "alt": "头顶射击摄影示例剧照",
+    "description": "摄像机直接位于场景上方，俯视，类似于鸟瞰图，但通常更近，通常用于桌面场景、地图或精心设计的动作。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/overhead-shot.jpg",
+    "index": 19,
+    "prompt": "俯视 [Subject] 的俯视镜头，平面几何排列渲染为图形构图，自然北极光创造柔和均匀的照明，没有刺眼的阴影，使用 55mm 镜头以中画幅拍摄，自上而下的透视具有临床清晰度，韦斯·安德森 (Wes Anderson) 级别的构图精度\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "头顶射击"
+  },
+  {
+    "alt": "平移拍摄摄影示例剧照",
+    "description": "相机在固定轴上水平旋转，向左或向右扫动以显示空间的宽度、跟随横向移动或连接场景中的主体。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/pan-shot.jpg",
+    "index": 20,
+    "prompt": "缓慢的全景摇摄显示 [Subject]，摄像机在流体头上平稳旋转，稳定的水平扫描连接大范围的视觉信息，使用 Panavision E 系列玻璃在 35mm 变形镜头上拍摄，超宽视野将全景压缩成分层的纹理带，冷青色阴影与温暖的高光色调形成鲜明对比\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "平移拍摄"
+  },
+  {
+    "alt": "观点射击摄影示例剧照",
+    "description": "准确地呈现角色所看到的场景，将观看者置于他们的主观体验中，并创造强大的认同感和沉浸感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/pov-shot.jpg",
+    "index": 21,
+    "prompt": "通过 [Subject] 的眼睛拍摄的第一人称 POV，模仿未对焦的人类视觉的浅景深，对焦架上微妙的镜头呼吸，使用宽 14mm 直线镜头拍摄以近似人类视野，准确地看到角色所看到的沉浸式主观性\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "观点射击"
+  },
+  {
+    "alt": "机架焦点摄影示例剧照",
+    "description": "在同一个镜头中故意将焦点从一个主题转移到另一个主题，在不剪切的情况下重新引导观众的注意力，并在前景和背景之间创建优雅的视觉过渡。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/rack-focus.jpg",
+    "index": 22,
+    "prompt": "使用 [Subject] 进行机架对焦拍摄，在清晰的前景细节和解析的背景之间过渡，对焦拉动需要整整两秒，散焦平面中的奶油色圆形散景层，使用老式佳能 K35 镜头在 T1.4 全开拍摄，以实现平面之间的最大分离，浅景深将焦点本身变成了讲故事的工具\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "机架焦点"
+  },
+  {
+    "alt": "慢动作摄影示例剧照",
+    "description": "以高于播放速度的帧速率捕获的镜头，延长时间以显示正常速度下看不见的细节，并放大某一时刻的冲击力、美感或情感分量。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/slow-motion.jpg",
+    "index": 23,
+    "prompt": "以 240 fps 的慢动作捕捉 [Subject] 悬浮在一个拉伸的瞬间，灰尘颗粒一动不动地悬挂在光轴中，每个细节都冻结在水晶般的清晰度中，使用配备 Zeiss Master Prime 玻璃的 Phantom Flex4K 高速相机拍摄，时间被拉伸，直到一秒变成永恒的美丽\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "慢动作"
+  },
+  {
+    "alt": "斯坦尼康摄影示例剧照",
+    "description": "操作员佩戴的稳定摄像机装置，可在复杂环境中跟踪拍摄对象时产生平稳、浮动的运动，将移动车工作的流畅性与手持的自由性结合起来。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/steadicam.jpg",
+    "index": 24,
+    "prompt": "斯坦尼康跟踪镜头通过不断变化的环境平稳地漂浮在 [Subject] 后面，超自然的平滑度营造出漂浮的掠夺性存在，使用蔡司标准速度镜头在 Arriflex 35BL 上拍摄，光温从温暖的钨丝灯到冷色荧光灯的变化创造了生动的色彩之旅\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "斯坦尼康"
+  },
+  {
+    "alt": "追踪射击摄影示例剧照",
+    "description": "相机在移动主体的旁边、后面或前面移动，保持一致的空间关系，以营造一种旅程、追求或陪伴的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/tracking-shot.jpg",
+    "index": 25,
+    "prompt": "[Subject] 在肩高处跟随 [Subject] 进行横向跟踪拍摄，摄影机在平行轨道上保持完美的节奏，前景、中景和背景层之间的视差分离平滑，使用 35mm Kodak Vision3 250D 和 40mm Panavision Primo 镜头拍摄，摄影机随着拍摄对象行走而有节奏的稳定伴奏\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "追踪射击"
+  },
+  {
+    "alt": "眩晕效应摄影示例剧照",
+    "description": "也称为移动变焦——相机在缩小时移动（反之亦然），导致背景扭曲，而拍摄对象保持相同大小，产生一种发自内心的迷失方向感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/vertigo-effect.jpg",
+    "index": 26,
+    "prompt": "[Subject] 上的眩晕效果推车变焦锁定在画面中，而背景在令人作呕的空间矛盾中扭曲和伸缩，变焦和推车反向运动完美同步，去饱和调色板带有病态的黄绿色底色，在变形玻璃上拍摄，希区柯克的心理眩晕视觉语言得到了体现\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "眩晕效应"
+  },
+  {
+    "alt": "起重机射击摄影示例剧照",
+    "description": "摄像机安装在机械起重机臂上，以雄伟、受控的运动向上、向下或扫过场景，通常用于戏剧性的揭示或盛大的建立时刻。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/crane-shot.jpg",
+    "index": 27,
+    "prompt": "起重机镜头在 [Subject] 上开始紧密拍摄，然后以雄伟的弧线向上和向后扫过，以揭示真实的周围规模，个人成为无缝垂直启示中的众多元素之一，使用 ARRI Alexa 65 和 35mm Signature Prime 进行拍摄，Technocrane 的机械优雅执行精确编排的弧线，金色时刻的光线水平泛滥\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "起重机射击"
+  },
+  {
+    "alt": "一号 (Oner)摄影示例剧照",
+    "description": "整个场景在一个完整的镜头中捕捉，没有剪辑，需要演员、摄像机和工作人员的精确编排，同时创造实时的张力和身临其境的空间连续性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/one-er.jpg",
+    "index": 28,
+    "prompt": "跟随 [Subject] 穿越不断变化的环境，整个旅程不间断地呈现几分钟精心设计的空间连续性，使用 ARRI Alexa Mini 和 Cooke S4 21mm 镜头在斯坦尼康上拍摄，不断变化的光温营造出穿越空间的生动色彩之旅\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "一号 (Oner)"
+  },
+  {
+    "alt": "倾斜拍摄摄影示例剧照",
+    "description": "相机在固定轴上垂直旋转，向上或向下倾斜以显示高度，从脚到脸扫描角色，或跟随垂直动作。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/tilt-shot.jpg",
+    "index": 29,
+    "prompt": "从 [Subject] 的脚开始缓慢倾斜拍摄，垂直爬上他们的身体，刻意的垂直扫描构建预期，每个细节在脸被揭露之前讲述角色的故事，用 85mm 长焦拍摄压缩垂直层次，柯达 Vision3 500T 具有冷色调的阴色彩再现\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "倾斜拍摄"
+  },
+  {
+    "alt": "鞭锅摄影示例剧照",
+    "description": "一种极快的水平平移，可产生运动模糊，用作动态过渡或传达突然的惊喜、注意力的快速转移或狂热的能量。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/whip-pan.jpg",
+    "index": 30,
+    "prompt": "快速平移捕捉到 [Subject]，严重的水平运动模糊将环境划成抽象的色带，模糊仅持续三帧，然后分解为锐利的清晰度，使用 35mm Zeiss Master Prime 高速摄像机拍摄，原始的内脏动能\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "鞭锅"
+  },
+  {
+    "alt": "两次射击摄影示例剧照",
+    "description": "精确拍摄两个主题的镜头，展示他们的空间和情感关系，这对于在对话、对抗或亲密关系中建立角色之间的动态至关重要。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/two-shot.jpg",
+    "index": 31,
+    "prompt": "[Subject] 的两张照片构图在一起，他们的身体形成互补的角度，他们之间的空间充满了所说和未说的一切，使用 50mm Summilux f/1.4 拍摄，背景模糊，柯达 Portra 400 色彩还原柔和温暖的中间色调，共享空间中两个人物安静的雄辩\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "两次射击"
+  },
+  {
+    "alt": "三连发摄影示例剧照",
+    "description": "拍摄三个主题的镜头，通常用于展示群体动态、联盟或三人组内的奇怪紧张关系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/three-shot.jpg",
+    "index": 32,
+    "prompt": "[Subject] 的三张镜头在宽银幕画面上以三角形构图排列，每个镜头占据自己的三分之一，三角形结构揭示了完全不同的能量在单点碰撞之间的张力，使用变形 50mm 拍摄，宽画面强调三个人物之间的空间\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "三连发"
+  },
+  {
+    "alt": "牛仔射击摄影示例剧照",
+    "description": "从大约大腿中部以上拍摄主题，以西方电影命名，其中框架需要包括枪手装在皮套里的武器，传达随意的权威。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/cowboy-shot.jpg",
+    "index": 33,
+    "prompt": "[Subject] 的牛仔镜头，取景于大腿中部以上，双手松弛地垂在身体两侧，人物的姿势在表面平静之下散发出盘绕的准备状态，使用 Techniscope 2-perf 35mm 拍摄，呈现坚韧的宽银幕外观，温暖的土色调为赭色和皮革棕色\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "牛仔射击"
+  },
+  {
+    "alt": "中景特写摄影示例剧照",
+    "description": "从胸部向上拍摄拍摄对象，比中景镜头更紧凑，但不像特写镜头那么亲密，非常适合情感对话，同时保留一些肢体语言背景。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/medium-close-up.jpg",
+    "index": 34,
+    "prompt": "[Subject] 从胸部向上的中特写，亲密的距离非常适合阅读微表情，而紧张的肢体语言在肩膀和手上仍然可见，在 T2 的 75mm Cooke S4 上拍摄，深蓝色和间歇性温暖色调的黑色色调调色板\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "中景特写"
+  },
+  {
+    "alt": "窒息射击摄影示例剧照",
+    "description": "这是一种非常紧凑的镜头，从前额到下巴，几乎消除了所有背景，比标准特写更令人产生幽闭恐惧症，通常用于极端情绪的时刻。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/choker-shot.jpg",
+    "index": 35,
+    "prompt": "[Subject]从发际线到下巴的Choker镜头取景，零背景可见，皮肤像风景一样充满整个屏幕，刺眼的顶光在眼窝处形成深深的阴影，同时照亮颧骨和眉毛的平面，100mm微距镜头，T2.8拍摄，高对比度单色色彩处理，伯格曼级别的心理幽闭恐惧症\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "窒息射击"
+  },
+  {
+    "alt": "推入摄影示例剧照",
+    "description": "镜头缓慢、谨慎地向拍摄对象移动，拉近身体距离，以增强焦点和情感分量，吸引观众更深入地陷入某个时刻或领悟。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/push-in.jpg",
+    "index": 36,
+    "prompt": "难以察觉地缓慢推入 [Subject]，摄影机从中景开始，逐渐接近中特写，如此缓慢的推入，观众可能不会有意识地注意到摄影机的移动，但却会感觉到情绪的墙壁正在靠近，使用 50mm Cooke Speed Panchro 复古镜头拍摄，带有柔和的对焦呼吸，柯达 5219 温暖\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "推入"
+  },
+  {
+    "alt": "拔出摄影示例剧照",
+    "description": "相机从物理上远离拍摄对象，揭示更多的环境，通常用于创造一种孤立感、启示感，或从亲密到史诗般的规模的过渡。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/pull-out.jpg",
+    "index": 37,
+    "prompt": "拉出镜头从 [Subject] 开始，然后慢慢撤回以揭示周围环境的真实规模，镜头在一个连续的动作中从亲密过渡到宇宙隔离，使用安装在伸缩臂上的 24 毫米广角镜头拍摄，规模扩大以吞没个体\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "拔出"
+  },
+  {
+    "alt": "360 度拍摄摄影示例剧照",
+    "description": "相机完全围绕拍摄对象旋转，营造出一种循环能量的感觉、浪漫的强度，或者时间和空间围绕中心时刻崩溃的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/360-degree-shot.jpg",
+    "index": 38,
+    "prompt": "围绕 [Subject] 旋转的 360 度轨道镜头，摄影机缓慢旋转，背景变成一条连续的光带，旋转的向心能量让世界感觉就像以拍摄对象为轴旋转，使用 50mm 变形镜头拍摄，椭圆形散景，皮肤上温暖的钨丝色调与冷色环境光的映衬，圆周运动的浪漫眩晕感\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "360 度拍摄"
+  },
+  {
+    "alt": "静态射击摄影示例剧照",
+    "description": "完全锁定的镜头，没有相机移动，迫使构图完成所有工作——刻意的静止可以创造沉思、通过舞台表演产生喜剧或令人不安的紧张气氛。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/static-shot.jpg",
+    "index": 39,
+    "prompt": "[Subject] 的完美静态锁定镜头，摄影机在沉重的三脚架上绝对一动不动，每个元素都以极其精确的方式放置，摄影机的静止使画面感觉就像一幅活生生的画作，在 ARRI Alexa 上使用 40 毫米蔡司 Master Prime 拍摄，T5.6 以获得最大边缘到边缘的锐度，韦斯·安德森调色板，完美秩序的面无表情的幽默\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "静态射击"
+  },
+  {
+    "alt": "崩溃缩放摄影示例剧照",
+    "description": "突然、快速地放大某个主题以达到戏剧性的强调，通常用于喜剧妙语、恐怖揭露或武术冲击时刻。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/crash-zoom.jpg",
+    "index": 40,
+    "prompt": "半秒内从广角镜头到 [Subject] 的极端特写镜头的崩溃变焦，快速变焦的模糊产生同心径向条纹，使用以最大速度启动的老式 Angenieux 25-250mm 变焦镜头拍摄，35mm 胶片颗粒为运动模糊增添了砂砾，邵氏兄弟的视觉能量通过现代镜头引导\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "崩溃缩放"
+  },
+  {
+    "alt": "虫眼视图摄影示例剧照",
+    "description": "相机放置在地面上，直视上方，以最低的角度，让一切都高高在上，营造出一种敬畏、恐吓或孩童般的惊奇感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/camera-work-stills-v1/worms-eye-view.jpg",
+    "index": 41,
+    "prompt": "蠕虫从地面直视 [Subject] 的视角，视角如此极端，以至于垂直元素似乎向内倾斜并有崩溃的危险，由直接放置在地面上的相机拍摄，14mm 超广角直线镜头笔直向上，桶形畸变增加了眩晕效果，从最小的生物的角度来看，压倒性的规模\n\nRemove the noise and high-frequency details from the image. Keep all the lines, colors, and brightness unchanged.Arri 65mm camera, Cooke anamorphic lenses",
+    "title": "虫眼视图"
+  }
+]

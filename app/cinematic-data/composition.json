@@ -1,0 +1,170 @@
+[
+  {
+    "alt": "三分法则构图示例剧照",
+    "description": "将框架划分为 3x3 网格，并沿线或交叉点放置关键元素，创建自然平衡、动态的构图，比死中心框架感觉更生动。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/rule-of-thirds.jpg",
+    "index": 1,
+    "prompt": "三分法则构图，[Subject] 位于右上角的功率点交叉点，眼睛精确地位于顶部水平第三线，画面的剩余三分之二充满负空间，创造自然的视觉流动，尽管不对称，但构图动态平衡，在 T2.8 的 50mm 镜头上拍摄，阴天提供均匀的自然照明",
+    "title": "三分法则"
+  },
+  {
+    "alt": "对称构图示例剧照",
+    "description": "两半框架相互镜像的构图，营造出一种秩序感、正式感、完美感或令人不安的精确感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/symmetry.jpg",
+    "index": 2,
+    "prompt": "完美的双边对称，[Subject] 站在消失点的正中心，匹配的元素在两侧后退到无穷大，对称如此绝对，以至于在心理上变得压抑而不是美丽，使用 24mm 宽镜头从锁定的三脚架在中心高度拍摄，库布里克单点透视严重性",
+    "title": "对称"
+  },
+  {
+    "alt": "引导线构图示例剧照",
+    "description": "使用场景中的自然或建筑线条（道路、栅栏、走廊、阴影）引导观看者的眼睛看向主题或深入画面。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/leading-lines.jpg",
+    "index": 3,
+    "prompt": "引导线构图在远处的消失点向[Subject]汇聚，画面中的每一个元素都旨在将视线不可抗拒地拉向焦点，晨雾柔化背景并增强大气透视，用135mm长焦拍摄压缩距离并加强汇聚，去饱和的冷色调，线条的视觉磁性拒绝让视线徘徊",
+    "title": "引导线"
+  },
+  {
+    "alt": "框内框构图示例剧照",
+    "description": "使用场景中的元素——门口、窗户、拱门、树枝——围绕主题创建一个辅助框架，增加深度，吸引焦点，并暗示诱捕或偷窥。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/framing-within-frame.jpg",
+    "index": 4,
+    "prompt": "框架中的 [Subject] 透过建筑开口的黑暗轮廓看到，框架装置增加了深度层次和从隐藏的有利位置观察的偷窥感，使用 35mm 镜头拍摄，曝光平衡使周围的框架完全黑暗，约翰·福特门口构图将一个简单的元素转变为归属和排斥的隐喻",
+    "title": "框内框"
+  },
+  {
+    "alt": "负空间构图示例剧照",
+    "description": "将画面的大片区域留空，让主体占据一小部分，创造呼吸空间、隔离、沉思或强调缺席的重量。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/negative-space.jpg",
+    "index": 5,
+    "prompt": "负空间构图，[Subject] 占据画面的最下角，剩余的 90% 是广阔的空虚，微小的人物和压倒性的空虚之间的比例关系创造了一种发自内心的孤立感，使用 55mm 镜头在 f/8 的中画幅上拍摄，使整个画面具有临床清晰度，安东尼奥尼的极简主义语言，其中空虚比对话更响亮",
+    "title": "负空间"
+  },
+  {
+    "alt": "浅焦点构图示例剧照",
+    "description": "使用非常窄的景深，因此只有拍摄对象清晰，而其他一切都融化为柔和的模糊，隔离拍摄对象并创造一种亲密、梦幻的品质。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/shallow-focus.jpg",
+    "index": 6,
+    "prompt": "[Subject] 的浅焦肖像，只有脸部锐利对焦，其他一切都溶解在发光色彩和散景的挂毯中，景深如此狭窄，甚至近耳都变得柔和，使用 Zeiss Master Prime 85mm T1.4 全开拍摄，大画幅传感器将背景转化为抽象绘画，王家卫的焦点如欲望的视觉诗歌",
+    "title": "浅焦点"
+  },
+  {
+    "alt": "深度聚焦构图示例剧照",
+    "description": "画面中的一切——前景、中景和背景——同时处于清晰的焦点中，让观看者能够探索整个图像并发现平面之间的关系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/deep-focus.jpg",
+    "index": 7,
+    "prompt": "[Subject] 的深焦构图同时在多个平面上可见，从两英尺到三十英尺都清晰可见，观看者可以自由探索任何层，需要 f/11 的小光圈和强大的隐形照明，在 21 毫米宽镜头上拍摄以最大化景深，《公民凯恩》民主构图，每一寸画面都值得检查",
+    "title": "深度聚焦"
+  },
+  {
+    "alt": "场面调度构图示例剧照",
+    "description": "画面中可见的一切的总体安排——布景设计、道具、服装、灯光、演员定位——其中每一个元素都是经过深思熟虑的讲故事的选择。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/mise-en-scene.jpg",
+    "index": 8,
+    "prompt": "[Subject] 精心布置的场景布置在一个环境中，每个元素都讲述一个故事，每个道具都经过制作设计师的精确研究和放置，表面上的常态隐藏着可见的断层线，使用 32mm 镜头在 35mm 上拍摄，捕捉整个空间作为叙事环境，这是一个布景设计是心理学的世界的 Sirkian 情节剧",
+    "title": "场面调度"
+  },
+  {
+    "alt": "黄金比例构图示例剧照",
+    "description": "使用数学黄金螺旋（1.618:1）将关键元素沿着自然发生的对数曲线放置，创造出有机和谐的作品。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/golden-ratio.jpg",
+    "index": 9,
+    "prompt": "[Subject] 沿着对数曲线放置的黄金比例螺旋构图，每个主要元素自然地沿着数学螺旋排列，比例和谐创造了眼睛无意识跟随的有机正确性，在 24mm 广角镜头上拍摄，将斐波那契数列与文艺复兴绘画和电影构图联系起来的数学之美",
+    "title": "黄金比例"
+  },
+  {
+    "alt": "景深构图示例剧照",
+    "description": "场景中看起来清晰的距离范围——控制景深可以控制观看者的焦点以及他们感知空间深度的方式。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/depth-of-field.jpg",
+    "index": 10,
+    "prompt": "选择性景深将 [Subject] 隔离在狭窄的聚焦切片中，前后的所有内容都融入渐变模糊，现代变形和大画幅电影摄影已成为著名电影制作的视觉标志，在 T1.3 下使用 85mm 镜头的大画幅传感器拍摄的电影景深",
+    "title": "景深"
+  },
+  {
+    "alt": "前景兴趣构图示例剧照",
+    "description": "将对象或元素放置在直接前景中以增加深度和维度，创建分层图像，吸引观看者通过构图的多个平面。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/foreground-interest.jpg",
+    "index": 11,
+    "prompt": "前景兴趣构图，中景为 [Subject]，模糊元素主导直接前景，三个不同的深度平面创造身临其境的物理空间，前景元素部分遮挡主体，增加偷窥张力，在 T2 处使用 40mm 镜头拍摄，在平面之间产生可见的焦点分离，柯达 5219 500T 具有不饱和的大地色调，斯皮尔伯格技术将观众带入世界",
+    "title": "前景兴趣"
+  },
+  {
+    "alt": "平衡元件构图示例剧照",
+    "description": "将视觉重量分布在整个框架上，这样就不会出现任何一个区域感觉太重或太空——一侧的大主题可以通过另一侧的较小但视觉上引人注目的元素来平衡。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/balancing-elements.jpg",
+    "index": 12,
+    "prompt": "画面三分之一处采用 [Subject] 进行平衡构图，另一侧采用视觉上引人注目的元素进行平衡，这种平衡不是对称的，而是感觉得到的，眼睛在两个锚定元素之间舒适地移动，使用 65mm 镜头在 f/5.6 的中画幅上拍摄，画面构图和谐，每个元素都经过天平秤的精确称重和放置",
+    "title": "平衡元件"
+  },
+  {
+    "alt": "对角线构图示例剧照",
+    "description": "在构图中使用对角元素来创造动态能量和运动，因为与水平或垂直线相比，对角线本质上感觉不稳定和活跃。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/diagonal-lines.jpg",
+    "index": 13,
+    "prompt": "[Subject] 的对角线构图被激进的 45 度角包围，整个构图中没有任何水平或垂直的东西，每条线都倾斜且活跃，故意没有任何稳定的参考，从而产生动态不稳定和前进的动力，在 24mm 广角上拍摄，轻微的桶形畸变增强了角度动态",
+    "title": "对角线"
+  },
+  {
+    "alt": "三角形构图构图示例剧照",
+    "description": "将关键元素排列在框架内形成一个三角形，创建一个稳定的分层结构，自然地引导视线在三个兴趣点之间。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/triangular-composition.jpg",
+    "index": 14,
+    "prompt": "[Subject] 的三角形构图在画面内排列成三角形，顶点首先吸引眼球，然后自然地沿着对角线引导视线向下到达底部，在视线高度上使用 50mm 镜头拍摄，达芬奇和黑泽明都将这种经典的构图结构理解为力量与稳定的几何结构",
+    "title": "三角形构图"
+  },
+  {
+    "alt": "居中构图构图示例剧照",
+    "description": "将拍摄对象置于画面的正中央——当有意这样做时，它会产生一种强大的、对抗性的或催眠式的效果，这需要信心和意向性。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/centered-composition.jpg",
+    "index": 15,
+    "prompt": "以 [Subject] 为精确数学中心的居中构图，围绕其周围的空间以完美双边对称排列，刻意的中心位置创造了仪式的重要性和对抗性的直接性，从中心高度的锁定三脚架上使用 28 毫米镜头拍摄，深焦渲染每个细节锐利，韦斯·安德森平面美学符合库布里克单点透视的严肃性",
+    "title": "居中构图"
+  },
+  {
+    "alt": "净空构图示例剧照",
+    "description": "拍摄对象的头顶和画面顶部之间的空间过多会让人感觉不连贯，太少会让人感觉局促，而适当的头部空间会创造出自然、舒适的画面。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/headroom.jpg",
+    "index": 16,
+    "prompt": "[Subject] 的中特写镜头中有适当的头部空间，眼睛位于上第三线，顶部和框架顶部之间有舒适的间隙，有足够的空间感觉自然而不浪费框架空间，在 T2.8 的 85mm 镜头上拍摄，良好相机操作的隐形语法",
+    "title": "净空"
+  },
+  {
+    "alt": "铅房构图示例剧照",
+    "description": "移动主体前面或他们正在看的方向上的空白空间，为主体提供视觉呼吸空间并暗示目的地或意图。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/lead-room.jpg",
+    "index": 17,
+    "prompt": "引导室构图，[Subject] 位于画面的一侧，在他们的凝视或移动方向上有宽敞的空白空间，开放空间暗示可能性和目的地，适当引导室的令人满意的正确性创造视觉动力，在 50mm 镜头上拍摄，构图感觉自然且动态向前",
+    "title": "铅房"
+  },
+  {
+    "alt": "视觉重量构图示例剧照",
+    "description": "基于尺寸、颜色、对比度、纹理和隔离的构图中元素的感知重量——理解视觉重量是创建平衡或故意不平衡框架的关键。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/visual-weight.jpg",
+    "index": 18,
+    "prompt": "视觉重量研究以 [Subject] 作为一个小而生动的元素，通过隔离、色彩饱和度和色调对比度承载与其物理尺寸不成比例的视觉质量，该构图有意探索色密度如何产生独立于实际尺寸的感知重量，在 f/5.6 的 35mm 镜头上拍摄，始终具有临床清晰度",
+    "title": "视觉重量"
+  },
+  {
+    "alt": "重复和模式构图示例剧照",
+    "description": "使用重复出现的视觉元素——形状、颜色、物体——在框架中创造节奏和统一，打破一个模式会立即引起人们对破坏的关注。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/repetition-and-pattern.jpg",
+    "index": 19,
+    "prompt": "使用 [Subject] 作为均匀阵列中的单个中断的重复和图案合成，数百个重复元素创造出令人着迷的规律性，其中一个异常立即吸引眼球，这是人眼天生能够检测规则图案中的异常的视觉原理，在 f/4 的 50mm 镜头上拍摄，完整图案边缘到边缘锐利，温暖的环境照明",
+    "title": "重复和模式"
+  },
+  {
+    "alt": "图地关系构图示例剧照",
+    "description": "主体（人物）与其背景（背景）之间的感知关系——强烈的人物与背景分离使主体流行起来，而模糊的关系则产生艺术张力。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/figure-ground.jpg",
+    "index": 20,
+    "prompt": "[Subject] 与背景的强烈关系通过极端的色调和颜色对比与背景分离，创造即时的三维流行，形状像剪纸一样干净地隔离，使用 110mm 镜头在 f/2.8 的中画幅上拍摄，创造轻微的背景柔化，在色调分离中添加光学分离，这是使电影可读的基本感知原理",
+    "title": "图地关系"
+  },
+  {
+    "alt": "对比构图示例剧照",
+    "description": "使用相反的视觉元素——亮与暗、大与小、暖与冷、锐利与柔和——在画面中创造视觉趣味、层次结构和戏剧张力。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/composition-stills-v1/contrast-composition.jpg",
+    "index": 21,
+    "prompt": "高对比度构图，以 [Subject] 作为微小的暖色元素，与广阔的冷色调环境形成鲜明对比，每种类型的视觉对比同时发挥作用 — 暖色与冷色、小型有机形状与大型几何形状、柔软纹理与坚硬表面、运动与静止、大画幅 65 毫米拍摄，100 毫米长焦压缩背景，柯达 Vision3 50D 饱和日光库存",
+    "title": "对比"
+  }
+]

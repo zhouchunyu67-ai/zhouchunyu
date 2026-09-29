@@ -2098,6 +2098,9 @@ export default function Home() {
               <p>{isLoadingSaved ? "正在读取本机素材库…" : visibleAssets.length ? `${visibleAssets.length} 个素材 · ${formatBytes(visibleSize)}` : "当前区域等待导入素材"}</p>
             </div>
             <div className="toolbar-actions">
+              <a className="cinematic-library-button" href="/cinematic">
+                <span aria-hidden="true">◈</span> 电影化参数
+              </a>
               <a className="ai-studio-button" href="/ai">
                 <span aria-hidden="true">✦</span> AI 生成
               </a>

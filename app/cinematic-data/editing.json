@@ -1,0 +1,138 @@
+[
+  {
+    "alt": "横切剪辑示意图",
+    "description": "在不同地点同时发生的两个或多个场景之间交替，通过暗示融合来营造张力，并在故事情节之间创造戏剧性的相似之处。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/cross-cutting.png",
+    "index": 1,
+    "prompt": "涉及 [Subject] 的两个同时场景之间的交叉剪辑，随着两个事件都走向高潮，暖色调和冷色调之间的节奏加速交替，视觉对比加剧了讽刺，每个剪辑都产生了意义的碰撞，这两个场景都无法单独生成，一侧是温暖的柯达色调，另一侧是冷推处理",
+    "title": "横切"
+  },
+  {
+    "alt": "跳切剪辑示意图",
+    "description": "从相似的角度拍摄同一主题的两个连续镜头之间的剪辑，造成了不和谐的时间跳跃——曾经被认为是一个错误，现在有意用于能量、焦虑或时间压缩。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/jump-cut.png",
+    "index": 2,
+    "prompt": "[Subject] 的跳剪序列，背景和位置在剪辑之间突然变化，而摄像机角度基本保持不变，刺耳的时间不连续性让时间感觉被打破和重新组合，每个剪辑都对平滑的连续性产生了微小的暴力，手持 16mm 拍摄，颗粒粗糙，高光过曝，法国新浪潮对隐形剪辑的反叛",
+    "title": "跳切"
+  },
+  {
+    "alt": "溶解剪辑示意图",
+    "description": "一幅图像逐渐淡出，下一幅图像淡入，在过渡过程中同时可见，暗示着时间的流逝、梦境或主题联系。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/dissolve.png",
+    "index": 3,
+    "prompt": "使用 [Subject] 的两个重叠图像进行溶解过渡，两个图像同时可见长达四秒的重叠，占据一幅图像的两个时间的柔和双曝光质量，温暖的棕褐色色调与饱和颜色混合，时间溶解电影的怀旧痛苦",
+    "title": "溶解"
+  },
+  {
+    "alt": "淡入/淡出剪辑示意图",
+    "description": "图像逐渐从黑色（或白色）出现或消失——淡入黑色表示结束或主要的时间流逝，而从黑色淡出则表示新的开始或章节。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/fade-in-out.png",
+    "index": 4,
+    "prompt": "从 [Subject] 淡入黑色，图像在六秒内逐渐失去亮度，人物变成阴影，阴影成为黑暗的一部分，淡入如此缓慢，以至于无法识别确切的消失时刻，永久结束的情感重量，视觉上相当于长长的呼气",
+    "title": "淡入/淡出"
+  },
+  {
+    "alt": "剪辑剪辑示意图",
+    "description": "将一系列短镜头剪辑在一起，以压缩时间、传达信息或营造情感动力——从训练序列到坠入爱河的序列，蒙太奇是电影的时间机器。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/montage.png",
+    "index": 5,
+    "prompt": "蒙太奇序列压缩 [Subject] 周围的时间，随着动量加速，每个镜头都比上一个镜头短，剪辑节奏本身像渐强一样建立，最终以最终的持续镜头完成，电影时间机器将几个月压缩为两分钟不断升级的视觉节奏",
+    "title": "剪辑"
+  },
+  {
+    "alt": "粉碎切割剪辑示意图",
+    "description": "两个截然不同的场景之间突然、不和谐的切换——通常是从安静到大声，从平静到混乱，或者一个角色对所有出错的事情说“不会出错”。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/smash-cut.png",
+    "index": 6,
+    "prompt": "从绝对平静到完全混乱的猛烈剪辑，涉及 [Subject]，瞬间硬剪辑，没有过渡，没有准备，音调鞭打如此极端，观众的身体反应如此之大，编辑相当于一巴掌，将剪辑本身武器化为讲故事工具的技术",
+    "title": "粉碎切割"
+  },
+  {
+    "alt": "长镜头剪辑示意图",
+    "description": "比传统剪辑长得多的加长镜头，营造实时张力，展示表演，并使观众沉浸在不间断的空间和时间中。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/long-take.png",
+    "index": 7,
+    "prompt": "通过连续空间实时跟踪 [Subject] 的长不间断镜头，单次镜头创造出身临其境的体验，观众被实时困住，使用 ARRI Alexa Mini 和 21mm 蔡司镜头在斯坦尼康上拍摄，不断变化的光线创造了自然的色温旅程，不间断的连续性拒绝让观众逃入剪辑",
+    "title": "长镜头"
+  },
+  {
+    "alt": "冻结帧剪辑示意图",
+    "description": "当屏幕上出现一个画面时，动作突然停止——电影的感叹号，用于结局、启示或喜剧强调。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/freeze-frame.png",
+    "index": 8,
+    "prompt": "[Subject] 的定格帧捕捉到情感或身体表达高峰的精确瞬间，运动停止时胶片颗粒突然可见，时间冻结的世界突然寂静，运动被捕获为编辑感叹号，柯达 Tri-X 黑白颗粒，单个被盗瞬间的不朽",
+    "title": "冻结帧"
+  },
+  {
+    "alt": "分屏剪辑示意图",
+    "description": "该框架分为两个或多个部分，每个部分同时显示不同的角度、位置或时间线，同时显示并行动作、电话对话或多个视角。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/split-screen.png",
+    "index": 9,
+    "prompt": "分屏将画面划分为两半同时可见的[Subject]，一侧为暖色调，另一侧为冷色调，垂直划分成为身体和情感的距离，德帕尔马技术让观众成为同一画面中平行现实的全知观察者",
+    "title": "分屏"
+  },
+  {
+    "alt": "反应射击剪辑示意图",
+    "description": "人物对事件、对话或启示的面部反应的剪辑——通常比展示动作本身更强大，因为它让观众体验到情感上的影响。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/reaction-shot.png",
+    "index": 10,
+    "prompt": "[Subject] 的反应特写镜头捕捉到了情绪冲击的确切瞬间，眼睛睁大，下巴肌肉紧缩，三秒内脸上出现的每一个微表情，柔和的定向光照亮每一个微妙的肌肉变化，用 85mm 镜头拍摄，眼睛沿着上三分之一处拍摄，斯皮尔伯格的技术通过人脸上的反射让观众感受到一个事件",
+    "title": "反应射击"
+  },
+  {
+    "alt": "剖面图剪辑示意图",
+    "description": "对主要动作之外的事物进行简短剪辑——墙上的时钟、紧张的手、外面的风景——添加背景、创造节奏或构建平行意义。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/cutaway.png",
+    "index": 11,
+    "prompt": "[Subject] 的切面在紧凑的取景中被孤立，平凡的物体突然被其背景赋予了意义，用 100mm 微距镜头拍摄，背景柔和模糊，温暖的钨丝光，希区柯克的原则，显示滴答作响的时钟比显示争论更悬疑",
+    "title": "剖面图"
+  },
+  {
+    "alt": "切入剪辑示意图",
+    "description": "将更宽画面中已经可见的事物切换到更近的镜头 - 放大手、道具或面部细节 - 将注意力集中在场景中的特定元素上。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/cut-in.png",
+    "index": 12,
+    "prompt": "切入 [Subject] 的特写镜头，揭示了一个有说服力的细节，在 T2 使用 100mm 微距镜头拍摄，导演决定放弃更广阔的视野，找到隐藏在特定细节中的真相",
+    "title": "切入"
+  },
+  {
+    "alt": "擦拭剪辑示意图",
+    "description": "一个镜头以明确的几何图案将另一个镜头推离屏幕——这是星球大战和经典连续剧的标志，增加了动能和复古、冒险的感觉。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/wipe-transition.png",
+    "index": 13,
+    "prompt": "一个场景中带有 [Subject] 的擦除过渡被滑入的传入场景推离帧，几何擦除边缘是一条干净的垂直线，两个场景都完全照亮并在两侧组成完整的图像，冒险连续剧的怀旧能量，自我意识的有趣过渡，宣布自己是一个讲故事的设备",
+    "title": "擦拭"
+  },
+  {
+    "alt": "鸢尾花剪辑示意图",
+    "description": "框架上的圆形光圈打开或关闭，将注意力集中在特定点上——这是一种早期的电影技术，因其迷人的、自我意识的品质而在现代得到复兴。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/iris-transition.png",
+    "index": 14,
+    "prompt": "虹膜过渡围绕中心帧处的 [Subject] 同心闭合，圆形黑色面罩从边缘收紧，就像闭上的眼睛一样，世界逐渐被黑暗吞噬，直到只剩下一个小圆盘，无声电影技术迷人的自我意识，温暖的棕褐色色调暗示着古老的胶片库存",
+    "title": "鸢尾花"
+  },
+  {
+    "alt": "延时摄影剪辑示意图",
+    "description": "以比播放速度慢得多的间隔捕获帧，将小时、天或月压缩为秒，以揭示正常感知不可见的过程——云层飞驰、城市脉动。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/time-lapse.png",
+    "index": 15,
+    "prompt": "[Subject] 的延时从几小时压缩为几秒，光在一天中的整个光谱中循环，阴影像日晷指针一样旋转，整个存在节奏被压缩为一次视觉呼吸，用带有间隔计的锁定相机拍摄，Koyaanisqatsi 揭示了加速时间揭示了人类感知不可见的模式",
+    "title": "延时摄影"
+  },
+  {
+    "alt": "快速运动剪辑示意图",
+    "description": "影片回放的速度比捕捉的速度要快，压缩实时动作以创造喜剧、狂热的能量或不可阻挡的加速感。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/fast-motion.png",
+    "index": 16,
+    "prompt": "[Subject] 的快速运动序列加速到正常速度的四倍，低速镜头的轻微抖动增加了喜剧效果，每个动作都有目的但加速得荒谬，身体的巴斯特·基顿能量移动速度超过了物理允许的速度，温暖的光线一致但阴影在表面上奔跑",
+    "title": "快速运动"
+  },
+  {
+    "alt": "反向运动剪辑示意图",
+    "description": "镜头向后播放，创造出超现实、不可思议或神奇的效果，破碎的东西重新组装，掉落的物体升起，熟悉的东西变得陌生。",
+    "img": "https://zcdn.rytesa.cn/moke-v3/d1cb05f9f9e9cee8/assets/editing-diagrams-v1/reverse-motion.png",
+    "index": 17,
+    "prompt": "[Subject] 的反向运动具有反向物理的不可思议的错误，其中熵向后运行，碎片找到它们的原始位置，就好像记住它们属于哪里一样，最初在高速 Phantom 相机上拍摄，以便在反向时实现平滑运动，时间以错误方式移动的世界的大卫·林奇超现实主义",
+    "title": "反向运动"
+  }
+]
